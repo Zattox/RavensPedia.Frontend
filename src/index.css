@@ -60,3 +60,30 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Кастомные стили для пагинации */
+.custom-pagination .ant-pagination-item {
+  background-color: #1a1a1a; /* Тёмный фон для элементов пагинации */
+  border-color: #1a1a1a;
+}
+.custom-pagination .ant-pagination-item a {
+  color: #ffffff; /* Белый цвет текста */
+}
+.custom-pagination .ant-pagination-item-active {
+  background-color: #ff0000; /* Красный фон для активной страницы */
+  border-color: #ff0000;
+}
+.custom-pagination .ant-pagination-item-active a {
+  color: #ffffff; /* Белый цвет текста для активной страницы */
+}
+.custom-pagination .ant-pagination-prev .ant-pagination-item-link,
+.custom-pagination .ant-pagination-next .ant-pagination-item-link {
+  background-color: #1a1a1a; /* Тёмный фон для стрелок */
+  color: #ffffff;
+  border-color: #1a1a1a;
+}
+.custom-pagination .ant-pagination-prev:hover .ant-pagination-item-link,
+.custom-pagination .ant-pagination-next:hover .ant-pagination-item-link {
+  color: #ff0000; /* Красный цвет при наведении на стрелки */
+  border-color: #ff0000;
+}

@@ -6,7 +6,7 @@ function Header() {
   const navigate = useNavigate();
 
   const topCards = [
-    { title: 'News', key: 'news', path: '/news' },
+    { title: 'News', key: 'news', path: '/' }, // Изменили путь с /news на /
     { title: 'Matches', key: 'matches', path: '/matches' },
     { title: 'Results', key: 'results', path: '/results' },
     { title: 'Events', key: 'events', path: '/events' },
