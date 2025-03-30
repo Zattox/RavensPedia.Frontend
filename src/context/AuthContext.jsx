@@ -7,13 +7,13 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null); // Добавляем состояние для данных пользователя
+  const [user, setUser] = useState(null); // Содержит email и role
 
   const checkAuth = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
       setIsAuthenticated(false);
-      setUser(null); // Сбрасываем данные пользователя
+      setUser(null);
       setLoading(false);
       return;
     }
@@ -21,7 +21,8 @@ export function AuthProvider({ children }) {
     try {
       const response = await api.get('/auth/me/');
       console.log('Ответ от /auth/me/:', response.data);
-      setUser({ email: response.data.email, role: response.data.role }); // Сохраняем email и role
+      const userData = { email: response.data.email, role: response.data.role };
+      setUser(userData);
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Ошибка проверки авторизации:', error.response?.data || error);
@@ -63,12 +64,14 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       setIsAuthenticated(false);
-      setUser(null); // Сбрасываем данные пользователя при выходе
+      setUser(null);
     }
   };
 
+  const isAdmin = user && user.role && user.role !== 'user'; // Проверка роли администратора
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, user, login, logout, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );
