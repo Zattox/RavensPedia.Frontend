@@ -7,11 +7,13 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // Добавляем состояние для данных пользователя
 
   const checkAuth = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
       setIsAuthenticated(false);
+      setUser(null); // Сбрасываем данные пользователя
       setLoading(false);
       return;
     }
@@ -19,10 +21,12 @@ export function AuthProvider({ children }) {
     try {
       const response = await api.get('/auth/me/');
       console.log('Ответ от /auth/me/:', response.data);
+      setUser({ email: response.data.email, role: response.data.role }); // Сохраняем email и role
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Ошибка проверки авторизации:', error.response?.data || error);
       setIsAuthenticated(false);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -38,7 +42,7 @@ export function AuthProvider({ children }) {
       const { access_token, refresh_token } = response.data;
       localStorage.setItem('accessToken', access_token);
       localStorage.setItem('refreshToken', refresh_token);
-      setIsAuthenticated(true); // Обновляем состояние напрямую
+      await checkAuth(); // Обновляем данные пользователя после логина
       return true;
     } catch (error) {
       console.error('Ошибка при входе:', error.response?.data || error);
@@ -58,12 +62,13 @@ export function AuthProvider({ children }) {
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      setIsAuthenticated(false); // Обновляем состояние напрямую
+      setIsAuthenticated(false);
+      setUser(null); // Сбрасываем данные пользователя при выходе
     }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
