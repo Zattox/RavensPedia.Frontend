@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 import { Card, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/context/AuthContext.jsx';
 import LogoutButton from '@/components/LogoutButton';
 
 function Header() {

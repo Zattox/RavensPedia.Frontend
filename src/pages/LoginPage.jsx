@@ -1,13 +1,14 @@
 // src/pages/LoginPage.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '@/api';
+import { useAuth } from '@/context/AuthContext.jsx';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -21,10 +22,7 @@ function LoginPage() {
 
     try {
       setError('');
-      const response = await api.post('/auth/login/', { email, password });
-      const { access_token, refresh_token } = response.data;
-      localStorage.setItem('accessToken', access_token);
-      localStorage.setItem('refreshToken', refresh_token);
+      await login(email, password); // Используем функцию login из контекста
       navigate('/');
     } catch (error) {
       const errorMessage = error.response?.data?.detail || 'Ошибка при входе. Проверьте email и пароль.';
