@@ -91,7 +91,7 @@ function MatchesPage() {
                     className="bg-gray-800 p-4 rounded-lg shadow-md text-white"
                   >
                     <h3 className="text-lg font-semibold mb-2">
-                      {match.best_of || 'N/A'} | {match.max_number_of_teams || 'N/A'} команд
+                      Формат: Best of {match.best_of || 'N/A'} {/* Заменили строку */}
                     </h3>
                     <p className="text-gray-300">
                       <span className="font-semibold">Турнир:</span> {match.tournament || 'N/A'}
@@ -146,7 +146,7 @@ function MatchesPage() {
                     className="bg-gray-800 p-4 rounded-lg shadow-md text-white"
                   >
                     <h3 className="text-lg font-semibold mb-2">
-                      {match.best_of || 'N/A'} | {match.max_number_of_teams || 'N/A'} команд
+                      Формат: Best of {match.best_of || 'N/A'} {/* Заменили строку */}
                     </h3>
                     <p className="text-gray-300">
                       <span className="font-semibold">Турнир:</span> {match.tournament || 'N/A'}
