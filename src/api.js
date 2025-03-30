@@ -1,22 +1,27 @@
-// src/api.js
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8001',
+  baseURL: 'https://127.0.0.1:8001',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // добавлено
 });
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    console.log('Request config:', config);
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    console.error('API error:', error.response?.data || error);
+    return Promise.reject(error);
+  }
 );
 
 export default api;
