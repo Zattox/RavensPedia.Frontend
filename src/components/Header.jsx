@@ -1,58 +1,41 @@
 // src/components/Header.jsx
-import { Card, Button } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext.jsx';
-import LogoutButton from '@/components/LogoutButton';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 function Header() {
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-  const { isAuthenticated, loading } = useAuth();
 
-  const topCards = [
-    { title: 'News', key: 'news', path: '/' },
-    { title: 'Matches', key: 'matches', path: '/matches' },
-    { title: 'Results', key: 'results', path: '/results' },
-    { title: 'Events', key: 'events', path: '/events' },
-  ];
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
-    <header className="w-full bg-gray-900 p-4 shadow-md fixed top-0 left-0 z-10">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="flex gap-4">
-          {topCards.map((card) => (
-            <Card
-              key={card.key}
-              hoverable
-              className="text-center"
-              style={{ backgroundColor: '#1a1a1a', color: 'rgba(255, 255, 255, 0.87)', width: '120px' }}
-              onClick={() => navigate(card.path)}
-            >
-              <p className="text-lg font-semibold">{card.title}</p>
-            </Card>
-          ))}
+    <header className="fixed top-0 left-0 w-full bg-gray-900 p-4 shadow-md z-10">
+      <nav className="flex justify-between items-center max-w-6xl mx-auto">
+        <div className="space-x-4">
+          <Link to="/" className="text-white hover:bg-gray-700 px-3 py-2 rounded">News</Link>
+          <Link to="/matches" className="text-white hover:bg-gray-700 px-3 py-2 rounded">Matches</Link>
+          <Link to="/results" className="text-white hover:bg-gray-700 px-3 py-2 rounded">Results</Link>
+          <Link to="/events" className="text-white hover:bg-gray-700 px-3 py-2 rounded">Events</Link>
         </div>
-        <div className="flex gap-2">
-          {loading ? (
-            <span className="text-white">Загрузка...</span>
-          ) : isAuthenticated ? (
+        <div>
+          {isAuthenticated ? (
             <>
-              <Button type="primary" onClick={() => navigate('/profile')}>
-                Профиль
-              </Button>
-              <LogoutButton />
+              <Link to="/profile" className="text-white hover:bg-gray-700 px-3 py-2 rounded">Профиль</Link>
+              <button
+                onClick={handleLogout}
+                className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded ml-2"
+              >
+                Выйти
+              </button>
             </>
           ) : (
-            <>
-              <Button type="primary" onClick={() => navigate('/login')}>
-                Войти
-              </Button>
-              <Button type="default" onClick={() => navigate('/register')}>
-                Регистрация
-              </Button>
-            </>
+            <Link to="/login" className="text-white hover:bg-gray-700 px-3 py-2 rounded">Войти</Link>
           )}
         </div>
-      </div>
+      </nav>
     </header>
   );
 }
