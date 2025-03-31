@@ -291,7 +291,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
   };
 
   return (
-    <div className="fixed top-24 right-4 w-80 admin-panel p-6 rounded-lg shadow-md z-20">
+    <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20">
       <h2 className="text-2xl font-bold mb-4 text-center">Управление матчем (Админ)</h2>
       <div className="space-y-4">
         {/* Match Actions */}
@@ -299,7 +299,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
           <h3 className="text-lg font-semibold mb-2">Match Actions</h3>
           <button
             onClick={showUpdateModal}
-            className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded mb-2 w-full"
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Обновить матч
           </button>
@@ -381,7 +381,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
 
           <button
             onClick={handleDeleteMatch}
-            className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full"
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить матч
           </button>
@@ -392,7 +392,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
           <h3 className="text-lg font-semibold mb-2">Matches Manager</h3>
           <button
             onClick={showAddTeamModal}
-            className="bg-green-600 hover:bg-green-700 px-3 py-2 rounded mb-2 w-full"
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Добавить команду
           </button>
@@ -442,7 +442,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
 
           <button
             onClick={showDeleteTeamModal}
-            className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full"
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить команду
           </button>
@@ -496,7 +496,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
           <h3 className="text-lg font-semibold mb-2">Matches Stats Manager</h3>
           <button
             onClick={showAddFaceitStatsModal}
-            className="bg-green-600 hover:bg-green-700 px-3 py-2 rounded mb-2 w-full"
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Добавить Faceit статистику
           </button>
@@ -546,14 +546,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
 
           <button
             onClick={handleDeleteMatchStats}
-            className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded mb-2 w-full"
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Удалить статистику матча
           </button>
 
           <button
             onClick={showAddStatsManualModal}
-            className="bg-green-600 hover:bg-green-700 px-3 py-2 rounded mb-2 w-full"
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Добавить статистику вручную
           </button>
@@ -749,7 +749,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
 
           <button
             onClick={handleDeleteLastStat}
-            className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full"
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить последнюю статистику
           </button>
@@ -760,7 +760,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
           <h3 className="text-lg font-semibold mb-2">Matches Info Manager</h3>
           <button
             onClick={showAddPickBanModal}
-            className="bg-green-600 hover:bg-green-700 px-3 py-2 rounded mb-2 w-full"
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Добавить Pick/Ban
           </button>
@@ -844,14 +844,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
 
           <button
             onClick={handleDeletePickBanInfo}
-            className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded mb-2 w-full"
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Удалить последний Pick/Ban
           </button>
 
           <button
             onClick={showAddMapResultModal}
-            className="bg-green-600 hover:bg-green-700 px-3 py-2 rounded mb-2 w-full"
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Добавить результат карты
           </button>
@@ -1043,7 +1043,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
 
           <button
             onClick={handleDeleteMapResultInfo}
-            className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full"
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить последний результат карты
           </button>
