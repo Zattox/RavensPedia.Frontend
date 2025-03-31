@@ -98,3 +98,85 @@ button:focus-visible {
 tbody tr:nth-child(even) {
     background-color: #2d3748;
 }
+
+/* Кастомные стили для модального окна */
+.custom-modal .ant-modal-content {
+    background-color: #1f2937;
+    color: #ffffff;
+}
+
+.custom-modal .ant-modal-header {
+    background-color: #1f2937;
+    border-bottom: 1px solid #374151;
+}
+
+.custom-modal .ant-modal-title {
+    color: #ffffff;
+}
+
+.custom-modal .ant-modal-close-x {
+    color: #ffffff;
+}
+
+.custom-modal .ant-input,
+.custom-modal .ant-input-number,
+.custom-modal .ant-input-textarea {
+    background-color: #374151;
+    color: #e5e7eb !important; /* Унифицируем цвет текста */
+    border-color: #4b5563;
+}
+
+.custom-modal .ant-input:hover,
+.custom-modal .ant-input-number:hover,
+.custom-modal .ant-input-textarea:hover {
+    border-color: #3b82f6;
+}
+
+.custom-modal .ant-input:focus,
+.custom-modal .ant-input-number:focus,
+.custom-modal .ant-input-textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.custom-modal .ant-form-item-label > label {
+    color: #d1d5db;
+}
+
+.custom-modal .ant-form-item-explain-error {
+    color: #f87171;
+}
+
+/* Кастомные классы для полей ввода */
+.custom-input,
+.custom-input-number,
+.custom-textarea {
+    background-color: #374151 !important;
+    color: #e5e7eb !important; /* Унифицируем цвет текста */
+    border-color: #4b5563 !important;
+}
+
+.custom-input:hover,
+.custom-input-number:hover,
+.custom-textarea:hover {
+    border-color: #3b82f6 !important;
+}
+
+.custom-input:focus,
+.custom-input-number:focus,
+.custom-textarea:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Стили для плейсхолдеров */
+.custom-input::placeholder,
+.custom-input-number input::placeholder,
+.custom-textarea::placeholder {
+    color: #9ca3af !important;
+}
+
+/* Унифицируем цвет текста внутри InputNumber */
+.custom-input-number .ant-input-number-input {
+    color: #e5e7eb !important;
+}
