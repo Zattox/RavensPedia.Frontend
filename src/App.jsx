@@ -12,6 +12,7 @@ import TeamPage from './pages/TeamPage'; // New import
 import PlayerPage from './pages/PlayerPage'; // New import
 import TournamentPage from './pages/TournamentPage'; // New import
 import Header from './components/Header';
+import MatchesResultsPage from './pages/MatchesResultsPage';
 import './index.css';
 
 function App() {
@@ -28,7 +29,7 @@ function App() {
             <Route path="/news/:news_id" element={<NewsDetailPage />} />
             <Route path="/matches" element={<MatchesPage />} />
             <Route path="/matches/:match_id" element={<MatchDetailPage />} />
-            <Route path="/results" element={<div>Страница результатов</div>} />
+            <Route path="/results" element={<MatchesResultsPage />} /> {/* Новый маршрут */}
             <Route path="/events" element={<div>Страница событий</div>} />
             <Route path="/teams/:team_name" element={<TeamPage />} /> {/* New route */}
             <Route path="/players/:player_id" element={<PlayerPage />} /> {/* New route */}
