@@ -1,7 +1,10 @@
 // src/components/AdminMatchPanel.jsx
+import { useNavigate } from 'react-router-dom'; // Добавляем useNavigate для перенаправления
 import api from '@/api';
 
 function AdminMatchPanel({ match_id, setMatch }) {
+  const navigate = useNavigate(); // Для перенаправления после удаления
+
   const handleAddTeam = async (teamName) => {
     try {
       await api.patch(`/matches/${match_id}/add_team/${teamName}/`);
@@ -110,10 +113,60 @@ function AdminMatchPanel({ match_id, setMatch }) {
     }
   };
 
+  const handleUpdateMatchInfo = async () => {
+    const tournament = prompt('Enter tournament name:', '');
+    const date = prompt('Enter date (YYYY-MM-DDTHH:MM:SSZ):', '');
+    const description = prompt('Enter description:', '');
+
+    try {
+      await api.patch(`/matches/${match_id}/`, {
+        tournament,
+        date,
+        description,
+      });
+      alert('Match info updated successfully');
+      const response = await api.get(`/matches/${match_id}/`);
+      setMatch(response.data);
+    } catch (error) {
+      console.error('Error updating match info:', error.response?.data || error);
+      alert('Failed to update match info');
+    }
+  };
+
+  const handleDeleteMatch = async () => {
+    if (window.confirm('Are you sure you want to delete this match?')) {
+      try {
+        await api.delete(`/matches/${match_id}/`);
+        alert('Match deleted successfully');
+        navigate('/matches'); // Используем navigate вместо window.location.href
+      } catch (error) {
+        console.error('Error deleting match:', error.response?.data || error);
+        alert('Failed to delete match');
+      }
+    }
+  };
+
   return (
     <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20">
       <h2 className="text-2xl font-bold mb-4 text-center">Управление матчем (Админ)</h2>
       <div className="space-y-4">
+        {/* Match Actions */}
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Match Actions</h3>
+          <button
+            onClick={handleUpdateMatchInfo}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded mb-2 w-full"
+          >
+            Обновить матч
+          </button>
+          <button
+            onClick={handleDeleteMatch}
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full"
+          >
+            Удалить матч
+          </button>
+        </div>
+
         {/* Matches Manager */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Matches Manager</h3>
@@ -130,6 +183,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
             Удалить команду
           </button>
         </div>
+
         {/* Matches Stats Manager */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Matches Stats Manager</h3>
@@ -152,6 +206,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
             Добавить статистику вручную
           </button>
         </div>
+
         {/* Matches Info Manager */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Matches Info Manager</h3>
