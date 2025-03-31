@@ -10,8 +10,6 @@
 
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
-    /* Убрали background-color, чтобы не конфликтовать с App.jsx */
-    /* background-color: #ffffff; */
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -22,11 +20,6 @@
 body {
     margin: 0;
     min-height: 100vh;
-    /* Убрали flex и центрирование, чтобы не дублировать стили из App.jsx */
-    /* display: flex; */
-    /* flex-direction: column; */
-    /* align-items: center; */
-    /* justify-content: center; */
 }
 
 h1 {
@@ -58,8 +51,6 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
-        /* Убрали background-color */
-        /* background-color: #ffffff; */
     }
 
     button {
@@ -67,7 +58,7 @@ button:focus-visible {
     }
 }
 
-/* Кастомные стили для пагинации (оставили один набор стилей) */
+/* Кастомные стили для пагинации */
 .custom-pagination .ant-pagination-item {
     background-color: #1f2937;
     border-color: #374151;
@@ -101,4 +92,9 @@ button:focus-visible {
 .custom-pagination .ant-pagination-next:hover .ant-pagination-item-link {
     color: #3b82f6;
     border-color: #3b82f6;
+}
+
+/* Чередование цветов строк в таблице */
+tbody tr:nth-child(even) {
+    background-color: #2d3748;
 }

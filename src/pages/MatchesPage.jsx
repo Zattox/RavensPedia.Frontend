@@ -1,5 +1,6 @@
 // src/pages/MatchesPage.jsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Pagination } from 'antd';
 import api from '@/api';
 
@@ -11,6 +12,7 @@ function MatchesPage() {
   const [inProgressPage, setInProgressPage] = useState(1);
   const [scheduledPage, setScheduledPage] = useState(1);
   const matchesPerPage = 4;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -66,6 +68,10 @@ function MatchesPage() {
     window.scrollTo(0, 0);
   };
 
+  const handleMatchClick = (matchId) => {
+    navigate(`/matches/${matchId}`);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -88,10 +94,11 @@ function MatchesPage() {
                 {currentInProgressMatches.map((match) => (
                   <div
                     key={match.id || Math.random()}
-                    className="bg-gray-800 p-4 rounded-lg shadow-md text-white"
+                    className="bg-gray-800 p-4 rounded-lg shadow-md text-white cursor-pointer hover:bg-gray-700"
+                    onClick={() => handleMatchClick(match.id)}
                   >
                     <h3 className="text-lg font-semibold mb-2">
-                      Формат: Best of {match.best_of || 'N/A'} {/* Заменили строку */}
+                      Формат: Best of {match.best_of || 'N/A'}
                     </h3>
                     <p className="text-gray-300">
                       <span className="font-semibold">Турнир:</span> {match.tournament || 'N/A'}
@@ -143,10 +150,11 @@ function MatchesPage() {
                 {currentScheduledMatches.map((match) => (
                   <div
                     key={match.id || Math.random()}
-                    className="bg-gray-800 p-4 rounded-lg shadow-md text-white"
+                    className="bg-gray-800 p-4 rounded-lg shadow-md text-white cursor-pointer hover:bg-gray-700"
+                    onClick={() => handleMatchClick(match.id)}
                   >
                     <h3 className="text-lg font-semibold mb-2">
-                      Формат: Best of {match.best_of || 'N/A'} {/* Заменили строку */}
+                      Формат: Best of {match.best_of || 'N/A'}
                     </h3>
                     <p className="text-gray-300">
                       <span className="font-semibold">Турнир:</span> {match.tournament || 'N/A'}

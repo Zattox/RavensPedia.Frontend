@@ -7,6 +7,10 @@ import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import NewsDetailPage from './pages/NewsDetailPage';
 import MatchesPage from './pages/MatchesPage';
+import MatchDetailPage from './pages/MatchDetailPage';
+import TeamPage from './pages/TeamPage'; // New import
+import PlayerPage from './pages/PlayerPage'; // New import
+import TournamentPage from './pages/TournamentPage'; // New import
 import Header from './components/Header';
 import './index.css';
 
@@ -23,8 +27,12 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/news/:news_id" element={<NewsDetailPage />} />
             <Route path="/matches" element={<MatchesPage />} />
+            <Route path="/matches/:match_id" element={<MatchDetailPage />} />
             <Route path="/results" element={<div>Страница результатов</div>} />
             <Route path="/events" element={<div>Страница событий</div>} />
+            <Route path="/teams/:team_name" element={<TeamPage />} /> {/* New route */}
+            <Route path="/players/:player_id" element={<PlayerPage />} /> {/* New route */}
+            <Route path="/tournaments/:tournament_id" element={<TournamentPage />} /> {/* New route */}
           </Routes>
         </div>
       </Router>
