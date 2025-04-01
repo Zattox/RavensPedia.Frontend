@@ -69,9 +69,10 @@ export function AuthProvider({ children }) {
   };
 
   const isAdmin = user && user.role && user.role !== 'user'; // Проверка роли администратора
+  const isSuperAdmin = user && user.role && user.role === 'super_admin'; // Проверка роли super_admin
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, user, login, logout, isAdmin }}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, user, login, logout, isAdmin, isSuperAdmin, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );
