@@ -1,0 +1,175 @@
+// src/components/AdminPlayerPanel.jsx
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Modal, Form, Input, Button, Tooltip } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import api from '@/api';
+
+function AdminPlayerPanel({ player_nickname }) {
+  const navigate = useNavigate();
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [updateForm] = Form.useForm();
+
+  // Update Player Modal
+  const showUpdateModal = () => {
+    setIsUpdateModalVisible(true);
+  };
+
+  const handleUpdatePlayer = async (values) => {
+    const updatedPlayer = {};
+    if (values.steam_id) updatedPlayer.steam_id = values.steam_id;
+    if (values.nickname) updatedPlayer.nickname = values.nickname;
+    if (values.name) updatedPlayer.name = values.name;
+    if (values.surname) updatedPlayer.surname = values.surname;
+
+    if (Object.keys(updatedPlayer).length > 0) {
+      try {
+        await api.patch(`/players/${player_nickname}/`, updatedPlayer);
+        alert('Информация об игроке успешно обновлена!');
+        setIsUpdateModalVisible(false);
+        updateForm.resetFields();
+        window.location.reload(); // Refresh to show updated data
+      } catch (error) {
+        console.error('Ошибка при обновлении игрока:', error);
+        alert('Не удалось обновить информацию об игроке.');
+      }
+    } else {
+      alert('Хотя бы одно поле должно быть заполнено для обновления.');
+    }
+  };
+
+  const handleUpdateCancel = () => {
+    setIsUpdateModalVisible(false);
+    updateForm.resetFields();
+  };
+
+  // Delete Player
+  const handleDeletePlayer = async () => {
+    if (window.confirm(`Вы уверены, что хотите удалить игрока ${player_nickname}?`)) {
+      try {
+        await api.delete(`/players/${player_nickname}/`);
+        alert('Игрок успешно удален!');
+        navigate('/');
+      } catch (error) {
+        console.error('Ошибка при удалении игрока:', error);
+        alert('Не удалось удалить игрока.');
+      }
+    }
+  };
+
+  return (
+    <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20">
+      <h2 className="text-2xl font-bold mb-4 text-center">Управление игроком (Админ)</h2>
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Действия с игроком</h3>
+          <button
+            onClick={showUpdateModal}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+          >
+            Обновить информацию
+          </button>
+
+          <Modal
+            title={<span className="text-white">Обновить информацию об игроке</span>}
+            open={isUpdateModalVisible}
+            onCancel={handleUpdateCancel}
+            footer={null}
+            className="custom-modal"
+          >
+            <Form
+              form={updateForm}
+              onFinish={handleUpdatePlayer}
+              layout="vertical"
+              className="text-white"
+            >
+              <Form.Item
+                name="steam_id"
+                label={
+                  <span className="text-gray-300">
+                    Steam ID{' '}
+                    <Tooltip title="Введите новый Steam ID (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+              >
+                <Input
+                  className="custom-input"
+                  placeholder="Новый Steam ID (необязательно)"
+                />
+              </Form.Item>
+              <Form.Item
+                name="nickname"
+                label={
+                  <span className="text-gray-300">
+                    Никнейм{' '}
+                    <Tooltip title="Введите новый никнейм (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+              >
+                <Input
+                  className="custom-input"
+                  placeholder="Новый никнейм (необязательно)"
+                />
+              </Form.Item>
+              <Form.Item
+                name="name"
+                label={
+                  <span className="text-gray-300">
+                    Имя{' '}
+                    <Tooltip title="Введите новое имя (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+              >
+                <Input
+                  className="custom-input"
+                  placeholder="Новое имя (необязательно)"
+                />
+              </Form.Item>
+              <Form.Item
+                name="surname"
+                label={
+                  <span className="text-gray-300">
+                    Фамилия{' '}
+                    <Tooltip title="Введите новую фамилию (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+              >
+                <Input
+                  className="custom-input"
+                  placeholder="Новая фамилия (необязательно)"
+                />
+              </Form.Item>
+              <Form.Item>
+                <div className="flex justify-end gap-2">
+                  <Button onClick={handleUpdateCancel} className="text-white border-gray-500">
+                    Отмена
+                  </Button>
+                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
+                    Обновить
+                  </Button>
+                </div>
+              </Form.Item>
+            </Form>
+          </Modal>
+
+          <button
+            onClick={handleDeletePlayer}
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+          >
+            Удалить игрока
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default AdminPlayerPanel;

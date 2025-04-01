@@ -176,6 +176,16 @@ tbody tr:nth-child(even) {
     color: #9ca3af !important;
 }
 
+/* Стили для плейсхолдеров DatePicker */
+.custom-input .ant-picker-input > input::placeholder {
+    color: #9ca3af !important; /* Соответствует text-gray-400 */
+}
+
+/* Стили для плейсхолдеров Select */
+.custom-select .ant-select-selection-placeholder {
+    color: #9ca3af !important; /* Соответствует text-gray-400 */
+}
+
 /* Унифицируем цвет текста внутри InputNumber */
 .custom-input-number .ant-input-number-input {
     color: #e5e7eb !important;
@@ -223,21 +233,43 @@ tbody tr:nth-child(even) {
 .admin-panel .bg-red-600:hover {
     background-color: #b91c1c !important;
 }
-/* index.css */
+
+/* Стили для формы фильтров */
+.custom-form .ant-form-item-label > label {
+    color: #d1d5db !important; /* Соответствует text-gray-300 */
+}
+
+.custom-form .ant-form-item-label > label .anticon {
+    color: #9ca3af !important; /* Соответствует text-gray-500 для иконок */
+}
+
+/* Стили для таблицы */
 .custom-table .ant-table {
-  background: #1f2937 !important;
-  color: #d1d5db !important;
+    background: #1f2937 !important;
+    color: #d1d5db !important;
 }
 
 .custom-table .ant-table-thead > tr > th {
-  background: #374151 !important;
-  color: #ffffff !important;
+    background: #374151 !important;
+    color: #ffffff !important;
 }
 
 .custom-table .ant-table-tbody > tr > td {
-  border-bottom: 1px solid #4b5563 !important;
+    border-bottom: 1px solid #4b5563 !important;
 }
 
 .custom-table .ant-table-tbody > tr:hover > td {
-  background: #374151 !important;
+    background: #374151 !important;
+}
+
+/* Стили для полей ввода и селектов */
+.custom-input,
+.custom-select .ant-select-selector {
+    background-color: #2d3748 !important;
+    color: #e2e8f0 !important;
+    border-color: #4a5568 !important;
+}
+
+.custom-select .ant-select-arrow {
+    color: #e2e8f0 !important;
 }
