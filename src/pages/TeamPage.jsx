@@ -19,7 +19,7 @@ function TeamPage() {
   const [sortedTeamStats, setSortedTeamStats] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [playersEloMap, setPlayersEloMap] = useState({});
-  const [tournamentsDatesMap, setTournamentsDatesMap] = useState({}); // Для хранения дат турниров
+  const [tournamentsDatesMap, setTournamentsDatesMap] = useState({});
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
   const [currentTournamentPage, setCurrentTournamentPage] = useState(1);
   const itemsPerPage = 5;
@@ -131,7 +131,6 @@ function TeamPage() {
     fetchPlayersElo();
   }, [team]);
 
-  // Загрузка дат проведения турниров
   useEffect(() => {
     const fetchTournamentsDates = async () => {
       if (team && team.tournaments && team.tournaments.length > 0) {
@@ -179,6 +178,22 @@ function TeamPage() {
     const direction =
       sortConfig.key === key && sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
     setSortConfig({ key, direction });
+  };
+
+  const calculateOverallScore = (match) => {
+    if (!match?.result) return { winsFirstTeam: 0, winsSecondTeam: 0 };
+    let winsFirstTeam = 0;
+    let winsSecondTeam = 0;
+
+    match.result.forEach((res) => {
+      if (res.total_score_first_team > res.total_score_second_team) {
+        winsFirstTeam += 1;
+      } else if (res.total_score_second_team > res.total_score_first_team) {
+        winsSecondTeam += 1;
+      }
+    });
+
+    return { winsFirstTeam, winsSecondTeam };
   };
 
   const formatDate = (dateString) => {
@@ -338,26 +353,35 @@ function TeamPage() {
           {currentMatches && currentMatches.length > 0 ? (
             <>
               <div className="flex flex-col gap-2 text-gray-300">
-                {currentMatches.map((match, index) => (
-                  <div key={index} className="flex items-center">
-                    <Link
-                      to={`/matches/${match.id}`}
-                      className="text-blue-400 hover:underline"
-                    >
-                      {match.teams && match.teams.length === 2 ? (
-                        <>
-                          {match.teams[0]} vs {match.teams[1]}
-                        </>
-                      ) : (
-                        'Матч с неизвестными командами'
-                      )}
-                    </Link>
-                    <span className="ml-2">
-                      (ELO соперника: {opponentsEloMap[match.id] || 'Загрузка...'},{' '}
-                      {match.date ? formatDate(match.date) : 'Дата неизвестна'})
-                    </span>
-                  </div>
-                ))}
+                {currentMatches.map((match, index) => {
+                  const overallScore = calculateOverallScore(match);
+                  const isWinner =
+                    match.teams &&
+                    ((overallScore.winsFirstTeam > overallScore.winsSecondTeam && match.teams[0] === team_name) ||
+                     (overallScore.winsSecondTeam > overallScore.winsFirstTeam && match.teams[1] === team_name));
+
+                  return (
+                    <div key={index} className="flex items-center">
+                      <Link
+                        to={`/matches/${match.id}`}
+                        className={`${isWinner ? 'text-green-400' : 'text-red-400'} hover:underline`}
+                      >
+                        {match.teams && match.teams.length === 2 ? (
+                          <>
+                            {match.teams[0]} vs {match.teams[1]}
+                          </>
+                        ) : (
+                          'Матч с неизвестными командами'
+                        )}
+                      </Link>
+                      <span className="ml-2">
+                        ({isWinner ? 'Победа' : 'Поражение'} {overallScore.winsFirstTeam} - {overallScore.winsSecondTeam},{' '}
+                        ELO соперника: {opponentsEloMap[match.id] || 'Загрузка...'},{' '}
+                        {match.date ? formatDate(match.date) : 'Дата неизвестна'})
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
               {matchesDetails.length > itemsPerPage && (
                 <div className="mt-6 flex justify-center">
