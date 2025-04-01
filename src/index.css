@@ -223,3 +223,21 @@ tbody tr:nth-child(even) {
 .admin-panel .bg-red-600:hover {
     background-color: #b91c1c !important;
 }
+/* index.css */
+.custom-table .ant-table {
+  background: #1f2937 !important;
+  color: #d1d5db !important;
+}
+
+.custom-table .ant-table-thead > tr > th {
+  background: #374151 !important;
+  color: #ffffff !important;
+}
+
+.custom-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #4b5563 !important;
+}
+
+.custom-table .ant-table-tbody > tr:hover > td {
+  background: #374151 !important;
+}
