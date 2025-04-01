@@ -19,6 +19,7 @@ function TeamPage() {
   const [sortedTeamStats, setSortedTeamStats] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [playersEloMap, setPlayersEloMap] = useState({});
+  const [tournamentsDatesMap, setTournamentsDatesMap] = useState({}); // Для хранения дат турниров
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
   const [currentTournamentPage, setCurrentTournamentPage] = useState(1);
   const itemsPerPage = 5;
@@ -130,6 +131,34 @@ function TeamPage() {
     fetchPlayersElo();
   }, [team]);
 
+  // Загрузка дат проведения турниров
+  useEffect(() => {
+    const fetchTournamentsDates = async () => {
+      if (team && team.tournaments && team.tournaments.length > 0) {
+        const datesMap = {};
+
+        const tournamentPromises = team.tournaments.map(async (tournament) => {
+          try {
+            const response = await api.get(`/tournaments/${tournament}/`);
+            const { start_date, end_date } = response.data;
+            datesMap[tournament] = {
+              start_date: start_date || 'N/A',
+              end_date: end_date || 'N/A',
+            };
+          } catch (error) {
+            console.error(`Ошибка при загрузке дат турнира ${tournament}:`, error);
+            datesMap[tournament] = { start_date: 'N/A', end_date: 'N/A' };
+          }
+        });
+
+        await Promise.all(tournamentPromises);
+        setTournamentsDatesMap(datesMap);
+      }
+    };
+
+    fetchTournamentsDates();
+  }, [team]);
+
   useEffect(() => {
     if (sortConfig.key && teamStats.length > 0) {
       const sorted = [...teamStats].sort((a, b) => {
@@ -153,11 +182,12 @@ function TeamPage() {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString || dateString === 'N/A') return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
       day: 'numeric',
+      month: 'long',
+      year: 'numeric',
     });
   };
 
@@ -361,6 +391,13 @@ function TeamPage() {
                     >
                       {tournament}
                     </Link>
+                    <span className="text-gray-400 ml-2">
+                      {tournamentsDatesMap[tournament] ? (
+                        `(с ${formatDate(tournamentsDatesMap[tournament].start_date)} по ${formatDate(tournamentsDatesMap[tournament].end_date)})`
+                      ) : (
+                        '(Загрузка дат...)'
+                      )}
+                    </span>
                   </div>
                 ))}
               </div>
