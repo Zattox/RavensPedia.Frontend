@@ -16,8 +16,9 @@ function TeamPage() {
   const [matchesDetails, setMatchesDetails] = useState([]);
   const [opponentsEloMap, setOpponentsEloMap] = useState({});
   const [teamStats, setTeamStats] = useState([]);
-  const [sortedTeamStats, setSortedTeamStats] = useState([]); // Для хранения отсортированной статистики
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' }); // Конфигурация сортировки
+  const [sortedTeamStats, setSortedTeamStats] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [playersEloMap, setPlayersEloMap] = useState({});
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
   const [currentTournamentPage, setCurrentTournamentPage] = useState(1);
   const itemsPerPage = 5;
@@ -93,7 +94,7 @@ function TeamPage() {
       try {
         const response = await api.get(`/teams/stats/${team_name}/`);
         setTeamStats(response.data);
-        setSortedTeamStats(response.data); // Изначально отображаем данные без сортировки
+        setSortedTeamStats(response.data);
       } catch (error) {
         console.error('Ошибка при загрузке статистики по картам:', error.response?.data || error);
         setTeamStats([]);
@@ -104,7 +105,31 @@ function TeamPage() {
     fetchTeamStats();
   }, [team_name]);
 
-  // Обновление отсортированных данных при изменении конфигурации сортировки
+  useEffect(() => {
+    const fetchPlayersElo = async () => {
+      if (team && team.players && team.players.length > 0) {
+        const eloMap = {};
+
+        const playerPromises = team.players.map(async (player) => {
+          try {
+            const playerId = player.faceit_id || player;
+            const response = await api.get(`/players/${playerId}/`);
+            const playerElo = response.data.faceit_elo;
+            eloMap[player] = playerElo !== null && playerElo !== undefined ? playerElo : 'N/A';
+          } catch (error) {
+            console.error(`Ошибка при загрузке ELO игрока ${player}:`, error);
+            eloMap[player] = 'N/A';
+          }
+        });
+
+        await Promise.all(playerPromises);
+        setPlayersEloMap(eloMap);
+      }
+    };
+
+    fetchPlayersElo();
+  }, [team]);
+
   useEffect(() => {
     if (sortConfig.key && teamStats.length > 0) {
       const sorted = [...teamStats].sort((a, b) => {
@@ -117,7 +142,7 @@ function TeamPage() {
       });
       setSortedTeamStats(sorted);
     } else {
-      setSortedTeamStats(teamStats); // Если сортировка не применена, отображаем исходные данные
+      setSortedTeamStats(teamStats);
     }
   }, [sortConfig, teamStats]);
 
@@ -154,7 +179,6 @@ function TeamPage() {
   const indexOfFirstTournament = indexOfLastTournament - itemsPerPage;
   const currentTournaments = team?.tournaments?.slice(indexOfFirstTournament, indexOfLastTournament) || [];
 
-  // Колонки для таблицы статистики по картам
   const columns = [
     {
       title: 'Карта',
@@ -258,18 +282,21 @@ function TeamPage() {
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-4 text-center">Игроки</h2>
           {team.players && team.players.length > 0 ? (
-            <ul className="list-disc list-inside text-gray-300">
+            <div className="flex flex-col gap-2">
               {team.players.map((player, index) => (
-                <li key={index}>
+                <div key={index} className="flex items-center">
                   <Link
                     to={`/players/${player.faceit_id || player}`}
                     className="text-blue-400 hover:underline"
                   >
                     {player}
                   </Link>
-                </li>
+                  <span className="text-gray-400 ml-2">
+                    (ELO: {playersEloMap[player] || 'Загрузка...'})
+                  </span>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <p className="text-gray-300 text-center">Игроки отсутствуют.</p>
           )}
@@ -280,9 +307,9 @@ function TeamPage() {
           <h2 className="text-2xl font-bold mb-4 text-center">Матчи</h2>
           {currentMatches && currentMatches.length > 0 ? (
             <>
-              <ul className="list-disc list-inside text-gray-300">
+              <div className="flex flex-col gap-2 text-gray-300">
                 {currentMatches.map((match, index) => (
-                  <li key={index}>
+                  <div key={index} className="flex items-center">
                     <Link
                       to={`/matches/${match.id}`}
                       className="text-blue-400 hover:underline"
@@ -294,12 +321,14 @@ function TeamPage() {
                       ) : (
                         'Матч с неизвестными командами'
                       )}
-                    </Link>{' '}
-                    (ELO соперника: {opponentsEloMap[match.id] || 'Загрузка...'},{' '}
-                    {match.date ? formatDate(match.date) : 'Дата неизвестна'})
-                  </li>
+                    </Link>
+                    <span className="ml-2">
+                      (ELO соперника: {opponentsEloMap[match.id] || 'Загрузка...'},{' '}
+                      {match.date ? formatDate(match.date) : 'Дата неизвестна'})
+                    </span>
+                  </div>
                 ))}
-              </ul>
+              </div>
               {matchesDetails.length > itemsPerPage && (
                 <div className="mt-6 flex justify-center">
                   <Pagination
@@ -323,18 +352,18 @@ function TeamPage() {
           <h2 className="text-2xl font-bold mb-4 text-center">Турниры</h2>
           {currentTournaments && currentTournaments.length > 0 ? (
             <>
-              <ul className="list-disc list-inside text-gray-300">
+              <div className="flex flex-col gap-2">
                 {currentTournaments.map((tournament, index) => (
-                  <li key={index}>
+                  <div key={index} className="flex items-center">
                     <Link
                       to={`/tournaments/${tournament}`}
                       className="text-blue-400 hover:underline"
                     >
                       {tournament}
                     </Link>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
               {team.tournaments.length > itemsPerPage && (
                 <div className="mt-6 flex justify-center">
                   <Pagination
