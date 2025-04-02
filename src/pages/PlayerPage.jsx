@@ -1,7 +1,6 @@
-// src/pages/PlayerPage.jsx
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import api from '@/api';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import api from '@/api'; // Предполагается, что это ваш настроенный axios для бэкенда
 import { useAuth } from '@/context/AuthContext';
 import { Button, Spin, Alert, Table, Pagination, Form, DatePicker, Select, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -9,7 +8,7 @@ import moment from 'moment';
 import AdminPlayerPanel from '@/components/AdminPlayerPanel';
 
 function PlayerPage() {
-  const { player_id } = useParams();
+  const { player_id } = useParams(); // player_id здесь — это nickname игрока
   const [playerData, setPlayerData] = useState(null);
   const [playerStats, setPlayerStats] = useState(null);
   const [detailedStats, setDetailedStats] = useState(null);
@@ -28,13 +27,76 @@ function PlayerPage() {
   const itemsPerPage = 5;
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const [tournamentsDatesMap, setTournamentsDatesMap] = useState({});
+  const [faceitNickname, setFaceitNickname] = useState(null);
+
+  const formatDate = (date) => {
+    return moment(date).format('DD.MM.YYYY');
+  };
+
+  useEffect(() => {
+    const fetchFaceitData = async () => {
+      try {
+        const response = await api.get('/players/get_faceit_profile/', {
+          params: {
+            player_nickname: player_id, // Используем player_id как nickname
+          },
+        });
+        console.log('Faceit Profile Response:', response.data);
+        if (response.data.error) {
+          // Если бэкенд вернул ошибку (например, профиль не найден)
+          setFaceitNickname(null);
+        } else {
+          setFaceitNickname(response.data.nickname); // Предполагаем, что Faceit API возвращает nickname
+        }
+      } catch (error) {
+        console.error('Ошибка при запросе Faceit профиля через бэкенд:', error.response?.status, error.response?.data || error.message);
+        setFaceitNickname(null);
+      }
+    };
+
+    if (playerData) { // Запрашиваем Faceit данные только после загрузки playerData
+      fetchFaceitData();
+    }
+  }, [playerData, player_id]);
+
+  useEffect(() => {
+    const fetchTournamentsDates = async () => {
+      if (tournaments && tournaments.length > 0) {
+        const datesMap = {};
+        const tournamentPromises = tournaments.map(async (tournament) => {
+          try {
+            const response = await api.get(`/tournaments/${tournament}/`);
+            return { id: tournament, data: response.data };
+          } catch (error) {
+            console.error(`Ошибка при загрузке данных турнира ${tournament}:`, error);
+            return { id: tournament, data: null };
+          }
+        });
+
+        const tournamentsData = await Promise.all(tournamentPromises);
+        tournamentsData.forEach(({ id, data }) => {
+          if (data) {
+            datesMap[id] = {
+              start_date: data.start_date,
+              end_date: data.end_date,
+            };
+          }
+        });
+
+        setTournamentsDatesMap(datesMap);
+      }
+    };
+
+    fetchTournamentsDates();
+  }, [tournaments]);
 
   useEffect(() => {
     const fetchPlayerData = async () => {
       try {
         const response = await api.get(`/players/${player_id}/`);
         setPlayerData(response.data);
-        setTournaments(response.data.tournaments?.map(t => t.tournament_id) || []);
+        setTournaments(response.data.tournaments || []);
         setError(null);
       } catch (err) {
         console.error('Ошибка при загрузке данных игрока:', err);
@@ -156,7 +218,7 @@ function PlayerPage() {
 
   const statsColumns = [
     {
-      title: 'Всего матчей',
+      title: 'Всего карт',
       dataIndex: 'total_matches',
       key: 'total_matches',
     },
@@ -237,8 +299,32 @@ function PlayerPage() {
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h1 className="text-3xl font-bold mb-4 text-center">Профиль игрока: {playerData.nickname}</h1>
           <h2 className="text-2xl font-bold mb-4 text-center">Основная информация</h2>
-          <p className="text-gray-300 mb-2"><strong>Steam ID:</strong> {playerData.steam_id}</p>
-          <p className="text-gray-300 mb-2"><strong>Faceit ID:</strong> {playerData.faceit_id}</p>
+          <p className="text-gray-300 mb-2">
+            <strong>Steam профиль:</strong>{' '}
+            <a
+              href={`https://steamcommunity.com/profiles/${playerData.steam_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:underline"
+            >
+              {playerData.nickname}
+            </a>
+          </p>
+          <p className="text-gray-300 mb-2">
+            <strong>Faceit профиль:</strong>{' '}
+            {faceitNickname ? (
+              <a
+                href={`https://www.faceit.com/en/players/${faceitNickname}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:underline"
+              >
+                {faceitNickname}
+              </a>
+            ) : (
+              playerData.faceit_id || 'Не указано'
+            )}
+          </p>
           <p className="text-gray-300 mb-2"><strong>Faceit ELO:</strong> {playerData.faceit_elo}</p>
           <p className="text-gray-300 mb-2"><strong>Имя:</strong> {playerData.name || 'Не указано'}</p>
           <p className="text-gray-300 mb-2"><strong>Фамилия:</strong> {playerData.surname || 'Не указано'}</p>
@@ -271,7 +357,7 @@ function PlayerPage() {
                   const overallScore = calculateOverallScore(match);
                   const isWinner = match.teams && playerData.team &&
                     ((overallScore.winsFirstTeam > overallScore.winsSecondTeam && match.teams[0] === playerData.team) ||
-                     (overallScore.winsSecondTeam > overallScore.winsFirstTeam && match.teams[1] === playerData.team));
+                      (overallScore.winsSecondTeam > overallScore.winsFirstTeam && match.teams[1] === playerData.team));
 
                   return (
                     <div key={index} className="flex items-center">
@@ -319,21 +405,24 @@ function PlayerPage() {
         {/* Турниры */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-4 text-center">Турниры</h2>
-          {currentTournaments.length > 0 ? (
+          {currentTournaments && currentTournaments.length > 0 ? (
             <>
               <div className="flex flex-col gap-2">
                 {currentTournaments.map((tournament, index) => (
                   <div key={index} className="flex items-center">
-                    <a
-                      href={`/tournaments/${tournament.tournament_id}`}
+                    <Link
+                      to={`/tournaments/${tournament}`}
                       className="text-blue-400 hover:underline"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(`/tournaments/${tournament.tournament_id}`);
-                      }}
                     >
-                      Турнир ID: {tournament.tournament_id}
-                    </a>
+                      {tournament}
+                    </Link>
+                    <span className="text-gray-400 ml-2">
+                      {tournamentsDatesMap[tournament] ? (
+                        `(с ${formatDate(tournamentsDatesMap[tournament].start_date)} по ${formatDate(tournamentsDatesMap[tournament].end_date)})`
+                      ) : (
+                        '(Загрузка дат...)'
+                      )}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -434,7 +523,7 @@ function PlayerPage() {
                 name="tournament_ids"
                 label={
                   <span className="text-gray-300">
-                    ID турниров{' '}
+                    Турниры{' '}
                     <Tooltip title="Выберите турниры для фильтрации статистики (оставьте пустым для всех турниров)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
@@ -445,7 +534,10 @@ function PlayerPage() {
                   mode="multiple"
                   placeholder="Выберите турниры (необязательно)"
                   className="custom-select w-full"
-                  options={tournaments.map(id => ({ label: `Турнир ${id}`, value: id }))}
+                  options={tournaments.map(tournament => ({
+                    label: tournament,
+                    value: tournament
+                  }))} // Используем само значение tournament
                 />
               </Form.Item>
               <Form.Item>
