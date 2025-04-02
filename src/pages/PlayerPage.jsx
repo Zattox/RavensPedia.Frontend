@@ -6,6 +6,7 @@ import { Button, Spin, Alert, Table, Pagination, Form, DatePicker, Select, Toolt
 import { InfoCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import AdminPlayerPanel from '@/components/AdminPlayerPanel';
+import AdminMatchPanel from "@/components/AdminMatchPanel.jsx";
 
 function PlayerPage() {
   const { player_id } = useParams(); // player_id здесь — это nickname игрока
@@ -289,11 +290,7 @@ function PlayerPage() {
         </button>
 
         {/* Панель администратора */}
-        {isAdmin && (
-          <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
-            <AdminPlayerPanel player_nickname={player_id} />
-          </div>
-        )}
+        {isAdmin && <AdminPlayerPanel player_nickname={player_id} />}
 
         {/* Основная информация */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
