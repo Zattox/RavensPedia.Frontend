@@ -36,14 +36,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
     if (Object.keys(updatedMatch).length > 0) {
       try {
         await api.patch(`/matches/${match_id}/`, updatedMatch);
-        alert('Match info updated successfully');
+        alert('Матч успешно обновлен');
         const response = await api.get(`/matches/${match_id}/`);
         setMatch(response.data);
         setIsUpdateModalVisible(false);
         updateForm.resetFields();
       } catch (error) {
-        console.error('Error updating match info:', error.response?.data || error);
-        alert('Failed to update match info');
+        console.error('Ошибка при обновлении матча:', error.response?.data || error);
+        alert('Не удалось обновить матч');
       }
     } else {
       alert('Хотя бы одно поле должно быть заполнено для обновления.');
@@ -63,14 +63,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleAddTeam = async (values) => {
     try {
       await api.patch(`/matches/${match_id}/add_team/${values.teamName}/`);
-      alert(`Team ${values.teamName} added successfully`);
+      alert(`Команда ${values.teamName} успешно добавлена`);
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddTeamModalVisible(false);
       addTeamForm.resetFields();
     } catch (error) {
-      console.error('Error adding team:', error.response?.data || error);
-      alert('Failed to add team');
+      console.error('Ошибка при добавлении команды:', error.response?.data || error);
+      alert('Не удалось добавить команду');
     }
   };
 
@@ -87,14 +87,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteTeam = async (values) => {
     try {
       await api.delete(`/matches/${match_id}/delete_team/${values.teamName}/`);
-      alert(`Team ${values.teamName} deleted successfully`);
+      alert(`Команда ${values.teamName} успешно удалена`);
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsDeleteTeamModalVisible(false);
       deleteTeamForm.resetFields();
     } catch (error) {
-      console.error('Error deleting team:', error.response?.data || error);
-      alert('Failed to delete team');
+      console.error('Ошибка при удалении команды:', error.response?.data || error);
+      alert('Не удалось удалить команду');
     }
   };
 
@@ -113,14 +113,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
       await api.patch(`/matches/stats/${match_id}/add_faceit_stats/`, null, {
         params: { faceit_url: values.faceitUrl },
       });
-      alert('Faceit stats added successfully');
+      alert('Статистика Faceit успешно добавлена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddFaceitStatsModalVisible(false);
       addFaceitStatsForm.resetFields();
     } catch (error) {
-      console.error('Error adding Faceit stats:', error.response?.data || error);
-      alert('Failed to add Faceit stats');
+      console.error('Ошибка при добавлении статистики Faceit:', error.response?.data || error);
+      alert('Не удалось добавить статистику Faceit');
     }
   };
 
@@ -141,14 +141,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
         map_status: values.mapStatus,
         initiator: values.initiator,
       });
-      alert('Pick/ban info added successfully');
+      alert('Pick/Ban успешно добавлен');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddPickBanModalVisible(false);
       addPickBanForm.resetFields();
     } catch (error) {
-      console.error('Error adding pick/ban info:', error.response?.data || error);
-      alert('Failed to add pick/ban info');
+      console.error('Ошибка при добавлении Pick/Ban:', error.response?.data || error);
+      alert('Не удалось добавить Pick/Ban');
     }
   };
 
@@ -161,12 +161,12 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeletePickBanInfo = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_last_pick_ban_info_from_match/`);
-      alert('Last pick/ban info deleted successfully');
+      alert('Последний Pick/Ban успешно удален');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
     } catch (error) {
-      console.error('Error deleting pick/ban info:', error.response?.data || error);
-      alert('Failed to delete pick/ban info');
+      console.error('Ошибка при удалении Pick/Ban:', error.response?.data || error);
+      alert('Не удалось удалить Pick/Ban');
     }
   };
 
@@ -182,20 +182,22 @@ function AdminMatchPanel({ match_id, setMatch }) {
         first_team: values.firstTeam,
         second_team: values.secondTeam,
         first_half_score_first_team: values.firstHalfScoreFirstTeam,
-        first_half_score_second_team: values.firstHalfScoreSecondTeam,
+        second_half_score_first_team: values.secondHalfScoreFirstTeam,
         overtime_score_first_team: values.overtimeScoreFirstTeam,
-        overtime_score_second_team: values.overtimeScoreSecondTeam,
         total_score_first_team: values.totalScoreFirstTeam,
+        first_half_score_second_team: values.firstHalfScoreSecondTeam,
+        second_half_score_second_team: values.secondHalfScoreSecondTeam,
+        overtime_score_second_team: values.overtimeScoreSecondTeam,
         total_score_second_team: values.totalScoreSecondTeam,
       });
-      alert('Map result info added successfully');
+      alert('Результат карты успешно добавлен');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddMapResultModalVisible(false);
       addMapResultForm.resetFields();
     } catch (error) {
-      console.error('Error adding map result info:', error.response?.data || error);
-      alert('Failed to add map result info');
+      console.error('Ошибка при добавлении результата карты:', error.response?.data || error);
+      alert('Не удалось добавить результат карты');
     }
   };
 
@@ -208,16 +210,16 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteMapResultInfo = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_last_map_result_info_from_match/`);
-      alert('Last map result info deleted successfully');
+      alert('Последний результат карты успешно удален');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
     } catch (error) {
-      console.error('Error deleting map result info:', error.response?.data || error);
-      alert('Failed to delete map result info');
+      console.error('Ошибка при удалении результата карты:', error.response?.data || error);
+      alert('Не удалось удалить результат карты');
     }
   };
 
-  // Добавить статистику вручную (по одному игроку)
+  // Добавить статистику вручную
   const showAddStatsManualModal = () => {
     setIsAddStatsManualModalVisible(true);
   };
@@ -235,14 +237,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
         ADR: values.adr,
         "Headshots %": values.headshotsPercentage,
       });
-      alert('Manual stats added successfully');
+      alert('Статистика вручную успешно добавлена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddStatsManualModalVisible(false);
       addStatsManualForm.resetFields();
     } catch (error) {
-      console.error('Error adding manual stats:', error.response?.data || error);
-      alert('Failed to add manual stats');
+      console.error('Ошибка при добавлении статистики вручную:', error.response?.data || error);
+      alert('Не удалось добавить статистику вручную');
     }
   };
 
@@ -255,12 +257,12 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteLastStat = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_last_stat_from_match/`);
-      alert('Last stat deleted successfully');
+      alert('Последняя статистика успешно удалена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
     } catch (error) {
-      console.error('Error deleting last stat:', error.response?.data || error);
-      alert('Failed to delete last stat');
+      console.error('Ошибка при удалении последней статистики:', error.response?.data || error);
+      alert('Не удалось удалить последнюю статистику');
     }
   };
 
@@ -268,24 +270,25 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteMatchStats = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_match_stats/`);
-      alert('Match stats deleted successfully');
+      alert('Статистика матча успешно удалена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
     } catch (error) {
-      console.error('Error deleting match stats:', error.response?.data || error);
-      alert('Failed to delete match stats');
+      console.error('Ошибка при удалении статистики матча:', error.response?.data || error);
+      alert('Не удалось удалить статистику матча');
     }
   };
 
+  // Удалить матч
   const handleDeleteMatch = async () => {
-    if (window.confirm('Are you sure you want to delete this match?')) {
+    if (window.confirm('Вы уверены, что хотите удалить этот матч?')) {
       try {
         await api.delete(`/matches/${match_id}/`);
-        alert('Match deleted successfully');
+        alert('Матч успешно удален');
         navigate('/matches');
       } catch (error) {
-        console.error('Error deleting match:', error.response?.data || error);
-        alert('Failed to delete match');
+        console.error('Ошибка при удалении матча:', error.response?.data || error);
+        alert('Не удалось удалить матч');
       }
     }
   };
@@ -328,10 +331,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                   </span>
                 }
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Новый турнир (необязательно)"
-                />
+                <Input className="custom-input" placeholder="Новый турнир (необязательно)" />
               </Form.Item>
               <Form.Item
                 name="date"
@@ -344,10 +344,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                   </span>
                 }
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Новая дата (необязательно)"
-                />
+                <Input className="custom-input" placeholder="Новая дата (необязательно)" />
               </Form.Item>
               <Form.Item
                 name="description"
@@ -422,10 +419,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите название команды' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, Team Liquid"
-                />
+                <Input className="custom-input" placeholder="Например, Team Liquid" />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
@@ -472,10 +466,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите название команды' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, Team Liquid"
-                />
+                <Input className="custom-input" placeholder="Например, Team Liquid" />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
@@ -583,10 +574,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите никнейм игрока' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, s1mple"
-                />
+                <Input className="custom-input" placeholder="Например, s1mple" />
               </Form.Item>
               <Form.Item
                 name="roundOfMatch"
@@ -618,10 +606,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите название карты' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, de_dust2"
-                />
+                <Input className="custom-input" placeholder="Например, de_dust2" />
               </Form.Item>
               <Form.Item
                 name="result"
@@ -790,27 +775,21 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите название карты' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, Anubis"
-                />
+                <Input className="custom-input" placeholder="Например, Anubis" />
               </Form.Item>
               <Form.Item
                 name="mapStatus"
                 label={
                   <span className="text-gray-300">
                     Статус карты{' '}
-                    <Tooltip title="Укажите статус карты (например, BANNED или PICKED)">
+                    <Tooltip title="Укажите статус карты (например, Banned или Picked)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите статус карты' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, BANNED"
-                />
+                <Input className="custom-input" placeholder="Например, Banned" />
               </Form.Item>
               <Form.Item
                 name="initiator"
@@ -824,10 +803,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите инициатора' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, first_team"
-                />
+                <Input className="custom-input" placeholder="Например, first_team" />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
@@ -874,17 +850,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 label={
                   <span className="text-gray-300">
                     Карта{' '}
-                    <Tooltip title="Введите название карты (например, Anubis)">
+                    <Tooltip title="Введите название карты (например, Dust2)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите название карты' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, Anubis"
-                />
+                <Input className="custom-input" placeholder="Например, Dust2" />
               </Form.Item>
               <Form.Item
                 name="firstTeam"
@@ -898,10 +871,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите первую команду' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, Team Liquid"
-                />
+                <Input className="custom-input" placeholder="Например, Black Ravens" />
               </Form.Item>
               <Form.Item
                 name="secondTeam"
@@ -915,10 +885,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, укажите вторую команду' }]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="Например, G2 Esports"
-                />
+                <Input className="custom-input" placeholder="Например, MSAPE" />
               </Form.Item>
               <Form.Item
                 name="firstHalfScoreFirstTeam"
@@ -935,7 +902,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 <InputNumber
                   min={0}
                   className="custom-input-number w-full"
-                  placeholder="Например, 8"
+                  placeholder="Например, 4"
                 />
               </Form.Item>
               <Form.Item
@@ -953,7 +920,43 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 <InputNumber
                   min={0}
                   className="custom-input-number w-full"
-                  placeholder="Например, 7"
+                  placeholder="Например, 8"
+                />
+              </Form.Item>
+              <Form.Item
+                name="secondHalfScoreFirstTeam"
+                label={
+                  <span className="text-gray-300">
+                    Счёт первой команды во второй половине{' '}
+                    <Tooltip title="Введите счёт первой команды во второй половине">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+                rules={[{ required: true, message: 'Пожалуйста, укажите счёт' }]}
+              >
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="Например, 3"
+                />
+              </Form.Item>
+              <Form.Item
+                name="secondHalfScoreSecondTeam"
+                label={
+                  <span className="text-gray-300">
+                    Счёт второй команды во второй половине{' '}
+                    <Tooltip title="Введите счёт второй команды во второй половине">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+                rules={[{ required: true, message: 'Пожалуйста, укажите счёт' }]}
+              >
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="Например, 5"
                 />
               </Form.Item>
               <Form.Item
@@ -1007,7 +1010,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
                 <InputNumber
                   min={0}
                   className="custom-input-number w-full"
-                  placeholder="Например, 16"
+                  placeholder="Например, 7"
                 />
               </Form.Item>
               <Form.Item

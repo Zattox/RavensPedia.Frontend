@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Pagination } from 'antd';
 import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
-import AdminMatchPanel from '@/components/AdminMatchPanel.jsx'; // Import the new component
+import AdminMatchPanel from '@/components/AdminMatchPanel.jsx';
 
 function MatchDetailPage() {
   const { match_id } = useParams();
@@ -14,7 +14,6 @@ function MatchDetailPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentRound, setCurrentRound] = useState(1);
-
   const [winnersSortConfig, setWinnersSortConfig] = useState({ key: null, direction: 'ascending' });
   const [sortedWinnersStats, setSortedWinnersStats] = useState([]);
   const [losersSortConfig, setLosersSortConfig] = useState({ key: null, direction: 'ascending' });
@@ -149,7 +148,11 @@ function MatchDetailPage() {
       ? match?.teams?.[0]
       : match?.teams?.[1];
 
-  const totalRounds = match?.result?.length || 1;
+  // Определяем общее количество раундов: максимум из result или stats
+  const totalRounds = Math.max(
+    match?.result?.length || 0,
+    match?.stats?.reduce((max, stat) => Math.max(max, stat.round_of_match), 0) || 1
+  );
 
   if (loading) {
     return (
@@ -286,7 +289,7 @@ function MatchDetailPage() {
             <Link to={`/teams/${winningTeam}`} className="text-blue-400 hover:underline">
               {winningTeam}
             </Link>
-            ) - Карта {currentRound}: {match.result[currentRound - 1]?.map}
+            ) - Карта {currentRound}: {match.result?.[currentRound - 1]?.map || 'N/A'}
           </h2>
           <p className="text-gray-300 text-center mb-4">Результат: Победа</p>
           {sortedWinnersStats.length > 0 ? (
@@ -383,7 +386,7 @@ function MatchDetailPage() {
             >
               {winningTeam === match.teams[0] ? match.teams[1] : match.teams[0]}
             </Link>
-            ) - Карта {currentRound}: {match.result[currentRound - 1]?.map}
+            ) - Карта {currentRound}: {match.result?.[currentRound - 1]?.map || 'N/A'}
           </h2>
           <p className="text-gray-300 text-center mb-4">Результат: Поражение</p>
           {sortedLosersStats.length > 0 ? (
@@ -472,7 +475,6 @@ function MatchDetailPage() {
         </div>
       </div>
 
-      {/* Admin Panel (only for admins) */}
       {isAdmin && <AdminMatchPanel match_id={match_id} setMatch={setMatch} />}
     </div>
   );
