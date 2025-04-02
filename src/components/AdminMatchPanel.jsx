@@ -1,11 +1,13 @@
 // src/components/AdminMatchPanel.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Form, Input, InputNumber, Button, Tooltip } from 'antd';
+import { Modal, Form, Input, InputNumber, Button, Tooltip, Select } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import api from '@/api';
 
+
 function AdminMatchPanel({ match_id, setMatch }) {
+  const { Option } = Select;
   const navigate = useNavigate();
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isAddTeamModalVisible, setIsAddTeamModalVisible] = useState(false);
@@ -21,6 +23,8 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const [addPickBanForm] = Form.useForm();
   const [addMapResultForm] = Form.useForm();
   const [addStatsManualForm] = Form.useForm();
+  const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] = useState(false);
+  const [updateStatusForm] = Form.useForm();
 
   // Обновить матч
   const showUpdateModal = () => {
@@ -293,6 +297,35 @@ function AdminMatchPanel({ match_id, setMatch }) {
     }
   };
 
+  // Обновить статус матча
+  const showUpdateStatusModal = () => {
+    setIsUpdateStatusModalVisible(true);
+    updateStatusForm.setFieldsValue({ match_id }); // Предзаполняем match_id
+  };
+
+  const handleUpdateStatus = async (values) => {
+    try {
+      // Отправляем new_status как параметр запроса (query parameter)
+      await api.patch(`/schedules/matches/${values.match_id}/update_status/`, null, {
+        params: { new_status: values.new_status },
+      });
+      alert('Статус матча успешно обновлен');
+      const response = await api.get(`/matches/${match_id}/`);
+      setMatch(response.data);
+      setIsUpdateStatusModalVisible(false);
+      updateStatusForm.resetFields();
+    } catch (error) {
+      // Логируем полную информацию об ошибке
+      console.error('Ошибка при обновлении статуса матча:', error.response?.data || error);
+      alert(`Не удалось обновить статус матча: ${error.response?.data?.detail || error.message}`);
+    }
+  };
+
+  const handleUpdateStatusCancel = () => {
+    setIsUpdateStatusModalVisible(false);
+    updateStatusForm.resetFields();
+  };
+
   return (
     <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20">
       <h2 className="text-2xl font-bold mb-4 text-center">Управление матчем (Админ)</h2>
@@ -301,66 +334,67 @@ function AdminMatchPanel({ match_id, setMatch }) {
         <div>
           <h3 className="text-lg font-semibold mb-2">Match Actions</h3>
           <button
-            onClick={showUpdateModal}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+              onClick={showUpdateModal}
+              className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Обновить матч
           </button>
 
           <Modal
-            title={<span className="text-white">Обновить матч</span>}
-            open={isUpdateModalVisible}
-            onCancel={handleUpdateCancel}
-            footer={null}
-            className="custom-modal"
+              title={<span className="text-white">Обновить матч</span>}
+              open={isUpdateModalVisible}
+              onCancel={handleUpdateCancel}
+              footer={null}
+              className="custom-modal"
           >
             <Form
-              form={updateForm}
-              onFinish={handleUpdateMatchInfo}
-              layout="vertical"
-              className="text-white"
+                form={updateForm}
+                onFinish={handleUpdateMatchInfo}
+                layout="vertical"
+                className="text-white"
             >
               <Form.Item
-                name="tournament"
-                label={
-                  <span className="text-gray-300">
+                  name="tournament"
+                  label={
+                    <span className="text-gray-300">
                     Турнир{' '}
-                    <Tooltip title="Введите новое название турнира (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите новое название турнира (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
-                <Input className="custom-input" placeholder="Новый турнир (необязательно)" />
+                <Input className="custom-input" placeholder="Новый турнир (необязательно)"/>
               </Form.Item>
               <Form.Item
-                name="date"
-                label={
-                  <span className="text-gray-300">
+                  name="date"
+                  label={
+                    <span className="text-gray-300">
                     Дата (YYYY-MM-DDTHH:MM:SSZ){' '}
-                    <Tooltip title="Введите новую дату и время матча в формате ISO (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip
+                          title="Введите новую дату и время матча в формате ISO (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
-                <Input className="custom-input" placeholder="Новая дата (необязательно)" />
+                <Input className="custom-input" placeholder="Новая дата (необязательно)"/>
               </Form.Item>
               <Form.Item
-                name="description"
-                label={
-                  <span className="text-gray-300">
+                  name="description"
+                  label={
+                    <span className="text-gray-300">
                     Описание{' '}
-                    <Tooltip title="Введите новое описание матча (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите новое описание матча (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
                 <Input.TextArea
-                  rows={4}
-                  className="custom-textarea"
-                  placeholder="Новое описание (необязательно)"
+                    rows={4}
+                    className="custom-textarea"
+                    placeholder="Новое описание (необязательно)"
                 />
               </Form.Item>
               <Form.Item>
@@ -377,8 +411,73 @@ function AdminMatchPanel({ match_id, setMatch }) {
           </Modal>
 
           <button
-            onClick={handleDeleteMatch}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+              onClick={showUpdateStatusModal}
+              className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+          >
+            Обновить статус матча
+          </button>
+
+          <Modal
+              title={<span className="text-white">Обновить статус матча</span>}
+              open={isUpdateStatusModalVisible}
+              onCancel={handleUpdateStatusCancel}
+              footer={null}
+              className="custom-modal"
+          >
+            <Form
+                form={updateStatusForm}
+                onFinish={handleUpdateStatus}
+                layout="vertical"
+                className="text-white"
+            >
+              <Form.Item
+                  name="match_id"
+                  label={
+                    <span className="text-gray-300">
+                    ID матча{' '}
+                      <Tooltip title="ID матча (нельзя изменить)">
+                      <InfoCircleOutlined className="text-gray-500"/>
+                    </Tooltip>
+                  </span>
+                  }
+                  rules={[{required: true, message: 'Пожалуйста, укажите ID матча'}]}
+              >
+                <Input className="custom-input" disabled/>
+              </Form.Item>
+              <Form.Item
+                  name="new_status"
+                  label={
+                    <span className="text-gray-300">
+                    Новый статус{' '}
+                      <Tooltip title="Выберите новый статус матча">
+                      <InfoCircleOutlined className="text-gray-500"/>
+                    </Tooltip>
+                  </span>
+                  }
+                  rules={[{required: true, message: 'Пожалуйста, выберите новый статус'}]}
+              >
+                <Select className="custom-select" placeholder="Выберите статус">
+                  <Option value="SCHEDULED">SCHEDULED</Option>
+                  <Option value="IN_PROGRESS">IN_PROGRESS</Option>
+                  <Option value="COMPLETED">COMPLETED</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item>
+                <div className="flex justify-end gap-2">
+                  <Button onClick={handleUpdateStatusCancel} className="text-white border-gray-500">
+                    Отмена
+                  </Button>
+                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
+                    Обновить
+                  </Button>
+                </div>
+              </Form.Item>
+            </Form>
+          </Modal>
+
+          <button
+              onClick={handleDeleteMatch}
+              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить матч
           </button>
@@ -388,38 +487,38 @@ function AdminMatchPanel({ match_id, setMatch }) {
         <div>
           <h3 className="text-lg font-semibold mb-2">Matches Manager</h3>
           <button
-            onClick={showAddTeamModal}
-            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+              onClick={showAddTeamModal}
+              className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Добавить команду
           </button>
 
           <Modal
-            title={<span className="text-white">Добавить команду</span>}
-            open={isAddTeamModalVisible}
-            onCancel={handleAddTeamCancel}
-            footer={null}
-            className="custom-modal"
+              title={<span className="text-white">Добавить команду</span>}
+              open={isAddTeamModalVisible}
+              onCancel={handleAddTeamCancel}
+              footer={null}
+              className="custom-modal"
           >
             <Form
-              form={addTeamForm}
-              onFinish={handleAddTeam}
-              layout="vertical"
-              className="text-white"
+                form={addTeamForm}
+                onFinish={handleAddTeam}
+                layout="vertical"
+                className="text-white"
             >
               <Form.Item
-                name="teamName"
-                label={
-                  <span className="text-gray-300">
+                  name="teamName"
+                  label={
+                    <span className="text-gray-300">
                     Название команды{' '}
-                    <Tooltip title="Введите название команды для добавления в матч">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите название команды для добавления в матч">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
-                rules={[{ required: true, message: 'Пожалуйста, укажите название команды' }]}
+                  }
+                  rules={[{required: true, message: 'Пожалуйста, укажите название команды'}]}
               >
-                <Input className="custom-input" placeholder="Например, Team Liquid" />
+                <Input className="custom-input" placeholder="Например, Team Liquid"/>
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
@@ -435,24 +534,24 @@ function AdminMatchPanel({ match_id, setMatch }) {
           </Modal>
 
           <button
-            onClick={showDeleteTeamModal}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+              onClick={showDeleteTeamModal}
+              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить команду
           </button>
 
           <Modal
-            title={<span className="text-white">Удалить команду</span>}
-            open={isDeleteTeamModalVisible}
-            onCancel={handleDeleteTeamCancel}
-            footer={null}
-            className="custom-modal"
+              title={<span className="text-white">Удалить команду</span>}
+              open={isDeleteTeamModalVisible}
+              onCancel={handleDeleteTeamCancel}
+              footer={null}
+              className="custom-modal"
           >
             <Form
-              form={deleteTeamForm}
-              onFinish={handleDeleteTeam}
-              layout="vertical"
-              className="text-white"
+                form={deleteTeamForm}
+                onFinish={handleDeleteTeam}
+                layout="vertical"
+                className="text-white"
             >
               <Form.Item
                 name="teamName"
