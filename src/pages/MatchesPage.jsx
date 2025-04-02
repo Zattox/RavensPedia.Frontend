@@ -1,21 +1,16 @@
 // src/pages/MatchesPage.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Pagination, Modal, Form, Input, InputNumber, Button, Tooltip } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { Pagination } from 'antd';
 import api from '@/api';
-import { useAuth } from '@/context/AuthContext';
 
 function MatchesPage() {
-  const { isAdmin } = useAuth();
   const [inProgressMatches, setInProgressMatches] = useState([]);
   const [scheduledMatches, setScheduledMatches] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [inProgressPage, setInProgressPage] = useState(1);
   const [scheduledPage, setScheduledPage] = useState(1);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [form] = Form.useForm();
   const matchesPerPage = 4;
   const navigate = useNavigate();
 
@@ -30,7 +25,6 @@ function MatchesPage() {
           params: { num_matches: 50 },
         });
         const scheduledData = scheduledResponse.data?.data || scheduledResponse.data || [];
-        // Сортировка запланированных матчей по времени (ближайшие первыми)
         const sortedScheduledData = Array.isArray(scheduledData)
           ? scheduledData.sort((a, b) => new Date(a.date) - new Date(b.date))
           : [];
@@ -81,50 +75,6 @@ function MatchesPage() {
     navigate(`/matches/${matchId}`);
   };
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleAddMatch = async (values) => {
-    try {
-      const response = await api.post('/matches/', {
-        best_of: values.best_of,
-        max_number_of_teams: values.max_number_of_teams,
-        max_number_of_players: values.max_number_of_players,
-        tournament: values.tournament,
-        date: values.date,
-        description: values.description,
-      });
-      const newMatch = response.data;
-
-      // Определяем, к какому списку добавить матч (текущие или запланированные)
-      const now = new Date();
-      const matchDate = new Date(newMatch.date);
-      if (matchDate <= now) {
-        // Добавляем в текущие матчи
-        setInProgressMatches((prev) => [...prev, newMatch]);
-      } else {
-        // Добавляем в запланированные матчи и пересортировываем
-        setScheduledMatches((prev) => {
-          const updated = [...prev, newMatch];
-          return updated.sort((a, b) => new Date(a.date) - new Date(b.date));
-        });
-      }
-
-      alert('Match created successfully');
-      setIsModalVisible(false);
-      form.resetFields();
-    } catch (error) {
-      console.error('Error creating match:', error.response?.data || error);
-      alert('Failed to create match');
-    }
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    form.resetFields();
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -136,149 +86,6 @@ function MatchesPage() {
   return (
     <div className="min-h-screen flex flex-col items-center p-4 pt-24 bg-gray-900">
       <div className="w-full">
-        {isAdmin && (
-          <div className="mb-6 flex justify-center">
-            <button
-              onClick={showModal}
-              className="text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
-            >
-              Добавить новый матч
-            </button>
-          </div>
-        )}
-
-        <Modal
-          title={<span className="text-white">Создать новый матч</span>}
-          open={isModalVisible}
-          onCancel={handleCancel}
-          footer={null}
-          className="custom-modal"
-        >
-          <Form
-            form={form}
-            onFinish={handleAddMatch}
-            layout="vertical"
-            className="text-white"
-          >
-            <Form.Item
-              name="best_of"
-              label={
-                <span className="text-gray-300">
-                  Best of{' '}
-                  <Tooltip title="Укажите формат матча (например, Best of 1, 3, 5 и т.д.)">
-                    <InfoCircleOutlined className="text-gray-500" />
-                  </Tooltip>
-                </span>
-              }
-              rules={[{ required: true, message: 'Пожалуйста, укажите Best of' }]}
-            >
-              <InputNumber
-                min={1}
-                className="w-full custom-input-number"
-                placeholder="Например, 3"
-              />
-            </Form.Item>
-            <Form.Item
-              name="max_number_of_teams"
-              label={
-                <span className="text-gray-300">
-                  Максимальное количество команд{' '}
-                  <Tooltip title="Укажите максимальное количество команд, участвующих в матче (обычно 2)">
-                    <InfoCircleOutlined className="text-gray-500" />
-                  </Tooltip>
-                </span>
-              }
-              rules={[{ required: true, message: 'Пожалуйста, укажите максимальное количество команд' }]}
-            >
-              <InputNumber
-                min={2}
-                className="w-full custom-input-number"
-                placeholder="Например, 2"
-              />
-            </Form.Item>
-            <Form.Item
-              name="max_number_of_players"
-              label={
-                <span className="text-gray-300">
-                  Максимальное количество игроков{' '}
-                  <Tooltip title="Укажите общее количество игроков в матче (например, 10 для формата 5v5)">
-                    <InfoCircleOutlined className="text-gray-500" />
-                  </Tooltip>
-                </span>
-              }
-              rules={[{ required: true, message: 'Пожалуйста, укажите максимальное количество игроков' }]}
-            >
-              <InputNumber
-                min={1}
-                className="w-full custom-input-number"
-                placeholder="Например, 10"
-              />
-            </Form.Item>
-            <Form.Item
-              name="tournament"
-              label={
-                <span className="text-gray-300">
-                  Турнир{' '}
-                  <Tooltip title="Укажите название турнира, в рамках которого проводится матч">
-                    <InfoCircleOutlined className="text-gray-500" />
-                  </Tooltip>
-                </span>
-              }
-              rules={[{ required: true, message: 'Пожалуйста, укажите название турнира' }]}
-            >
-              <Input
-                className="custom-input"
-                placeholder="Например, ESL Pro League"
-              />
-            </Form.Item>
-            <Form.Item
-              name="date"
-              label={
-                <span className="text-gray-300">
-                  Дата (YYYY-MM-DDTHH:MM:SSZ){' '}
-                  <Tooltip title="Укажите дату и время матча в формате ISO (например, 2025-03-31T16:04:39.534Z)">
-                    <InfoCircleOutlined className="text-gray-500" />
-                  </Tooltip>
-                </span>
-              }
-              rules={[{ required: true, message: 'Пожалуйста, укажите дату' }]}
-            >
-              <Input
-                className="custom-input"
-                placeholder="2025-03-31T16:04:39.534Z"
-              />
-            </Form.Item>
-            <Form.Item
-              name="description"
-              label={
-                <span className="text-gray-300">
-                  Описание{' '}
-                  <Tooltip title="Добавьте краткое описание матча (например, 'Финал турнира ESL Pro League')">
-                    <InfoCircleOutlined className="text-gray-500" />
-                  </Tooltip>
-                </span>
-              }
-              rules={[{ required: true, message: 'Пожалуйста, укажите описание' }]}
-            >
-              <Input.TextArea
-                rows={4}
-                className="custom-textarea"
-                placeholder="Например, Финал турнира ESL Pro League"
-              />
-            </Form.Item>
-            <Form.Item>
-              <div className="flex justify-end gap-2">
-                <Button onClick={handleCancel} className="text-white border-gray-500">
-                  Отмена
-                </Button>
-                <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                  Создать
-                </Button>
-              </div>
-            </Form.Item>
-          </Form>
-        </Modal>
-
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-4 text-white text-center">Текущие матчи</h2>
           {error ? (
