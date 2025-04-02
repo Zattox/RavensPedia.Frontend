@@ -5,14 +5,18 @@ import { Modal, Form, Input, Button, Tooltip, Select } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import api from '@/api';
 
+const { Option } = Select;
+
 function AdminTournamentPanel({ tournamentName }) {
   const navigate = useNavigate();
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isAddTeamModalVisible, setIsAddTeamModalVisible] = useState(false);
   const [isDeleteTeamModalVisible, setIsDeleteTeamModalVisible] = useState(false);
+  const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] = useState(false); // Новое состояние для модального окна статуса
   const [updateForm] = Form.useForm();
   const [addTeamForm] = Form.useForm();
   const [deleteTeamForm] = Form.useForm();
+  const [updateStatusForm] = Form.useForm(); // Новая форма для обновления статуса
 
   // Update Tournament Modal
   const showUpdateModal = () => {
@@ -46,6 +50,32 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleUpdateCancel = () => {
     setIsUpdateModalVisible(false);
     updateForm.resetFields();
+  };
+
+  // Update Tournament Status
+  const showUpdateStatusModal = () => {
+    setIsUpdateStatusModalVisible(true);
+    updateStatusForm.setFieldsValue({ tournament_name: tournamentName }); // Предзаполняем tournament_name
+  };
+
+  const handleUpdateStatus = async (values) => {
+    try {
+      await api.patch(`/schedules/tournaments/${values.tournament_name}/update_status/`, null, {
+        params: { new_status: values.new_status },
+      });
+      alert('Статус турнира успешно обновлен!');
+      setIsUpdateStatusModalVisible(false);
+      updateStatusForm.resetFields();
+      window.location.reload();
+    } catch (error) {
+      console.error('Ошибка при обновлении статуса турнира:', error.response?.data || error);
+      alert(`Не удалось обновить статус турнира: ${error.response?.data?.detail || error.message}`);
+    }
+  };
+
+  const handleUpdateStatusCancel = () => {
+    setIsUpdateStatusModalVisible(false);
+    updateStatusForm.resetFields();
   };
 
   // Delete Tournament
@@ -231,6 +261,71 @@ function AdminTournamentPanel({ tournamentName }) {
           </Modal>
 
           <button
+            onClick={showUpdateStatusModal}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+          >
+            Обновить статус турнира
+          </button>
+
+          <Modal
+            title={<span className="text-white">Обновить статус турнира</span>}
+            open={isUpdateStatusModalVisible}
+            onCancel={handleUpdateStatusCancel}
+            footer={null}
+            className="custom-modal"
+          >
+            <Form
+              form={updateStatusForm}
+              onFinish={handleUpdateStatus}
+              layout="vertical"
+              className="text-white"
+            >
+              <Form.Item
+                name="tournament_name"
+                label={
+                  <span className="text-gray-300">
+                    Название турнира{' '}
+                    <Tooltip title="Название турнира (нельзя изменить)">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+                rules={[{ required: true, message: 'Пожалуйста, укажите название турнира' }]}
+              >
+                <Input className="custom-input" disabled />
+              </Form.Item>
+              <Form.Item
+                name="new_status"
+                label={
+                  <span className="text-gray-300">
+                    Новый статус{' '}
+                    <Tooltip title="Выберите новый статус турнира">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+                rules={[{ required: true, message: 'Пожалуйста, выберите новый статус' }]}
+              >
+                <Select className="custom-select" placeholder="Выберите статус">
+                  <Option value="SCHEDULED">SCHEDULED</Option>
+                  <Option value="IN_PROGRESS">IN_PROGRESS</Option>
+                  <Option value="COMPLETED">COMPLETED</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item>
+                <div className="flex justify-end gap-2">
+                  <Button onClick={handleUpdateStatusCancel} className="text-white border-gray-500">
+                    Отмена
+                  </Button>
+                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
+                    Обновить
+                  </Button>
+                </div>
+              </Form.Item>
+            </Form>
+          </Modal>
+
+          <button
             onClick={handleDeleteTournament}
             className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
@@ -292,7 +387,7 @@ function AdminTournamentPanel({ tournamentName }) {
 
           <button
             onClick={showDeleteTeamModal}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+            className="text-white bg-red-600 Hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить команду
           </button>
