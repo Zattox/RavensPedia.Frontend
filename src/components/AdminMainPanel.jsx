@@ -1,12 +1,15 @@
 // src/components/AdminMainPanel.jsx
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+
 import { Modal, Form, Input, InputNumber, Button, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
+import { NotificationContext } from '@/context/NotificationContext';
 
 function AdminMainPanel() {
   const { isAdmin } = useAuth();
+  const notificationApi = useContext(NotificationContext);
   const [isNewsModalVisible, setIsNewsModalVisible] = useState(false);
   const [isMatchModalVisible, setIsMatchModalVisible] = useState(false);
   const [isPlayerModalVisible, setIsPlayerModalVisible] = useState(false);
@@ -18,7 +21,21 @@ function AdminMainPanel() {
   const [teamForm] = Form.useForm();
   const [tournamentForm] = Form.useForm();
 
+  // Состояния для индикации загрузки
+  const [loadingPlayersElo, setLoadingPlayersElo] = useState(false);
+  const [loadingTeamsElo, setLoadingTeamsElo] = useState(false);
+  const [loadingMatchesStatuses, setLoadingMatchesStatuses] = useState(false);
+  const [loadingTournamentsStatuses, setLoadingTournamentsStatuses] = useState(false);
+
   if (!isAdmin) return null;
+
+  const showNotification = (type, message, description) => {
+    notificationApi[type]({
+      message,
+      description,
+      placement: 'bottomRight',
+    });
+  };
 
   // News handlers
   const showNewsModal = () => setIsNewsModalVisible(true);
@@ -114,7 +131,63 @@ function AdminMainPanel() {
       tournamentForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании турнира:', error);
-      alert('Не удалось создать турнир.');
+      alert('Не удалось создать турнир');
+    }
+  };
+
+  // Обновить Faceit ELO игроков
+  const handleUpdatePlayersFaceitElo = async () => {
+    setLoadingPlayersElo(true);
+    try {
+      await api.patch('/players/update_faceit_elo/');
+      showNotification('success', 'Успех!', 'Faceit ELO игроков обновлено.')
+    } catch (error) {
+      console.error('Ошибка при обновлении Faceit ELO игроков:', error.response?.data || error);
+      showNotification('error', 'Ошибка!', 'Не удалось обновить Faceit ELO игроков.')
+    } finally {
+      setLoadingPlayersElo(false);
+    }
+  };
+
+  // Обновить Faceit ELO команд
+  const handleUpdateTeamsFaceitElo = async () => {
+    setLoadingTeamsElo(true);
+    try {
+      await api.patch('/teams/update_team_faceit_elo/');
+      showNotification('success', 'Успех!', 'Среднее Faceit ELO команд обновлено.')
+    } catch (error) {
+      console.error('Ошибка при обновлении Faceit ELO команд:', error.response?.data || error);
+      showNotification('error', 'Ошибка!', 'Среднее Faceit ELO команд не удалось обновить.')
+    } finally {
+      setLoadingTeamsElo(false);
+    }
+  };
+
+  // Обновить статусы матчей
+  const handleUpdateMatchesStatuses = async () => {
+    setLoadingMatchesStatuses(true);
+    try {
+      await api.patch('/schedules/matches/update_statuses/');
+      showNotification('success', 'Успех!', 'Статусы всех матчей обновлены.')
+    } catch (error) {
+      console.error('Ошибка при обновлении статусов матчей:', error.response?.data || error);
+      showNotification('success', 'Успех!', 'Ошибка при обновлении статусов матчей.')
+    } finally {
+      setLoadingMatchesStatuses(false);
+    }
+  };
+
+  // Обновить статусы турниров
+  const handleUpdateTournamentsStatuses = async () => {
+    setLoadingTournamentsStatuses(true);
+    try {
+      await api.patch('/schedules/tournaments/update_statuses/');
+      showNotification('success', 'Успех!', 'Статусы всех турниров обновлены.')
+    } catch (error) {
+      console.error('Ошибка при обновлении статусов турниров:', error.response?.data || error);
+      showNotification('success', 'Успех!', 'Ошибка при обновлении статусов турниров.')
+    } finally {
+      setLoadingTournamentsStatuses(false);
     }
   };
 
@@ -332,6 +405,39 @@ function AdminMainPanel() {
             </Form.Item>
           </Form>
         </Modal>
+
+        {/* Секция: Обновление данных Faceit ELO и статусов */}
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Обновление данных</h3>
+          <Button
+            onClick={handleUpdatePlayersFaceitElo}
+            loading={loadingPlayersElo}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 w-full h-10 text-sm mb-2"
+          >
+            Обновить Faceit ELO игроков
+          </Button>
+          <Button
+            onClick={handleUpdateTeamsFaceitElo}
+            loading={loadingTeamsElo}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 w-full h-10 text-sm mb-2"
+          >
+            Обновить Faceit ELO команд
+          </Button>
+          <Button
+            onClick={handleUpdateMatchesStatuses}
+            loading={loadingMatchesStatuses}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 w-full h-10 text-sm mb-2"
+          >
+            Обновить статусы матчей
+          </Button>
+          <Button
+            onClick={handleUpdateTournamentsStatuses}
+            loading={loadingTournamentsStatuses}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 w-full h-10 text-sm"
+          >
+            Обновить статусы турниров
+          </Button>
+        </div>
       </div>
     </div>
   );
