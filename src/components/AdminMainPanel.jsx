@@ -1,4 +1,3 @@
-// src/components/AdminMainPanel.jsx
 import { useState, useContext } from 'react';
 
 import { Modal, Form, Input, InputNumber, Button, Tooltip } from 'antd';
@@ -203,7 +202,7 @@ function AdminMainPanel() {
         {/* Create News */}
         <button
           onClick={showNewsModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full"
+          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
         >
           Добавить новость
         </button>
@@ -240,7 +239,7 @@ function AdminMainPanel() {
         {/* Create Match */}
         <button
           onClick={showMatchModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full"
+          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
         >
           Добавить матч
         </button>
@@ -286,7 +285,7 @@ function AdminMainPanel() {
         {/* Create Player */}
         <button
           onClick={showPlayerModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full"
+          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
         >
           Добавить игрока
         </button>
@@ -326,7 +325,7 @@ function AdminMainPanel() {
         {/* Create Team */}
         <button
           onClick={showTeamModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full"
+          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
         >
           Добавить команду
         </button>
@@ -363,7 +362,7 @@ function AdminMainPanel() {
         {/* Create Tournament */}
         <button
           onClick={showTournamentModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full"
+          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
         >
           Добавить турнир
         </button>
@@ -412,28 +411,29 @@ function AdminMainPanel() {
           <Button
             onClick={handleUpdatePlayersFaceitElo}
             loading={loadingPlayersElo}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
           >
             Обновить Faceit ELO игроков
           </Button>
           <Button
             onClick={handleUpdateTeamsFaceitElo}
             loading={loadingTeamsElo}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 w-full h-10 text-sm mb-2"
+
+            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
           >
             Обновить Faceit ELO команд
           </Button>
           <Button
             onClick={handleUpdateMatchesStatuses}
             loading={loadingMatchesStatuses}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
           >
             Обновить статусы матчей
           </Button>
           <Button
             onClick={handleUpdateTournamentsStatuses}
             loading={loadingTournamentsStatuses}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 w-full h-10 text-sm"
+            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500 "
           >
             Обновить статусы турниров
           </Button>
