@@ -1,4 +1,3 @@
-// src/pages/TeamPage.jsx
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Pagination, Table } from 'antd';
@@ -22,24 +21,25 @@ function TeamPage() {
   const [tournamentsDatesMap, setTournamentsDatesMap] = useState({});
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
   const [currentTournamentPage, setCurrentTournamentPage] = useState(1);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Добавляем триггер для перезапроса
   const itemsPerPage = 5;
 
-  useEffect(() => {
-    const fetchTeam = async () => {
-      try {
-        const response = await api.get(`/teams/${team_name}/`);
-        setTeam(response.data);
-        setError(null);
-      } catch (error) {
-        console.error('Ошибка при загрузке команды:', error.response?.data || error.message);
-        setError('Не удалось загрузить данные о команде. Проверьте подключение к серверу.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchTeam = async () => {
+    try {
+      const response = await api.get(`/teams/${team_name}/`);
+      setTeam(response.data);
+      setError(null);
+    } catch (error) {
+      console.error('Ошибка при загрузке команды:', error.response?.data || error.message);
+      setError('Не удалось загрузить данные о команде. Проверьте подключение к серверу.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTeam();
-  }, [team_name]);
+  }, [team_name, refreshTrigger]); // Добавляем refreshTrigger в зависимости
 
   useEffect(() => {
     const fetchMatchesDetails = async () => {
@@ -216,6 +216,10 @@ function TeamPage() {
     window.scrollTo(0, 0);
   };
 
+  const refreshTeam = () => {
+    setRefreshTrigger((prev) => prev + 1); // Триггерим перезагрузку
+  };
+
   const indexOfLastMatch = currentMatchPage * itemsPerPage;
   const indexOfFirstMatch = indexOfLastMatch - itemsPerPage;
   const currentMatches = matchesDetails.slice(indexOfFirstMatch, indexOfLastMatch);
@@ -321,7 +325,7 @@ function TeamPage() {
         </div>
 
         {/* Панель администратора */}
-        {isAdmin && <AdminTeamPanel team_name={team_name} setTeam={setTeam} />}
+        {isAdmin && <AdminTeamPanel team_name={team_name} refreshTeam={refreshTeam} />}
 
         {/* Секция игроков */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
