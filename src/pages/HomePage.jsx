@@ -1,11 +1,10 @@
-// src/pages/HomePage.jsx
 import { useState, useEffect } from 'react';
 import { Pagination } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
-import AdminMainPanel from '../components/AdminMainPanel.jsx'; // New import
+import AdminMainPanel from '../components/AdminMainPanel.jsx';
 import api from '@/api';
-import { useAuth } from '@/context/AuthContext'; // New import
+import { useAuth } from '@/context/AuthContext';
 
 function HomePage() {
   const [newsData, setNewsData] = useState([]);
@@ -13,7 +12,7 @@ function HomePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const newsPerPage = 12;
   const navigate = useNavigate();
-  const { isAdmin } = useAuth(); // New
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -54,7 +53,7 @@ function HomePage() {
     <div className="min-h-screen flex flex-col items-center justify-center p-4 pt-24 bg-gray-900">
       <div className="w-full max-w-6xl relative">
         <h2 className="text-2xl font-bold mb-4 text-white text-center">Последние новости</h2>
-        {isAdmin && <AdminMainPanel />} {/* Add AdminMainPanel */}
+        {isAdmin && <AdminMainPanel setNewsData={setNewsData} />}
         {error ? (
           <p className="text-red-500 text-center">{error}</p>
         ) : newsData.length > 0 ? (

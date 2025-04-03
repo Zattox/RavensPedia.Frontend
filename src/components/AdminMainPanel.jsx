@@ -1,12 +1,11 @@
 import { useState, useContext } from 'react';
-
 import { Modal, Form, Input, InputNumber, Button, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
 import { NotificationContext } from '@/context/NotificationContext';
 
-function AdminMainPanel() {
+function AdminMainPanel({ setNewsData }) { // Принимаем setNewsData через пропсы
   const { isAdmin } = useAuth();
   const notificationApi = useContext(NotificationContext);
   const [isNewsModalVisible, setIsNewsModalVisible] = useState(false);
@@ -21,6 +20,7 @@ function AdminMainPanel() {
   const [tournamentForm] = Form.useForm();
 
   // Состояния для индикации загрузки
+  const [loadingNews, setLoadingNews] = useState(false); // Новое состояние для кнопки "Добавить новость"
   const [loadingPlayersElo, setLoadingPlayersElo] = useState(false);
   const [loadingTeamsElo, setLoadingTeamsElo] = useState(false);
   const [loadingMatchesStatuses, setLoadingMatchesStatuses] = useState(false);
@@ -39,19 +39,23 @@ function AdminMainPanel() {
   // News handlers
   const showNewsModal = () => setIsNewsModalVisible(true);
   const handleCreateNews = async (values) => {
+    setLoadingNews(true);
     try {
       await api.post('/news/', {
         title: values.title,
         content: values.content,
         author: values.author,
       });
+      const updatedNews = await api.get('/news/');
+      setNewsData(updatedNews.data);
       newsForm.resetFields();
-      window.location.reload(); // Refresh to show new news
       showNotification('success', 'Успех!', 'Новость успешно создана!');
       setIsNewsModalVisible(false);
     } catch (error) {
       console.error('Ошибка при создании новости:', error);
       showNotification('error', 'Ошибка!', 'Не удалось создать новость.');
+    } finally {
+      setLoadingNews(false);
     }
   };
 
@@ -139,10 +143,10 @@ function AdminMainPanel() {
     setLoadingPlayersElo(true);
     try {
       await api.patch('/players/update_faceit_elo/');
-      showNotification('success', 'Успех!', 'Faceit ELO игроков обновлено.')
+      showNotification('success', 'Успех!', 'Faceit ELO игроков обновлено.');
     } catch (error) {
       console.error('Ошибка при обновлении Faceit ELO игроков:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось обновить Faceit ELO игроков.')
+      showNotification('error', 'Ошибка!', 'Не удалось обновить Faceit ELO игроков.');
     } finally {
       setLoadingPlayersElo(false);
     }
@@ -153,10 +157,10 @@ function AdminMainPanel() {
     setLoadingTeamsElo(true);
     try {
       await api.patch('/teams/update_team_faceit_elo/');
-      showNotification('success', 'Успех!', 'Среднее Faceit ELO команд обновлено.')
+      showNotification('success', 'Успех!', 'Среднее Faceit ELO команд обновлено.');
     } catch (error) {
       console.error('Ошибка при обновлении Faceit ELO команд:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Среднее Faceit ELO команд не удалось обновить.')
+      showNotification('error', 'Ошибка!', 'Среднее Faceit ELO команд не удалось обновить.');
     } finally {
       setLoadingTeamsElo(false);
     }
@@ -167,10 +171,10 @@ function AdminMainPanel() {
     setLoadingMatchesStatuses(true);
     try {
       await api.patch('/schedules/matches/update_statuses/');
-      showNotification('success', 'Успех!', 'Статусы всех матчей обновлены.')
+      showNotification('success', 'Успех!', 'Статусы всех матчей обновлены.');
     } catch (error) {
       console.error('Ошибка при обновлении статусов матчей:', error.response?.data || error);
-      showNotification('success', 'Успех!', 'Ошибка при обновлении статусов матчей.')
+      showNotification('error', 'Ошибка!', 'Не удалось обновить статусы матчей.');
     } finally {
       setLoadingMatchesStatuses(false);
     }
@@ -181,10 +185,10 @@ function AdminMainPanel() {
     setLoadingTournamentsStatuses(true);
     try {
       await api.patch('/schedules/tournaments/update_statuses/');
-      showNotification('success', 'Успех!', 'Статусы всех турниров обновлены.')
+      showNotification('success', 'Успех!', 'Статусы всех турниров обновлены.');
     } catch (error) {
       console.error('Ошибка при обновлении статусов турниров:', error.response?.data || error);
-      showNotification('success', 'Успех!', 'Ошибка при обновлении статусов турниров.')
+      showNotification('error', 'Ошибка!', 'Не удалось обновить статусы турниров.');
     } finally {
       setLoadingTournamentsStatuses(false);
     }
@@ -200,12 +204,13 @@ function AdminMainPanel() {
       <h2 className="text-2xl font-bold mb-4 text-center">Панель администратора</h2>
       <div className="space-y-4">
         {/* Create News */}
-        <button
+        <Button
           onClick={showNewsModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
+          loading={loadingNews}
+          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
         >
           Добавить новость
-        </button>
+        </Button>
         <Modal
           title={<span className="text-white">Создать новую новость</span>}
           open={isNewsModalVisible}
@@ -228,7 +233,7 @@ function AdminMainPanel() {
                 <Button onClick={() => handleCancel(setIsNewsModalVisible, newsForm)} className="text-white border-gray-500">
                   Отмена
                 </Button>
-                <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
+                <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700" loading={loadingNews}>
                   Создать
                 </Button>
               </div>
@@ -237,12 +242,12 @@ function AdminMainPanel() {
         </Modal>
 
         {/* Create Match */}
-        <button
+        <Button
           onClick={showMatchModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
+          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
         >
           Добавить матч
-        </button>
+        </Button>
         <Modal
           title={<span className="text-white">Создать новый матч</span>}
           open={isMatchModalVisible}
@@ -283,12 +288,12 @@ function AdminMainPanel() {
         </Modal>
 
         {/* Create Player */}
-        <button
+        <Button
           onClick={showPlayerModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
+          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
         >
           Добавить игрока
-        </button>
+        </Button>
         <Modal
           title={<span className="text-white">Создать нового игрока</span>}
           open={isPlayerModalVisible}
@@ -323,12 +328,12 @@ function AdminMainPanel() {
         </Modal>
 
         {/* Create Team */}
-        <button
+        <Button
           onClick={showTeamModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
+          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
         >
           Добавить команду
-        </button>
+        </Button>
         <Modal
           title={<span className="text-white">Создать новую команду</span>}
           open={isTeamModalVisible}
@@ -360,12 +365,12 @@ function AdminMainPanel() {
         </Modal>
 
         {/* Create Tournament */}
-        <button
+        <Button
           onClick={showTournamentModal}
-          className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full border border-gray-500"
+          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
         >
           Добавить турнир
-        </button>
+        </Button>
         <Modal
           title={<span className="text-white">Создать новый турнир</span>}
           open={isTournamentModalVisible}
@@ -418,7 +423,6 @@ function AdminMainPanel() {
           <Button
             onClick={handleUpdateTeamsFaceitElo}
             loading={loadingTeamsElo}
-
             className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
           >
             Обновить Faceit ELO команд
@@ -433,7 +437,7 @@ function AdminMainPanel() {
           <Button
             onClick={handleUpdateTournamentsStatuses}
             loading={loadingTournamentsStatuses}
-            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500 "
+            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
           >
             Обновить статусы турниров
           </Button>
