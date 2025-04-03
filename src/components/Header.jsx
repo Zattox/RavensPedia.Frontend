@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import SearchBar from './SearchBar';
 
 function Header() {
   const { isAuthenticated, logout } = useAuth();
@@ -76,7 +77,9 @@ function Header() {
             )}
           </div>
         </div>
-        <div>
+        <div className="flex items-center space-x-4">
+          {/* Add SearchBar here */}
+          <SearchBar />
           {isAuthenticated ? (
             <>
               <Link to="/profile" className="text-white hover:bg-gray-700 px-3 py-2 rounded">
@@ -84,7 +87,7 @@ function Header() {
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded ml-2"
+                className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded"
               >
                 Выйти
               </button>
