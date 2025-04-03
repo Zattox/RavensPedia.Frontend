@@ -1,10 +1,11 @@
 // src/pages/MatchDetailPage.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Pagination } from 'antd';
 import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
 import AdminMatchPanel from '@/components/AdminMatchPanel.jsx';
+import { NotificationContext } from '@/context/NotificationContext';
 
 function MatchDetailPage() {
   const { match_id } = useParams();
@@ -13,28 +14,37 @@ function MatchDetailPage() {
   const [match, setMatch] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
   const [winnersSortConfig, setWinnersSortConfig] = useState({ key: null, direction: 'ascending' });
   const [sortedWinnersStats, setSortedWinnersStats] = useState([]);
   const [losersSortConfig, setLosersSortConfig] = useState({ key: null, direction: 'ascending' });
   const [sortedLosersStats, setSortedLosersStats] = useState([]);
+  const notificationApi = useContext(NotificationContext);
+
+  const showNotification = (type, message, description) => {
+    notificationApi[type]({ message, description, placement: 'bottomRight' });
+  };
 
   useEffect(() => {
     const fetchMatch = async () => {
       try {
+        setLoading(true);
         const response = await api.get(`/matches/${match_id}/`);
         setMatch(response.data);
         setError(null);
       } catch (error) {
         console.error('Ошибка при загрузке матча:', error.response?.data || error.message);
         setError('Не удалось загрузить данные о матче. Проверьте подключение к серверу.');
+        showNotification('error', 'Ошибка!', 'Не удалось загрузить данные о матче.');
       } finally {
         setLoading(false);
       }
     };
-
     fetchMatch();
-  }, [match_id]);
+  }, [match_id, refreshTrigger]); // Добавляем refreshTrigger
+
+  const refreshMatch = () => setRefreshTrigger((prev) => prev + 1);
 
   useEffect(() => {
     if (match) {
@@ -475,7 +485,7 @@ function MatchDetailPage() {
         </div>
       </div>
 
-      {isAdmin && <AdminMatchPanel match_id={match_id} setMatch={setMatch} />}
+      {isAdmin && <AdminMatchPanel match_id={match_id} setMatch={setMatch} refreshMatch={refreshMatch} />}
     </div>
   );
 }

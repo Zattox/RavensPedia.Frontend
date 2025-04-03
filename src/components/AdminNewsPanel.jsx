@@ -6,7 +6,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { NotificationContext } from '@/context/NotificationContext';
 import api from '@/api';
 
-function AdminNewsPanel({ newsId, setNews }) {
+function AdminNewsPanel({ newsId, setNews, refreshNews }) {
   const navigate = useNavigate();
   const notificationApi = useContext(NotificationContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -35,7 +35,8 @@ function AdminNewsPanel({ newsId, setNews }) {
       try {
         const response = await api.patch(`/news/${newsId}/`, updatedNews);
         setNews(response.data);
-        showNotification('success', 'Успех!', 'Новость успешно обновлена!'); // Заменяем alert
+        refreshNews();
+        showNotification('success', 'Успех!', 'Новость успешно обновлена!');
         setIsModalVisible(false);
         form.resetFields();
       } catch (error) {
@@ -43,7 +44,7 @@ function AdminNewsPanel({ newsId, setNews }) {
         showNotification('error', 'Ошибка!', 'Не удалось обновить новость.'); // Заменяем alert
       }
     } else {
-      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
     }
   };
 
@@ -52,19 +53,17 @@ function AdminNewsPanel({ newsId, setNews }) {
     form.resetFields();
   };
 
-  const showDeleteNewsModal = () => {
-    setIsDeleteNewsModalVisible(true);
-  };
+  const showDeleteNewsModal = () => setIsDeleteNewsModalVisible(true);
 
   const handleDeleteNews = async () => {
     try {
       await api.delete(`/news/${newsId}/`);
-      showNotification('success', 'Успех!', 'Новость успешно удалена!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Новость успешно удалена!');
       setIsDeleteNewsModalVisible(false);
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении новости:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить новость.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Не удалось удалить новость.');
       setIsDeleteNewsModalVisible(false);
     }
   };
@@ -78,19 +77,19 @@ function AdminNewsPanel({ newsId, setNews }) {
       <h2 className="text-2xl font-bold mb-4 text-center">Управление новостью (Админ)</h2>
       <div className="space-y-4">
         <button
-            onClick={showModal}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full"
+          onClick={showModal}
+          className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full"
         >
           Обновить новость
         </button>
 
         {/* Модальное окно с формой */}
         <Modal
-            title={<span className="text-white">Обновить новость</span>}
-            open={isModalVisible}
-            onCancel={handleCancel}
-            footer={null}
-            className="custom-modal"
+          title={<span className="text-white">Обновить новость</span>}
+          open={isModalVisible}
+          onCancel={handleCancel}
+          footer={null}
+          className="custom-modal"
         >
           <Form
               form={form}
@@ -99,15 +98,15 @@ function AdminNewsPanel({ newsId, setNews }) {
               className="text-white"
           >
             <Form.Item
-                name="title"
-                label={
-                  <span className="text-gray-300">
+              name="title"
+              label={
+                <span className="text-gray-300">
                   Заголовок{' '}
-                    <Tooltip title="Введите новый заголовок новости (оставьте пустым, чтобы не изменять)">
-                    <InfoCircleOutlined className="text-gray-500"/>
+                  <Tooltip title="Введите новый заголовок новости (оставьте пустым, чтобы не изменять)">
+                    <InfoCircleOutlined className="text-gray-500" />
                   </Tooltip>
                 </span>
-                }
+              }
             >
               <Input
                   className="custom-input"
@@ -115,29 +114,29 @@ function AdminNewsPanel({ newsId, setNews }) {
               />
             </Form.Item>
             <Form.Item
-                name="content"
-                label={
-                  <span className="text-gray-300">
+              name="content"
+              label={
+                <span className="text-gray-300">
                   Содержание{' '}
-                    <Tooltip title="Введите новое содержание новости (оставьте пустым, чтобы не изменять)">
-                    <InfoCircleOutlined className="text-gray-500"/>
+                  <Tooltip title="Введите новое содержание новости (оставьте пустым, чтобы не изменять)">
+                    <InfoCircleOutlined className="text-gray-500" />
                   </Tooltip>
                 </span>
-                }
+              }
             >
               <Input.TextArea
-                  rows={4}
-                  className="custom-textarea"
-                  placeholder="Новое содержание (необязательно)"
+                rows={4}
+                className="custom-textarea"
+                placeholder="Новое содержание (необязательно)"
               />
             </Form.Item>
             <Form.Item
-                name="author"
-                label={
-                  <span className="text-gray-300">
+              name="author"
+              label={
+                <span className="text-gray-300">
                   Автор{' '}
-                    <Tooltip title="Введите нового автора новости (оставьте пустым, чтобы не изменять)">
-                    <InfoCircleOutlined className="text-gray-500"/>
+                  <Tooltip title="Введите нового автора новости (оставьте пустым, чтобы не изменять)">
+                    <InfoCircleOutlined className="text-gray-500" />
                   </Tooltip>
                 </span>
                 }

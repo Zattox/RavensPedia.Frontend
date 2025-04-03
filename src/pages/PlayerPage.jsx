@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import api from '@/api'; // Предполагается, что это ваш настроенный axios для бэкенда
+import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
 import { Button, Spin, Alert, Table, Pagination, Form, DatePicker, Select, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -9,7 +9,7 @@ import AdminPlayerPanel from '@/components/AdminPlayerPanel';
 import AdminMatchPanel from "@/components/AdminMatchPanel.jsx";
 
 function PlayerPage() {
-  const { player_id } = useParams(); // player_id здесь — это nickname игрока
+  const { player_id } = useParams();
   const [playerData, setPlayerData] = useState(null);
   const [playerStats, setPlayerStats] = useState(null);
   const [detailedStats, setDetailedStats] = useState(null);
@@ -25,6 +25,7 @@ function PlayerPage() {
   const [currentTournamentPage, setCurrentTournamentPage] = useState(1);
   const [matchesDetails, setMatchesDetails] = useState([]);
   const [form] = Form.useForm();
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Добавляем триггер обновления
   const itemsPerPage = 5;
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
@@ -35,20 +36,35 @@ function PlayerPage() {
     return moment(date).format('DD.MM.YYYY');
   };
 
+  const fetchPlayerData = async () => {
+    try {
+      const response = await api.get(`/players/${player_id}/`);
+      setPlayerData(response.data);
+      setTournaments(response.data.tournaments || []);
+      setError(null);
+    } catch (err) {
+      console.error('Ошибка при загрузке данных игрока:', err);
+      setError('Не удалось загрузить данные игрока. Проверьте подключение или убедитесь, что игрок существует.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlayerData();
+  }, [player_id, refreshTrigger]); // Добавляем refreshTrigger в зависимости
+
   useEffect(() => {
     const fetchFaceitData = async () => {
       try {
         const response = await api.get('/players/get_faceit_profile/', {
-          params: {
-            player_nickname: player_id, // Используем player_id как nickname
-          },
+          params: { player_nickname: player_id },
         });
         console.log('Faceit Profile Response:', response.data);
         if (response.data.error) {
-          // Если бэкенд вернул ошибку (например, профиль не найден)
           setFaceitNickname(null);
         } else {
-          setFaceitNickname(response.data.nickname); // Предполагаем, что Faceit API возвращает nickname
+          setFaceitNickname(response.data.nickname);
         }
       } catch (error) {
         console.error('Ошибка при запросе Faceit профиля через бэкенд:', error.response?.status, error.response?.data || error.message);
@@ -56,7 +72,7 @@ function PlayerPage() {
       }
     };
 
-    if (playerData) { // Запрашиваем Faceit данные только после загрузки playerData
+    if (playerData) {
       fetchFaceitData();
     }
   }, [playerData, player_id]);
@@ -91,24 +107,6 @@ function PlayerPage() {
 
     fetchTournamentsDates();
   }, [tournaments]);
-
-  useEffect(() => {
-    const fetchPlayerData = async () => {
-      try {
-        const response = await api.get(`/players/${player_id}/`);
-        setPlayerData(response.data);
-        setTournaments(response.data.tournaments || []);
-        setError(null);
-      } catch (err) {
-        console.error('Ошибка при загрузке данных игрока:', err);
-        setError('Не удалось загрузить данные игрока. Проверьте подключение или убедитесь, что игрок существует.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPlayerData();
-  }, [player_id]);
 
   useEffect(() => {
     const fetchPlayerStats = async () => {
@@ -201,6 +199,10 @@ function PlayerPage() {
     window.scrollTo(0, 0);
   };
 
+  const refreshPlayer = () => {
+    setRefreshTrigger((prev) => prev + 1); // Триггерим перезагрузку данных
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -289,10 +291,8 @@ function PlayerPage() {
           Назад
         </button>
 
-        {/* Панель администратора */}
-        {isAdmin && <AdminPlayerPanel player_nickname={player_id} />}
+        {isAdmin && <AdminPlayerPanel player_nickname={player_id} refreshPlayer={refreshPlayer} />}
 
-        {/* Основная информация */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h1 className="text-3xl font-bold mb-4 text-center">Профиль игрока: {playerData.nickname}</h1>
           <h2 className="text-2xl font-bold mb-4 text-center">Основная информация</h2>
@@ -344,7 +344,6 @@ function PlayerPage() {
           </p>
         </div>
 
-        {/* Матчи */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-4 text-center">Матчи</h2>
           {currentMatches.length > 0 ? (
@@ -399,7 +398,6 @@ function PlayerPage() {
           )}
         </div>
 
-        {/* Турниры */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-4 text-center">Турниры</h2>
           {currentTournaments && currentTournaments.length > 0 ? (
@@ -441,7 +439,6 @@ function PlayerPage() {
           )}
         </div>
 
-        {/* Краткая статистика */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-4 text-center">Краткая статистика</h2>
           {statsLoading ? (
@@ -471,7 +468,6 @@ function PlayerPage() {
           </Button>
         </div>
 
-        {/* Детальная статистика */}
         {showDetailedStats && (
           <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
             <h2 className="text-2xl font-bold mb-4 text-center">Детальная статистика</h2>
@@ -534,7 +530,7 @@ function PlayerPage() {
                   options={tournaments.map(tournament => ({
                     label: tournament,
                     value: tournament
-                  }))} // Используем само значение tournament
+                  }))}
                 />
               </Form.Item>
               <Form.Item>

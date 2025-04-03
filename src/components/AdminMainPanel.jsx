@@ -5,7 +5,7 @@ import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
 import { NotificationContext } from '@/context/NotificationContext';
 
-function AdminMainPanel({ setNewsData }) { // Принимаем setNewsData через пропсы
+function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимаем setNewsData через пропсы
   const { isAdmin } = useAuth();
   const notificationApi = useContext(NotificationContext);
   const [isNewsModalVisible, setIsNewsModalVisible] = useState(false);
@@ -48,6 +48,7 @@ function AdminMainPanel({ setNewsData }) { // Принимаем setNewsData ч�
       });
       const updatedNews = await api.get('/news/');
       setNewsData(updatedNews.data);
+      refreshNewsData();
       newsForm.resetFields();
       showNotification('success', 'Успех!', 'Новость успешно создана!');
       setIsNewsModalVisible(false);

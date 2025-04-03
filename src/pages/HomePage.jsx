@@ -1,43 +1,59 @@
-import { useState, useEffect } from 'react';
+// src/pages/HomePage.jsx
+import { useState, useEffect, useContext } from 'react';
 import { Pagination } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
 import AdminMainPanel from '../components/AdminMainPanel.jsx';
 import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
+import { NotificationContext } from '@/context/NotificationContext';
 
 function HomePage() {
   const [newsData, setNewsData] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Добавляем триггер
   const newsPerPage = 12;
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
+  const notificationApi = useContext(NotificationContext);
+
+  const showNotification = (type, message, description) => {
+    notificationApi[type]({ message, description, placement: 'bottomRight' });
+  };
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
+        setLoading(true);
         const response = await api.get('/news/');
         setNewsData(response.data);
         setError(null);
       } catch (error) {
-        console.error('Ошибка при загрузке новостей:', error);
         setError('Не удалось загрузить новости. Проверьте подключение к серверу.');
+        showNotification('error', 'Ошибка!', 'Не удалось загрузить новости.');
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchNews();
-  }, []);
+  }, [refreshTrigger]); // Добавляем refreshTrigger
+
+  const refreshNewsData = () => setRefreshTrigger((prev) => prev + 1); // Функция обновления
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'Дата не указана';
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return isNaN(date.getTime())
+      ? 'Неверная дата'
+      : date.toLocaleDateString('ru-RU', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
   };
 
   const indexOfLastNews = currentPage * newsPerPage;
@@ -49,14 +65,28 @@ function HomePage() {
     window.scrollTo(0, 0);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <p className="text-white text-center">Загрузка...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <p className="text-red-500 text-center">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 pt-24 bg-gray-900">
       <div className="w-full max-w-6xl relative">
         <h2 className="text-2xl font-bold mb-4 text-white text-center">Последние новости</h2>
-        {isAdmin && <AdminMainPanel setNewsData={setNewsData} />}
-        {error ? (
-          <p className="text-red-500 text-center">{error}</p>
-        ) : newsData.length > 0 ? (
+        {isAdmin && <AdminMainPanel setNewsData={setNewsData} refreshNewsData={refreshNewsData} />}
+        {newsData.length > 0 ? (
           <>
             <div className="flex flex-wrap justify-center gap-4">
               {currentNews.map((news) => (
@@ -82,7 +112,7 @@ function HomePage() {
             )}
           </>
         ) : (
-          <p className="text-white text-center">Загрузка новостей...</p>
+          <p className="text-white text-center">Новости отсутствуют</p>
         )}
       </div>
     </div>

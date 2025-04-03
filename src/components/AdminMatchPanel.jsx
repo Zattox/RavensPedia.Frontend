@@ -7,7 +7,7 @@ import { NotificationContext } from '@/context/NotificationContext';
 import api from '@/api';
 
 
-function AdminMatchPanel({ match_id, setMatch }) {
+function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
   const { Option } = Select;
   const navigate = useNavigate();
   const notificationApi = useContext(NotificationContext);
@@ -43,27 +43,28 @@ function AdminMatchPanel({ match_id, setMatch }) {
   };
 
   const handleUpdateMatchInfo = async (values) => {
-    const updatedMatch = {};
-    if (values.tournament) updatedMatch.tournament = values.tournament;
-    if (values.date) updatedMatch.date = values.date;
-    if (values.description) updatedMatch.description = values.description;
+      const updatedMatch = {};
+      if (values.tournament) updatedMatch.tournament = values.tournament;
+      if (values.date) updatedMatch.date = values.date;
+      if (values.description) updatedMatch.description = values.description;
 
-    if (Object.keys(updatedMatch).length > 0) {
-      try {
-        await api.patch(`/matches/${match_id}/`, updatedMatch);
-        showNotification('success', 'Успех!', 'Матч успешно обновлен.'); // Заменяем alert
-        const response = await api.get(`/matches/${match_id}/`);
-        setMatch(response.data);
-        setIsUpdateModalVisible(false);
-        updateForm.resetFields();
-      } catch (error) {
-        console.error('Ошибка при обновлении матча:', error.response?.data || error);
-        showNotification('error', 'Ошибка!', 'Не удалось обновить матч.'); // Заменяем alert
+      if (Object.keys(updatedMatch).length > 0) {
+        try {
+          await api.patch(`/matches/${match_id}/`, updatedMatch);
+          const response = await api.get(`/matches/${match_id}/`);
+          setMatch(response.data);
+          refreshMatch();
+          showNotification('success', 'Успех!', 'Матч успешно обновлен.');
+          setIsUpdateModalVisible(false);
+          updateForm.resetFields();
+        } catch (error) {
+          console.error('Ошибка при обновлении матча:', error.response?.data || error);
+          showNotification('error', 'Ошибка!', 'Не удалось обновить матч.');
+        }
+      } else {
+        showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
       }
-    } else {
-      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.'); // Заменяем alert
-    }
-  };
+    };
 
   const handleUpdateCancel = () => {
     setIsUpdateModalVisible(false);
@@ -81,6 +82,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', `Команда ${values.teamName} успешно добавлена.`); // Заменяем alert
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
       setIsAddTeamModalVisible(false);
       addTeamForm.resetFields();
     } catch (error) {
@@ -105,6 +107,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', `Команда ${values.teamName} успешно удалена.`); // Заменяем alert
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
       setIsDeleteTeamModalVisible(false);
       deleteTeamForm.resetFields();
     } catch (error) {
@@ -131,6 +134,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Статистика Faceit успешно добавлена.'); // Заменяем alert
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
       setIsAddFaceitStatsModalVisible(false);
       addFaceitStatsForm.resetFields();
     } catch (error) {
@@ -159,6 +163,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Pick/Ban успешно добавлен.'); // Заменяем alert
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
       setIsAddPickBanModalVisible(false);
       addPickBanForm.resetFields();
     } catch (error) {
@@ -179,6 +184,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Последний Pick/Ban успешно удален.');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
     } catch (error) {
       console.error('Ошибка при удалении Pick/Ban:', error.response?.data || error);
       showNotification('error', 'Ошибка!', 'Не удалось удалить Pick/Ban.'); // Заменяем alert
@@ -208,6 +214,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Результат карты успешно добавлен');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
       setIsAddMapResultModalVisible(false);
       addMapResultForm.resetFields();
     } catch (error) {
@@ -228,6 +235,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Последний результат карты успешно удален');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
     } catch (error) {
       console.error('Ошибка при удалении результата карты:', error.response?.data || error);
       showNotification('error', 'Ошибка!', 'Не удалось удалить результат карты');
@@ -255,6 +263,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Статистика вручную успешно добавлена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
       setIsAddStatsManualModalVisible(false);
       addStatsManualForm.resetFields();
     } catch (error) {
@@ -275,6 +284,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Последняя статистика успешно удалена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
     } catch (error) {
       console.error('Ошибка при удалении последней статистики:', error.response?.data || error);
       showNotification('error', 'Ошибка!', 'Не удалось удалить последнюю статистику');
@@ -288,6 +298,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Статистика матча успешно удалена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
     } catch (error) {
       console.error('Ошибка при удалении статистики матча:', error.response?.data || error);
       showNotification('error', 'Ошибка!', 'Не удалось удалить статистику матча');
@@ -331,6 +342,7 @@ function AdminMatchPanel({ match_id, setMatch }) {
       showNotification('success', 'Успех!', 'Статус матча успешно обновлен');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
+      refreshMatch();
       setIsUpdateStatusModalVisible(false);
       updateStatusForm.resetFields();
     } catch (error) {
