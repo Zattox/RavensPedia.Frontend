@@ -15,7 +15,7 @@ function TournamentPage() {
   const [matchesDetails, setMatchesDetails] = useState([]);
   const [currentTeamPage, setCurrentTeamPage] = useState(1);
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
-  const [refreshTrigger, setRefreshTrigger] = useState(0); // Добавляем триггер обновления
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const itemsPerPage = 5;
 
   const fetchTournament = async () => {
@@ -33,7 +33,7 @@ function TournamentPage() {
 
   useEffect(() => {
     fetchTournament();
-  }, [tournament_id, refreshTrigger]); // Добавляем refreshTrigger в зависимости
+  }, [tournament_id, refreshTrigger]);
 
   useEffect(() => {
     const fetchMatchesDetails = async () => {
@@ -66,6 +66,23 @@ function TournamentPage() {
     });
   };
 
+  // Добавляем функцию для подсчета итогового счета матча
+  const calculateOverallScore = (match) => {
+    if (!match?.result) return { winsFirstTeam: 0, winsSecondTeam: 0 };
+    let winsFirstTeam = 0;
+    let winsSecondTeam = 0;
+
+    match.result.forEach((res) => {
+      if (res.total_score_first_team > res.total_score_second_team) {
+        winsFirstTeam += 1;
+      } else if (res.total_score_second_team > res.total_score_first_team) {
+        winsSecondTeam += 1;
+      }
+    });
+
+    return { winsFirstTeam, winsSecondTeam };
+  };
+
   const handleTeamPageChange = (page) => {
     setCurrentTeamPage(page);
     window.scrollTo(0, 0);
@@ -77,7 +94,7 @@ function TournamentPage() {
   };
 
   const refreshTournament = () => {
-    setRefreshTrigger((prev) => prev + 1); // Триггерим перезагрузку
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   if (loading) {
@@ -179,18 +196,26 @@ function TournamentPage() {
           <h2 className="text-2xl font-bold mb-4 text-center">Матчи</h2>
           {currentMatches.length > 0 ? (
             <>
-              <div className="flex flex-col gap-2">
-                {currentMatches.map((match, index) => (
-                  <Link
-                    key={index}
-                    to={`/matches/${match.id}`}
-                    className="text-blue-400 hover:underline"
-                  >
-                    {match.teams && match.teams.length === 2
-                      ? `${match.teams[0]} vs ${match.teams[1]}`
-                      : 'Матч с неизвестными командами'}
-                  </Link>
-                ))}
+              <div className="flex flex-col gap-2 text-gray-300">
+                {currentMatches.map((match, index) => {
+                  const overallScore = calculateOverallScore(match); // Подсчитываем итоговый счет
+                  return (
+                    <div key={index} className="flex items-center">
+                      <Link
+                        to={`/matches/${match.id}`}
+                        className="text-blue-400 hover:underline"
+                      >
+                        {match.teams && match.teams.length === 2
+                          ? `${match.teams[0]} vs ${match.teams[1]}`
+                          : 'Матч с неизвестными командами'}
+                      </Link>
+                      <span className="ml-2">
+                        ({overallScore.winsFirstTeam} - {overallScore.winsSecondTeam},{' '}
+                        {match.date ? formatDate(match.date) : 'Дата неизвестна'})
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
               {matchesDetails.length > itemsPerPage && (
                 <div className="mt-6 flex justify-center">
