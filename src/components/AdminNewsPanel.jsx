@@ -8,6 +8,7 @@ import api from '@/api';
 function AdminNewsPanel({ newsId, setNews }) {
   const navigate = useNavigate();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDeleteNewsModalVisible, setIsDeleteNewsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   const showModal = () => {
@@ -43,17 +44,25 @@ function AdminNewsPanel({ newsId, setNews }) {
     form.resetFields();
   };
 
+  const showDeleteNewsModal = () => {
+    setIsDeleteNewsModalVisible(true);
+  };
+
   const handleDeleteNews = async () => {
-    if (window.confirm('Вы уверены, что хотите удалить эту новость?')) {
-      try {
-        await api.delete(`/news/${newsId}/`);
-        alert('Новость успешно удалена!');
-        navigate('/'); // Перенаправляем на главную страницу после удаления
-      } catch (error) {
-        console.error('Ошибка при удалении новости:', error);
-        alert('Не удалось удалить новость.');
-      }
+    try {
+      await api.delete(`/news/${newsId}/`);
+      alert('Новость успешно удалена!');
+      setIsDeleteNewsModalVisible(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Ошибка при удалении новости:', error);
+      alert('Не удалось удалить новость.');
+      setIsDeleteNewsModalVisible(false);
     }
+  };
+
+  const handleDeleteNewsCancel = () => {
+    setIsDeleteNewsModalVisible(false);
   };
 
   return (
@@ -61,73 +70,73 @@ function AdminNewsPanel({ newsId, setNews }) {
       <h2 className="text-2xl font-bold mb-4 text-center">Управление новостью (Админ)</h2>
       <div className="space-y-4">
         <button
-          onClick={showModal}
-          className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full"
+            onClick={showModal}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full"
         >
           Обновить новость
         </button>
 
         {/* Модальное окно с формой */}
         <Modal
-          title={<span className="text-white">Обновить новость</span>}
-          open={isModalVisible}
-          onCancel={handleCancel}
-          footer={null}
-          className="custom-modal"
+            title={<span className="text-white">Обновить новость</span>}
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={null}
+            className="custom-modal"
         >
           <Form
-            form={form}
-            onFinish={handleUpdateNews}
-            layout="vertical"
-            className="text-white"
+              form={form}
+              onFinish={handleUpdateNews}
+              layout="vertical"
+              className="text-white"
           >
             <Form.Item
-              name="title"
-              label={
-                <span className="text-gray-300">
+                name="title"
+                label={
+                  <span className="text-gray-300">
                   Заголовок{' '}
-                  <Tooltip title="Введите новый заголовок новости (оставьте пустым, чтобы не изменять)">
-                    <InfoCircleOutlined className="text-gray-500" />
+                    <Tooltip title="Введите новый заголовок новости (оставьте пустым, чтобы не изменять)">
+                    <InfoCircleOutlined className="text-gray-500"/>
                   </Tooltip>
                 </span>
-              }
+                }
             >
               <Input
-                className="custom-input"
-                placeholder="Новый заголовок (необязательно)"
+                  className="custom-input"
+                  placeholder="Новый заголовок (необязательно)"
               />
             </Form.Item>
             <Form.Item
-              name="content"
-              label={
-                <span className="text-gray-300">
+                name="content"
+                label={
+                  <span className="text-gray-300">
                   Содержание{' '}
-                  <Tooltip title="Введите новое содержание новости (оставьте пустым, чтобы не изменять)">
-                    <InfoCircleOutlined className="text-gray-500" />
+                    <Tooltip title="Введите новое содержание новости (оставьте пустым, чтобы не изменять)">
+                    <InfoCircleOutlined className="text-gray-500"/>
                   </Tooltip>
                 </span>
-              }
+                }
             >
               <Input.TextArea
-                rows={4}
-                className="custom-textarea"
-                placeholder="Новое содержание (необязательно)"
+                  rows={4}
+                  className="custom-textarea"
+                  placeholder="Новое содержание (необязательно)"
               />
             </Form.Item>
             <Form.Item
-              name="author"
-              label={
-                <span className="text-gray-300">
+                name="author"
+                label={
+                  <span className="text-gray-300">
                   Автор{' '}
-                  <Tooltip title="Введите нового автора новости (оставьте пустым, чтобы не изменять)">
-                    <InfoCircleOutlined className="text-gray-500" />
+                    <Tooltip title="Введите нового автора новости (оставьте пустым, чтобы не изменять)">
+                    <InfoCircleOutlined className="text-gray-500"/>
                   </Tooltip>
                 </span>
-              }
+                }
             >
               <Input
-                className="custom-input"
-                placeholder="Новый автор (необязательно)"
+                  className="custom-input"
+                  placeholder="Новый автор (необязательно)"
               />
             </Form.Item>
             <Form.Item>
@@ -144,11 +153,29 @@ function AdminNewsPanel({ newsId, setNews }) {
         </Modal>
 
         <button
-          onClick={handleDeleteNews}
-          className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full"
+            onClick={showDeleteNewsModal}
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full"
         >
           Удалить новость
         </button>
+
+        <Modal
+            title={<span className="text-white">Удалить новость</span>}
+            open={isDeleteNewsModalVisible}
+            onCancel={handleDeleteNewsCancel}
+            footer={null}
+            className="custom-modal"
+        >
+          <p className="text-white">Вы уверены, что хотите удалить эту новость?</p>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button onClick={handleDeleteNewsCancel} className="text-white border-gray-500">
+              Отмена
+            </Button>
+            <Button onClick={handleDeleteNews} className="bg-red-600 hover:bg-red-700 text-white">
+              Удалить
+            </Button>
+          </div>
+        </Modal>
       </div>
     </div>
   );

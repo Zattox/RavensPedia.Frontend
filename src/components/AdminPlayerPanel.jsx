@@ -8,6 +8,7 @@ import api from '@/api';
 function AdminPlayerPanel({ player_nickname }) {
   const navigate = useNavigate();
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [isDeletePlayerModalVisible, setIsDeletePlayerModalVisible] = useState(false);
   const [updateForm] = Form.useForm();
 
   // Update Player Modal
@@ -44,17 +45,25 @@ function AdminPlayerPanel({ player_nickname }) {
   };
 
   // Delete Player
+  const showDeletePlayerModal = () => {
+    setIsDeletePlayerModalVisible(true);
+  };
+
   const handleDeletePlayer = async () => {
-    if (window.confirm(`Вы уверены, что хотите удалить игрока ${player_nickname}?`)) {
-      try {
-        await api.delete(`/players/${player_nickname}/`);
-        alert('Игрок успешно удален!');
-        navigate('/');
-      } catch (error) {
-        console.error('Ошибка при удалении игрока:', error);
-        alert('Не удалось удалить игрока.');
-      }
+    try {
+      await api.delete(`/players/${player_nickname}/`);
+      alert('Игрок успешно удален!');
+      setIsDeletePlayerModalVisible(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Ошибка при удалении игрока:', error);
+      alert('Не удалось удалить игрока.');
+      setIsDeletePlayerModalVisible(false);
     }
+  };
+
+  const handleDeletePlayerCancel = () => {
+    setIsDeletePlayerModalVisible(false);
   };
 
   return (
@@ -64,87 +73,87 @@ function AdminPlayerPanel({ player_nickname }) {
         <div>
           <h3 className="text-lg font-semibold mb-2">Действия с игроком</h3>
           <button
-            onClick={showUpdateModal}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+              onClick={showUpdateModal}
+              className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Обновить информацию
           </button>
 
           <Modal
-            title={<span className="text-white">Обновить информацию об игроке</span>}
-            open={isUpdateModalVisible}
-            onCancel={handleUpdateCancel}
-            footer={null}
-            className="custom-modal"
+              title={<span className="text-white">Обновить информацию об игроке</span>}
+              open={isUpdateModalVisible}
+              onCancel={handleUpdateCancel}
+              footer={null}
+              className="custom-modal"
           >
             <Form
-              form={updateForm}
-              onFinish={handleUpdatePlayer}
-              layout="vertical"
-              className="text-white"
+                form={updateForm}
+                onFinish={handleUpdatePlayer}
+                layout="vertical"
+                className="text-white"
             >
               <Form.Item
-                name="steam_id"
-                label={
-                  <span className="text-gray-300">
+                  name="steam_id"
+                  label={
+                    <span className="text-gray-300">
                     Steam ID{' '}
-                    <Tooltip title="Введите новый Steam ID (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите новый Steam ID (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
                 <Input
-                  className="custom-input"
-                  placeholder="Новый Steam ID (необязательно)"
+                    className="custom-input"
+                    placeholder="Новый Steam ID (необязательно)"
                 />
               </Form.Item>
               <Form.Item
-                name="nickname"
-                label={
-                  <span className="text-gray-300">
+                  name="nickname"
+                  label={
+                    <span className="text-gray-300">
                     Никнейм{' '}
-                    <Tooltip title="Введите новый никнейм (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите новый никнейм (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
                 <Input
-                  className="custom-input"
-                  placeholder="Новый никнейм (необязательно)"
+                    className="custom-input"
+                    placeholder="Новый никнейм (необязательно)"
                 />
               </Form.Item>
               <Form.Item
-                name="name"
-                label={
-                  <span className="text-gray-300">
+                  name="name"
+                  label={
+                    <span className="text-gray-300">
                     Имя{' '}
-                    <Tooltip title="Введите новое имя (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите новое имя (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
                 <Input
-                  className="custom-input"
-                  placeholder="Новое имя (необязательно)"
+                    className="custom-input"
+                    placeholder="Новое имя (необязательно)"
                 />
               </Form.Item>
               <Form.Item
-                name="surname"
-                label={
-                  <span className="text-gray-300">
+                  name="surname"
+                  label={
+                    <span className="text-gray-300">
                     Фамилия{' '}
-                    <Tooltip title="Введите новую фамилию (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите новую фамилию (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
                 <Input
-                  className="custom-input"
-                  placeholder="Новая фамилия (необязательно)"
+                    className="custom-input"
+                    placeholder="Новая фамилия (необязательно)"
                 />
               </Form.Item>
               <Form.Item>
@@ -161,11 +170,29 @@ function AdminPlayerPanel({ player_nickname }) {
           </Modal>
 
           <button
-            onClick={handleDeletePlayer}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+              onClick={showDeletePlayerModal}
+              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить игрока
           </button>
+
+          <Modal
+              title={<span className="text-white">Удалить игрока</span>}
+              open={isDeletePlayerModalVisible}
+              onCancel={handleDeletePlayerCancel}
+              footer={null}
+              className="custom-modal"
+          >
+            <p className="text-white">Вы уверены, что хотите удалить игрока {player_nickname}?</p>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button onClick={handleDeletePlayerCancel} className="text-white border-gray-500">
+                Отмена
+              </Button>
+              <Button onClick={handleDeletePlayer} className="bg-red-600 hover:bg-red-700 text-white">
+                Удалить
+              </Button>
+            </div>
+          </Modal>
         </div>
       </div>
     </div>

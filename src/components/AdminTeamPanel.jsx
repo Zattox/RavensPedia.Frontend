@@ -10,6 +10,7 @@ function AdminTeamPanel({ team_name, setTeam }) {
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isAddPlayerModalVisible, setIsAddPlayerModalVisible] = useState(false);
   const [isDeletePlayerModalVisible, setIsDeletePlayerModalVisible] = useState(false);
+  const [isDeleteTeamConfirmModalVisible, setIsDeleteTeamConfirmModalVisible] = useState(false);
   const [updateForm] = Form.useForm();
   const [addPlayerForm] = Form.useForm();
   const [deletePlayerForm] = Form.useForm();
@@ -94,17 +95,25 @@ function AdminTeamPanel({ team_name, setTeam }) {
   };
 
   // Удалить команду
+  const showDeleteTeamConfirmModal = () => {
+    setIsDeleteTeamConfirmModalVisible(true);
+  };
+
   const handleDeleteTeam = async () => {
-    if (window.confirm('Вы уверены, что хотите удалить эту команду?')) {
-      try {
-        await api.delete(`/teams/${team_name}/`);
-        alert('Команда успешно удалена!');
-        navigate('/');
-      } catch (error) {
-        console.error('Ошибка при удалении команды:', error);
-        alert('Не удалось удалить команду.');
-      }
+    try {
+      await api.delete(`/teams/${team_name}/`);
+      alert('Команда успешно удалена!');
+      setIsDeleteTeamConfirmModalVisible(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Ошибка при удалении команды:', error);
+      alert('Не удалось удалить команду.');
+      setIsDeleteTeamConfirmModalVisible(false);
     }
+  };
+
+  const handleDeleteTeamCancel = () => {
+    setIsDeleteTeamConfirmModalVisible(false);
   };
 
   return (
@@ -115,56 +124,56 @@ function AdminTeamPanel({ team_name, setTeam }) {
         <div>
           <h3 className="text-lg font-semibold mb-2">Действия с командой</h3>
           <button
-            onClick={showUpdateModal}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+              onClick={showUpdateModal}
+              className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Обновить информацию
           </button>
 
           <Modal
-            title={<span className="text-white">Обновить информацию о команде</span>}
-            open={isUpdateModalVisible}
-            onCancel={handleUpdateCancel}
-            footer={null}
-            className="custom-modal"
+              title={<span className="text-white">Обновить информацию о команде</span>}
+              open={isUpdateModalVisible}
+              onCancel={handleUpdateCancel}
+              footer={null}
+              className="custom-modal"
           >
             <Form
-              form={updateForm}
-              onFinish={handleUpdateTeam}
-              layout="vertical"
-              className="text-white"
+                form={updateForm}
+                onFinish={handleUpdateTeam}
+                layout="vertical"
+                className="text-white"
             >
               <Form.Item
-                name="name"
-                label={
-                  <span className="text-gray-300">
+                  name="name"
+                  label={
+                    <span className="text-gray-300">
                     Название команды{' '}
-                    <Tooltip title="Введите новое название команды (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите новое название команды (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
                 <Input
-                  className="custom-input"
-                  placeholder="Новое название (необязательно)"
+                    className="custom-input"
+                    placeholder="Новое название (необязательно)"
                 />
               </Form.Item>
               <Form.Item
-                name="description"
-                label={
-                  <span className="text-gray-300">
+                  name="description"
+                  label={
+                    <span className="text-gray-300">
                     Описание{' '}
-                    <Tooltip title="Введите новое описание команды (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <Tooltip title="Введите новое описание команды (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500"/>
                     </Tooltip>
                   </span>
-                }
+                  }
               >
                 <Input.TextArea
-                  rows={4}
-                  className="custom-textarea"
-                  placeholder="Новое описание (необязательно)"
+                    rows={4}
+                    className="custom-textarea"
+                    placeholder="Новое описание (необязательно)"
                 />
               </Form.Item>
               <Form.Item>
@@ -181,35 +190,53 @@ function AdminTeamPanel({ team_name, setTeam }) {
           </Modal>
 
           <button
-            onClick={handleDeleteTeam}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+              onClick={showDeleteTeamConfirmModal}
+              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить команду
           </button>
+
+          <Modal
+              title={<span className="text-white">Удалить команду</span>}
+              open={isDeleteTeamConfirmModalVisible}
+              onCancel={handleDeleteTeamCancel}
+              footer={null}
+              className="custom-modal"
+          >
+            <p className="text-white">Вы уверены, что хотите удалить команду {team_name}?</p>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button onClick={handleDeleteTeamCancel} className="text-white border-gray-500">
+                Отмена
+              </Button>
+              <Button onClick={handleDeleteTeam} className="bg-red-600 hover:bg-red-700 text-white">
+                Удалить
+              </Button>
+            </div>
+          </Modal>
         </div>
 
         {/* Team Players Manager */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Управление игроками</h3>
           <button
-            onClick={showAddPlayerModal}
-            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+              onClick={showAddPlayerModal}
+              className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Добавить игрока
           </button>
 
           <Modal
-            title={<span className="text-white">Добавить игрока</span>}
-            open={isAddPlayerModalVisible}
-            onCancel={handleAddPlayerCancel}
-            footer={null}
-            className="custom-modal"
+              title={<span className="text-white">Добавить игрока</span>}
+              open={isAddPlayerModalVisible}
+              onCancel={handleAddPlayerCancel}
+              footer={null}
+              className="custom-modal"
           >
             <Form
-              form={addPlayerForm}
-              onFinish={handleAddPlayer}
-              layout="vertical"
-              className="text-white"
+                form={addPlayerForm}
+                onFinish={handleAddPlayer}
+                layout="vertical"
+                className="text-white"
             >
               <Form.Item
                 name="player_nickname"

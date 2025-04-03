@@ -16,6 +16,8 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const [isAddPickBanModalVisible, setIsAddPickBanModalVisible] = useState(false);
   const [isAddMapResultModalVisible, setIsAddMapResultModalVisible] = useState(false);
   const [isAddStatsManualModalVisible, setIsAddStatsManualModalVisible] = useState(false);
+  const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] = useState(false);
+  const [isDeleteMatchModalVisible, setIsDeleteMatchModalVisible] = useState(false);
   const [updateForm] = Form.useForm();
   const [addTeamForm] = Form.useForm();
   const [deleteTeamForm] = Form.useForm();
@@ -23,7 +25,6 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const [addPickBanForm] = Form.useForm();
   const [addMapResultForm] = Form.useForm();
   const [addStatsManualForm] = Form.useForm();
-  const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] = useState(false);
   const [updateStatusForm] = Form.useForm();
 
   // Обновить матч
@@ -284,17 +285,25 @@ function AdminMatchPanel({ match_id, setMatch }) {
   };
 
   // Удалить матч
+  const showDeleteMatchModal = () => {
+    setIsDeleteMatchModalVisible(true);
+  };
+
   const handleDeleteMatch = async () => {
-    if (window.confirm('Вы уверены, что хотите удалить этот матч?')) {
-      try {
-        await api.delete(`/matches/${match_id}/`);
-        alert('Матч успешно удален');
-        navigate('/matches');
-      } catch (error) {
-        console.error('Ошибка при удалении матча:', error.response?.data || error);
-        alert('Не удалось удалить матч');
-      }
+    try {
+      await api.delete(`/matches/${match_id}/`);
+      alert('Матч успешно удален');
+      setIsDeleteMatchModalVisible(false);
+      navigate('/matches');
+    } catch (error) {
+      console.error('Ошибка при удалении матча:', error.response?.data || error);
+      alert('Не удалось удалить матч');
+      setIsDeleteMatchModalVisible(false);
     }
+  };
+
+  const handleDeleteMatchCancel = () => {
+    setIsDeleteMatchModalVisible(false);
   };
 
   // Обновить статус матча
@@ -476,11 +485,29 @@ function AdminMatchPanel({ match_id, setMatch }) {
           </Modal>
 
           <button
-              onClick={handleDeleteMatch}
+              onClick={showDeleteMatchModal}
               className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить матч
           </button>
+
+          <Modal
+              title={<span className="text-white">Удалить матч</span>}
+              open={isDeleteMatchModalVisible}
+              onCancel={handleDeleteMatchCancel}
+              footer={null}
+              className="custom-modal"
+          >
+            <p className="text-white">Вы уверены, что хотите удалить этот матч?</p>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button onClick={handleDeleteMatchCancel} className="text-white border-gray-500">
+                Отмена
+              </Button>
+              <Button onClick={handleDeleteMatch} className="bg-red-600 hover:bg-red-700 text-white">
+                Удалить
+              </Button>
+            </div>
+          </Modal>
         </div>
 
         {/* Matches Manager */}
