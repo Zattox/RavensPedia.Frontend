@@ -40,7 +40,8 @@ function AdminPlayerPanel({ player_nickname, refreshPlayer }) { // Добавл�
         updateForm.resetFields();
       } catch (error) {
         console.error('Ошибка при обновлении игрока:', error);
-        showNotification('error', 'Ошибка!', 'Не удалось обновить информацию об игроке.');
+        const errorDetail = error.response?.data?.detail || 'Не удалось обновить информацию об игроке';
+        showNotification('error', 'Ошибка!', errorDetail);
       }
     } else {
       showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
@@ -64,7 +65,8 @@ function AdminPlayerPanel({ player_nickname, refreshPlayer }) { // Добавл�
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении игрока:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить игрока.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить игрока';
+      showNotification('error', 'Ошибка!', errorDetail);
       setIsDeletePlayerModalVisible(false);
     }
   };

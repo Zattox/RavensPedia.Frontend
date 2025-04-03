@@ -56,7 +56,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
         updateForm.resetFields();
       } catch (error) {
         console.error('Ошибка при обновлении турнира:', error);
-        showNotification('error', 'Ошибка!', 'Не удалось обновить турнир.');
+        const errorDetail = error.response?.data?.detail || 'Не удалось обновить турнир';
+        showNotification('error', 'Ошибка!', errorDetail);
       }
     } else {
       showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
@@ -85,7 +86,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
       updateStatusForm.resetFields();
     } catch (error) {
       console.error('Ошибка при обновлении статуса турнира:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', `Не удалось обновить статус турнира: ${error.response?.data?.detail || error.message}`);
+      const errorDetail = error.response?.data?.detail || 'Не удалось обновить статус турнира';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -109,7 +111,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении турнира:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить турнир.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить турнир';
+      showNotification('error', 'Ошибка!', errorDetail);
       setIsDeleteTournamentModalVisible(false);
     }
   };
@@ -132,7 +135,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
       addTeamForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении команды:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить команду в турнир.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось добавить команду в турнир';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -155,7 +159,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
       deleteTeamForm.resetFields();
     } catch (error) {
       console.error('Ошибка при удалении команды:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить команду из турнира.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить команду из турнира';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -181,7 +186,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
       addResultForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении результата:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить результат.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось добавить результат';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -203,7 +209,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
       setIsDeleteResultModalVisible(false);
     } catch (error) {
       console.error('Ошибка при удалении результата:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить результат.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить результат';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -227,7 +234,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
       assignTeamToResultForm.resetFields();
     } catch (error) {
       console.error('Ошибка при привязке команды к результату:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось привязать команду к результату.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось привязать команду к результату';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -252,7 +260,8 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
       removeTeamFromResultForm.resetFields();
     } catch (error) {
       console.error('Ошибка при отвязке команды от результата:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось отвязать команду от результата.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось отвязать команду от результата';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 

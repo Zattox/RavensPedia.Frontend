@@ -59,7 +59,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
           updateForm.resetFields();
         } catch (error) {
           console.error('Ошибка при обновлении матча:', error.response?.data || error);
-          showNotification('error', 'Ошибка!', 'Не удалось обновить матч.');
+          const errorDetail = error.response?.data?.detail || 'Не удалось обновить матч';
+          showNotification('error', 'Ошибка!', errorDetail);
         }
       } else {
         showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
@@ -87,7 +88,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       addTeamForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении команды:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить команду.'); // Заменяем alert
+      const errorDetail = error.response?.data?.detail || 'Не удалось добавить команду';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -112,7 +114,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       deleteTeamForm.resetFields();
     } catch (error) {
       console.error('Ошибка при удалении команды:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить команду.'); // Заменяем alert
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить команду';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -139,7 +142,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       addFaceitStatsForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении статистики Faceit:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить статистику Faceit.'); // Заменяем alert
+      const errorDetail = error.response?.data?.detail || 'Не удалось добавить статистику Faceit';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -168,7 +172,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       addPickBanForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении Pick/Ban:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить Pick/Ban.'); // Заменяем alert
+      const errorDetail = error.response?.data?.detail || 'Не удалось добавить Pick/Ban';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -187,7 +192,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       refreshMatch();
     } catch (error) {
       console.error('Ошибка при удалении Pick/Ban:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить Pick/Ban.'); // Заменяем alert
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить Pick/Ban';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -219,7 +225,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       addMapResultForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении результата карты:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить результат карты');
+      const errorDetail = error.response?.data?.detail || 'Не удалось добавить результат карты';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -238,7 +245,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       refreshMatch();
     } catch (error) {
       console.error('Ошибка при удалении результата карты:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить результат карты');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить результат карты';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -268,7 +276,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       addStatsManualForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении статистики вручную:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить статистику вручную');
+      const errorDetail = error.response?.data?.detail || 'Не удалось добавить статистику вручную';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -287,7 +296,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       refreshMatch();
     } catch (error) {
       console.error('Ошибка при удалении последней статистики:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить последнюю статистику');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить последнюю статистику';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -301,7 +311,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       refreshMatch();
     } catch (error) {
       console.error('Ошибка при удалении статистики матча:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить статистику матча');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить статистику матча';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -318,7 +329,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       navigate('/matches');
     } catch (error) {
       console.error('Ошибка при удалении матча:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить матч');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить матч';
+      showNotification('error', 'Ошибка!', errorDetail);
       setIsDeleteMatchModalVisible(false);
     }
   };
@@ -347,7 +359,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch }) {
       updateStatusForm.resetFields();
     } catch (error) {
       console.error('Ошибка при обновлении статуса матча:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', `Не удалось обновить статус матча: ${error.response?.data?.detail || error.message}`);
+      const errorDetail = error.response?.data?.detail || 'Не удалось обновить статус матча';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 

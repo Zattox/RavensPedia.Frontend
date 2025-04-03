@@ -43,7 +43,8 @@ function AdminTeamPanel({ team_name, refreshTeam }) { // Заменяем setTea
         updateForm.resetFields();
       } catch (error) {
         console.error('Ошибка при обновлении команды:', error);
-        showNotification('error', 'Ошибка!', 'Не удалось обновить информацию о команде.');
+        const errorDetail = error.response?.data?.detail || 'Не удалось обновить информацию о команде';
+        showNotification('error', 'Ошибка!', errorDetail);
       }
     } else {
       showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
@@ -69,7 +70,8 @@ function AdminTeamPanel({ team_name, refreshTeam }) { // Заменяем setTea
       addPlayerForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении игрока:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить игрока.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось добавить игрока';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -92,7 +94,8 @@ function AdminTeamPanel({ team_name, refreshTeam }) { // Заменяем setTea
       deletePlayerForm.resetFields();
     } catch (error) {
       console.error('Ошибка при удалении игрока:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить игрока.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить игрока';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -114,7 +117,8 @@ function AdminTeamPanel({ team_name, refreshTeam }) { // Заменяем setTea
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении команды:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить команду.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить команду';
+      showNotification('error', 'Ошибка!', errorDetail);
       setIsDeleteTeamConfirmModalVisible(false);
     }
   };

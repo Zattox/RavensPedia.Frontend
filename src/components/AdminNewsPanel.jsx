@@ -41,7 +41,8 @@ function AdminNewsPanel({ newsId, setNews, refreshNews }) {
         form.resetFields();
       } catch (error) {
         console.error('Ошибка при обновлении новости:', error);
-        showNotification('error', 'Ошибка!', 'Не удалось обновить новость.'); // Заменяем alert
+        const errorDetail = error.response?.data?.detail || 'Не удалось обновить новость';
+        showNotification('error', 'Ошибка!', errorDetail);
       }
     } else {
       showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
@@ -63,7 +64,8 @@ function AdminNewsPanel({ newsId, setNews, refreshNews }) {
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении новости:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить новость.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось удалить новость';
+      showNotification('error', 'Ошибка!', errorDetail);
       setIsDeleteNewsModalVisible(false);
     }
   };

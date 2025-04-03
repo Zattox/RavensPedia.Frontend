@@ -132,10 +132,6 @@ function TournamentPage() {
               {tournament.prize || 'Не указан'}
             </p>
             <p>
-              <span className="font-semibold">Максимальное количество команд:</span>{' '}
-              {tournament.max_count_of_teams}
-            </p>
-            <p>
               <span className="font-semibold">Дата начала:</span>{' '}
               {formatDate(tournament.start_date)}
             </p>

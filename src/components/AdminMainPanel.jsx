@@ -54,7 +54,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       setIsNewsModalVisible(false);
     } catch (error) {
       console.error('Ошибка при создании новости:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось создать новость.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось создать новость';
+      showNotification('error', 'Ошибка!', errorDetail);
     } finally {
       setLoadingNews(false);
     }
@@ -77,7 +78,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       matchForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании матча:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось создать матч.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось создать матч';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -96,7 +98,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       playerForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании игрока:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось создать игрока.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось создать игрока';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -114,7 +117,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       teamForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании команды:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось создать команду.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось создать команду';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -135,7 +139,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       tournamentForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании турнира:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось создать турнир');
+      const errorDetail = error.response?.data?.detail || 'Не удалось создать турнир';
+      showNotification('error', 'Ошибка!', errorDetail);
     }
   };
 
@@ -147,7 +152,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       showNotification('success', 'Успех!', 'Faceit ELO игроков обновлено.');
     } catch (error) {
       console.error('Ошибка при обновлении Faceit ELO игроков:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось обновить Faceit ELO игроков.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось обновить Faceit ELO игроков';
+      showNotification('error', 'Ошибка!', errorDetail);
     } finally {
       setLoadingPlayersElo(false);
     }
@@ -161,7 +167,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       showNotification('success', 'Успех!', 'Среднее Faceit ELO команд обновлено.');
     } catch (error) {
       console.error('Ошибка при обновлении Faceit ELO команд:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Среднее Faceit ELO команд не удалось обновить.');
+      const errorDetail = error.response?.data?.detail || 'Среднее Faceit ELO команд не удалось обновить';
+      showNotification('error', 'Ошибка!', errorDetail);
     } finally {
       setLoadingTeamsElo(false);
     }
@@ -175,7 +182,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       showNotification('success', 'Успех!', 'Статусы всех матчей обновлены.');
     } catch (error) {
       console.error('Ошибка при обновлении статусов матчей:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось обновить статусы матчей.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось обновить статусы матчей';
+      showNotification('error', 'Ошибка!', errorDetail);
     } finally {
       setLoadingMatchesStatuses(false);
     }
@@ -189,7 +197,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
       showNotification('success', 'Успех!', 'Статусы всех турниров обновлены.');
     } catch (error) {
       console.error('Ошибка при обновлении статусов турниров:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', 'Не удалось обновить статусы турниров.');
+      const errorDetail = error.response?.data?.detail || 'Не удалось обновить статусы турниров';
+      showNotification('error', 'Ошибка!', errorDetail);
     } finally {
       setLoadingTournamentsStatuses(false);
     }
@@ -269,10 +278,10 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
             <Form.Item name="tournament" label={<span className="text-gray-300">Турнир</span>} rules={[{ required: true }]}>
               <Input className="custom-input" placeholder="Например, ESL Pro League" />
             </Form.Item>
-            <Form.Item name="date" label={<span className="text-gray-300">Дата (ISO)</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="2025-03-31T16:04:39.534Z" />
+            <Form.Item name="date" label={<span className="text-gray-300">Дата</span>} rules={[{ required: true }]}>
+              <Input className="custom-input" placeholder="2025-03-31T16:00:00" />
             </Form.Item>
-            <Form.Item name="description" label={<span className="text-gray-300">Описание</span>} rules={[{ required: true }]}>
+            <Form.Item name="description" label={<span className="text-gray-300">Описание (необязательно)</span>}>
               <Input.TextArea rows={4} className="custom-textarea" placeholder="Например, Финал турнира..." />
             </Form.Item>
             <Form.Item>
@@ -392,11 +401,11 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
             <Form.Item name="description" label={<span className="text-gray-300">Описание (необязательно)</span>}>
               <Input.TextArea rows={4} className="custom-textarea" placeholder="Например, Международный турнир..." />
             </Form.Item>
-            <Form.Item name="start_date" label={<span className="text-gray-300">Дата начала (ISO)</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="2025-04-02T20:22:25.321Z" />
+            <Form.Item name="start_date" label={<span className="text-gray-300">Дата начала</span>} rules={[{ required: true }]}>
+              <Input className="custom-input" placeholder="2025-04-02T20:20:00" />
             </Form.Item>
-            <Form.Item name="end_date" label={<span className="text-gray-300">Дата окончания (ISO)</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="2025-04-02T20:22:25.321Z" />
+            <Form.Item name="end_date" label={<span className="text-gray-300">Дата окончания</span>} rules={[{ required: true }]}>
+              <Input className="custom-input" placeholder="2025-04-03T20:20:00" />
             </Form.Item>
             <Form.Item>
               <div className="flex justify-end gap-2">
