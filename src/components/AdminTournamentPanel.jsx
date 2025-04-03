@@ -7,24 +7,24 @@ import api from '@/api';
 
 const { Option } = Select;
 
-function AdminTournamentPanel({ tournamentName }) {
+function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Добавляем refreshTournament
   const navigate = useNavigate();
   const notificationApi = useContext(NotificationContext);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isAddTeamModalVisible, setIsAddTeamModalVisible] = useState(false);
   const [isDeleteTeamModalVisible, setIsDeleteTeamModalVisible] = useState(false);
   const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] = useState(false);
-  const [isAddResultModalVisible, setIsAddResultModalVisible] = useState(false); // Новое состояние для добавления результата
-  const [isDeleteResultModalVisible, setIsDeleteResultModalVisible] = useState(false); // Новое состояние для удаления результата
-  const [isAssignTeamToResultModalVisible, setIsAssignTeamToResultModalVisible] = useState(false); // Новое состояние для привязки команды
-  const [isRemoveTeamFromResultModalVisible, setIsRemoveTeamFromResultModalVisible] = useState(false); // Новое состояние для отвязки команды
+  const [isAddResultModalVisible, setIsAddResultModalVisible] = useState(false);
+  const [isDeleteResultModalVisible, setIsDeleteResultModalVisible] = useState(false);
+  const [isAssignTeamToResultModalVisible, setIsAssignTeamToResultModalVisible] = useState(false);
+  const [isRemoveTeamFromResultModalVisible, setIsRemoveTeamFromResultModalVisible] = useState(false);
   const [updateForm] = Form.useForm();
   const [addTeamForm] = Form.useForm();
   const [deleteTeamForm] = Form.useForm();
   const [updateStatusForm] = Form.useForm();
-  const [addResultForm] = Form.useForm(); // Новая форма для добавления результата
-  const [assignTeamToResultForm] = Form.useForm(); // Новая форма для привязки команды
-  const [removeTeamFromResultForm] = Form.useForm(); // Новая форма для отвязки команды
+  const [addResultForm] = Form.useForm();
+  const [assignTeamToResultForm] = Form.useForm();
+  const [removeTeamFromResultForm] = Form.useForm();
 
   const showNotification = (type, message, description) => {
     notificationApi[type]({
@@ -50,16 +50,16 @@ function AdminTournamentPanel({ tournamentName }) {
     if (Object.keys(updatedTournament).length > 0) {
       try {
         await api.patch(`/tournaments/${tournamentName}/`, updatedTournament);
-        showNotification('success', 'Успех!', 'Турнир успешно обновлен!'); // Заменяем alert
+        showNotification('success', 'Успех!', 'Турнир успешно обновлен!');
+        await refreshTournament(); // Перезапрашиваем данные
         setIsUpdateModalVisible(false);
         updateForm.resetFields();
-        window.location.reload();
       } catch (error) {
         console.error('Ошибка при обновлении турнира:', error);
-        showNotification('error', 'Ошибка!', 'Не удалось обновить турнир.'); // Заменяем alert
+        showNotification('error', 'Ошибка!', 'Не удалось обновить турнир.');
       }
     } else {
-      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
     }
   };
 
@@ -79,13 +79,13 @@ function AdminTournamentPanel({ tournamentName }) {
       await api.patch(`/schedules/tournaments/${values.tournament_name}/update_status/`, null, {
         params: { new_status: values.new_status },
       });
-      showNotification('success', 'Успех!', 'Статус турнира успешно обновлен!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Статус турнира успешно обновлен!');
+      await refreshTournament(); // Перезапрашиваем данные
       setIsUpdateStatusModalVisible(false);
       updateStatusForm.resetFields();
-      window.location.reload();
     } catch (error) {
       console.error('Ошибка при обновлении статуса турнира:', error.response?.data || error);
-      showNotification('error', 'Ошибка!', `Не удалось обновить статус турнира: ${error.response?.data?.detail || error.message}`); // Заменяем alert
+      showNotification('error', 'Ошибка!', `Не удалось обновить статус турнира: ${error.response?.data?.detail || error.message}`);
     }
   };
 
@@ -104,12 +104,12 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleDeleteTournament = async () => {
     try {
       await api.delete(`/tournaments/${tournamentName}/`);
-      showNotification('success', 'Успех!', 'Турнир успешно удален!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Турнир успешно удален!');
       setIsDeleteTournamentModalVisible(false);
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении турнира:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить турнир.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Не удалось удалить турнир.');
       setIsDeleteTournamentModalVisible(false);
     }
   };
@@ -126,13 +126,13 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleAddTeam = async (values) => {
     try {
       await api.patch(`/tournaments/${tournamentName}/add_team/${values.team_name}/`);
-      showNotification('success', 'Успех!', 'Команда успешно добавлена в турнир!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Команда успешно добавлена в турнир!');
+      await refreshTournament(); // Перезапрашиваем данные
       setIsAddTeamModalVisible(false);
       addTeamForm.resetFields();
-      window.location.reload();
     } catch (error) {
       console.error('Ошибка при добавлении команды:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить команду в турнир.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Не удалось добавить команду в турнир.');
     }
   };
 
@@ -149,13 +149,13 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleDeleteTeam = async (values) => {
     try {
       await api.delete(`/tournaments/${tournamentName}/delete_team/${values.team_name}/`);
-      showNotification('success', 'Успех!', 'Команда успешно удалена из турнира!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Команда успешно удалена из турнира!');
+      await refreshTournament(); // Перезапрашиваем данные
       setIsDeleteTeamModalVisible(false);
       deleteTeamForm.resetFields();
-      window.location.reload();
     } catch (error) {
       console.error('Ошибка при удалении команды:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить команду из турнира.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Не удалось удалить команду из турнира.');
     }
   };
 
@@ -175,13 +175,13 @@ function AdminTournamentPanel({ tournamentName }) {
         place: values.place,
         prize: values.prize,
       });
-      showNotification('success', 'Успех!', 'Результат успешно добавлен!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Результат успешно добавлен!');
+      await refreshTournament(); // Перезапрашиваем данные
       setIsAddResultModalVisible(false);
       addResultForm.resetFields();
-      window.location.reload();
     } catch (error) {
       console.error('Ошибка при добавлении результата:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось добавить результат.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Не удалось добавить результат.');
     }
   };
 
@@ -198,12 +198,12 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleDeleteResult = async () => {
     try {
       await api.delete(`/tournaments/${tournamentName}/delete_last_result/`);
-      showNotification('success', 'Успех!', 'Последний результат успешно удален!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Последний результат успешно удален!');
+      await refreshTournament(); // Перезапрашиваем данные
       setIsDeleteResultModalVisible(false);
-      window.location.reload();
     } catch (error) {
       console.error('Ошибка при удалении результата:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось удалить результат.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Не удалось удалить результат.');
     }
   };
 
@@ -221,13 +221,13 @@ function AdminTournamentPanel({ tournamentName }) {
       await api.patch(`/tournaments/${tournamentName}/assign_team_to_result/`, null, {
         params: { place: values.place, team_name: values.team_name },
       });
-      showNotification('success', 'Успех!', 'Команда успешно привязана к результату!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Команда успешно привязана к результату!');
+      await refreshTournament(); // Перезапрашиваем данные
       setIsAssignTeamToResultModalVisible(false);
       assignTeamToResultForm.resetFields();
-      window.location.reload();
     } catch (error) {
       console.error('Ошибка при привязке команды к результату:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось привязать команду к результату.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Не удалось привязать команду к результату.');
     }
   };
 
@@ -246,13 +246,13 @@ function AdminTournamentPanel({ tournamentName }) {
       await api.delete(`/tournaments/${tournamentName}/remove_team_from_result/`, {
         params: { place: values.place },
       });
-      showNotification('success', 'Успех!', 'Команда успешно отвязана от результата!'); // Заменяем alert
+      showNotification('success', 'Успех!', 'Команда успешно отвязана от результата!');
+      await refreshTournament(); // Перезапрашиваем данные
       setIsRemoveTeamFromResultModalVisible(false);
       removeTeamFromResultForm.resetFields();
-      window.location.reload();
     } catch (error) {
       console.error('Ошибка при отвязке команды от результата:', error);
-      showNotification('error', 'Ошибка!', 'Не удалось отвязать команду от результата.'); // Заменяем alert
+      showNotification('error', 'Ошибка!', 'Не удалось отвязать команду от результата.');
     }
   };
 
@@ -268,106 +268,106 @@ function AdminTournamentPanel({ tournamentName }) {
         <div>
           <h3 className="text-lg font-semibold mb-2">Действия с турниром</h3>
           <button
-              onClick={showUpdateModal}
-              className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showUpdateModal}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Обновить информацию
           </button>
 
           <Modal
-              title={<span className="text-white">Обновить информацию о турнире</span>}
-              open={isUpdateModalVisible}
-              onCancel={handleUpdateCancel}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Обновить информацию о турнире</span>}
+            open={isUpdateModalVisible}
+            onCancel={handleUpdateCancel}
+            footer={null}
+            className="custom-modal"
           >
             <Form
-                form={updateForm}
-                onFinish={handleUpdateTournament}
-                layout="vertical"
-                className="text-white"
+              form={updateForm}
+              onFinish={handleUpdateTournament}
+              layout="vertical"
+              className="text-white"
             >
               <Form.Item
-                  name="name"
-                  label={
-                    <span className="text-gray-300">
+                name="name"
+                label={
+                  <span className="text-gray-300">
                     Название{' '}
-                      <Tooltip title="Введите новое название турнира (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                    <Tooltip title="Введите новое название турнира (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
+                }
               >
                 <Input
-                    className="custom-input"
-                    placeholder="Новое название (необязательно)"
+                  className="custom-input"
+                  placeholder="Новое название (необязательно)"
                 />
               </Form.Item>
               <Form.Item
-                  name="description"
-                  label={
-                    <span className="text-gray-300">
+                name="description"
+                label={
+                  <span className="text-gray-300">
                     Описание{' '}
-                      <Tooltip title="Введите новое описание (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                    <Tooltip title="Введите новое описание (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
+                }
               >
                 <Input.TextArea
-                    rows={4}
-                    className="custom-textarea"
-                    placeholder="Новое описание (необязательно)"
+                  rows={4}
+                  className="custom-textarea"
+                  placeholder="Новое описание (необязательно)"
                 />
               </Form.Item>
               <Form.Item
-                  name="prize"
-                  label={
-                    <span className="text-gray-300">
+                name="prize"
+                label={
+                  <span className="text-gray-300">
                     Призовой фонд{' '}
-                      <Tooltip title="Введите новый призовой фонд (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                    <Tooltip title="Введите новый призовой фонд (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
+                }
               >
                 <Input
-                    className="custom-input"
-                    placeholder="Новый призовой фонд (необязательно)"
+                  className="custom-input"
+                  placeholder="Новый призовой фонд (необязательно)"
                 />
               </Form.Item>
               <Form.Item
-                  name="start_date"
-                  label={
-                    <span className="text-gray-300">
+                name="start_date"
+                label={
+                  <span className="text-gray-300">
                     Дата начала{' '}
-                      <Tooltip title="Введите новую дату начала (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                    <Tooltip title="Введите новую дату начала (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
+                }
               >
                 <Input
-                    type="date"
-                    className="custom-input"
-                    placeholder="Новая дата начала (необязательно)"
+                  type="date"
+                  className="custom-input"
+                  placeholder="Новая дата начала (необязательно)"
                 />
               </Form.Item>
               <Form.Item
-                  name="end_date"
-                  label={
-                    <span className="text-gray-300">
+                name="end_date"
+                label={
+                  <span className="text-gray-300">
                     Дата окончания{' '}
-                      <Tooltip title="Введите новую дату окончания (оставьте пустым, чтобы не изменять)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                    <Tooltip title="Введите новую дату окончания (оставьте пустым, чтобы не изменять)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
+                }
               >
                 <Input
-                    type="date"
-                    className="custom-input"
-                    placeholder="Новая дата окончания (необязательно)"
+                  type="date"
+                  className="custom-input"
+                  placeholder="Новая дата окончания (необязательно)"
                 />
               </Form.Item>
               <Form.Item>
@@ -384,50 +384,50 @@ function AdminTournamentPanel({ tournamentName }) {
           </Modal>
 
           <button
-              onClick={showUpdateStatusModal}
-              className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showUpdateStatusModal}
+            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Обновить статус турнира
           </button>
 
           <Modal
-              title={<span className="text-white">Обновить статус турнира</span>}
-              open={isUpdateStatusModalVisible}
-              onCancel={handleUpdateStatusCancel}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Обновить статус турнира</span>}
+            open={isUpdateStatusModalVisible}
+            onCancel={handleUpdateStatusCancel}
+            footer={null}
+            className="custom-modal"
           >
             <Form
-                form={updateStatusForm}
-                onFinish={handleUpdateStatus}
-                layout="vertical"
-                className="text-white"
+              form={updateStatusForm}
+              onFinish={handleUpdateStatus}
+              layout="vertical"
+              className="text-white"
             >
               <Form.Item
-                  name="tournament_name"
-                  label={
-                    <span className="text-gray-300">
+                name="tournament_name"
+                label={
+                  <span className="text-gray-300">
                     Название турнира{' '}
-                      <Tooltip title="Название турнира (нельзя изменить)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                    <Tooltip title="Название турнира (нельзя изменить)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите название турнира'}]}
+                }
+                rules={[{ required: true, message: 'Пожалуйста, укажите название турнира' }]}
               >
-                <Input className="custom-input" disabled/>
+                <Input className="custom-input" disabled />
               </Form.Item>
               <Form.Item
-                  name="new_status"
-                  label={
-                    <span className="text-gray-300">
+                name="new_status"
+                label={
+                  <span className="text-gray-300">
                     Новый статус{' '}
-                      <Tooltip title="Выберите новый статус турнира">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                    <Tooltip title="Выберите новый статус турнира">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, выберите новый статус'}]}
+                }
+                rules={[{ required: true, message: 'Пожалуйста, выберите новый статус' }]}
               >
                 <Select className="custom-select" placeholder="Выберите статус">
                   <Option value="SCHEDULED">SCHEDULED</Option>
@@ -449,18 +449,18 @@ function AdminTournamentPanel({ tournamentName }) {
           </Modal>
 
           <button
-              onClick={showDeleteTournamentModal}
-              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+            onClick={showDeleteTournamentModal}
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
             Удалить турнир
           </button>
 
           <Modal
-              title={<span className="text-white">Удалить турнир</span>}
-              open={isDeleteTournamentModalVisible}
-              onCancel={handleDeleteTournamentCancel}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Удалить турнир</span>}
+            open={isDeleteTournamentModalVisible}
+            onCancel={handleDeleteTournamentCancel}
+            footer={null}
+            className="custom-modal"
           >
             <p className="text-white">Вы уверены, что хотите удалить турнир {tournamentName}?</p>
             <div className="flex justify-end gap-2 mt-4">
@@ -477,27 +477,27 @@ function AdminTournamentPanel({ tournamentName }) {
         <div>
           <h3 className="text-lg font-semibold mb-2">Управление командами</h3>
           <button
-              onClick={showAddTeamModal}
-              className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showAddTeamModal}
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
             Добавить команду
           </button>
 
           <Modal
-              title={<span className="text-white">Добавить команду в турнир</span>}
-              open={isAddTeamModalVisible}
-              onCancel={handleAddTeamCancel}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Добавить команду в турнир</span>}
+            open={isAddTeamModalVisible}
+            onCancel={handleAddTeamCancel}
+            footer={null}
+            className="custom-modal"
           >
             <Form
-                form={addTeamForm}
-                onFinish={handleAddTeam}
-                layout="vertical"
-                className="text-white"
+              form={addTeamForm}
+              onFinish={handleAddTeam}
+              layout="vertical"
+              className="text-white"
             >
               <Form.Item
-                  name="team_name"
+                name="team_name"
                 label={
                   <span className="text-gray-300">
                     Название команды{' '}
@@ -577,7 +577,6 @@ function AdminTournamentPanel({ tournamentName }) {
           </Modal>
         </div>
 
-        {/* Новый раздел: Управление результатами */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Управление результатами</h3>
           <button

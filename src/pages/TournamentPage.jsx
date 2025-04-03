@@ -15,24 +15,25 @@ function TournamentPage() {
   const [matchesDetails, setMatchesDetails] = useState([]);
   const [currentTeamPage, setCurrentTeamPage] = useState(1);
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Добавляем триггер обновления
   const itemsPerPage = 5;
 
-  useEffect(() => {
-    const fetchTournament = async () => {
-      try {
-        const response = await api.get(`/tournaments/${tournament_id}/`);
-        setTournament(response.data);
-        setError(null);
-      } catch (err) {
-        console.error('Ошибка при загрузке турнира:', err);
-        setError('Не удалось загрузить данные турнира.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchTournament = async () => {
+    try {
+      const response = await api.get(`/tournaments/${tournament_id}/`);
+      setTournament(response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Ошибка при загрузке турнира:', err);
+      setError('Не удалось загрузить данные турнира.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTournament();
-  }, [tournament_id]);
+  }, [tournament_id, refreshTrigger]); // Добавляем refreshTrigger в зависимости
 
   useEffect(() => {
     const fetchMatchesDetails = async () => {
@@ -75,6 +76,10 @@ function TournamentPage() {
     window.scrollTo(0, 0);
   };
 
+  const refreshTournament = () => {
+    setRefreshTrigger((prev) => prev + 1); // Триггерим перезагрузку
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -109,7 +114,7 @@ function TournamentPage() {
           Назад
         </button>
 
-        {isAdmin && <AdminTournamentPanel tournamentName={tournament_id} />}
+        {isAdmin && <AdminTournamentPanel tournamentName={tournament_id} refreshTournament={refreshTournament} />}
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h1 className="text-3xl font-bold mb-4 text-center">{tournament.name}</h1>
@@ -209,7 +214,6 @@ function TournamentPage() {
           )}
         </div>
 
-        {/* Результаты */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-4 text-center">Результаты</h2>
           {tournament.results && tournament.results.length > 0 ? (
