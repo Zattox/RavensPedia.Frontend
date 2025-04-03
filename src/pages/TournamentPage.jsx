@@ -1,4 +1,3 @@
-// src/pages/TournamentPage.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '@/api';
@@ -16,7 +15,7 @@ function TournamentPage() {
   const [matchesDetails, setMatchesDetails] = useState([]);
   const [currentTeamPage, setCurrentTeamPage] = useState(1);
   const [currentMatchPage, setCurrentMatchPage] = useState(1);
-  const itemsPerPage = 5; // Количество элементов на странице для пагинации
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchTournament = async () => {
@@ -92,12 +91,10 @@ function TournamentPage() {
     );
   }
 
-  // Пагинация для команд
   const indexOfLastTeam = currentTeamPage * itemsPerPage;
   const indexOfFirstTeam = indexOfLastTeam - itemsPerPage;
   const currentTeams = tournament.teams.slice(indexOfFirstTeam, indexOfLastTeam);
 
-  // Пагинация для матчей
   const indexOfLastMatch = currentMatchPage * itemsPerPage;
   const indexOfFirstMatch = indexOfLastMatch - itemsPerPage;
   const currentMatches = matchesDetails.slice(indexOfFirstMatch, indexOfLastMatch);
@@ -112,10 +109,8 @@ function TournamentPage() {
           Назад
         </button>
 
-        {/* Панель администратора */}
         {isAdmin && <AdminTournamentPanel tournamentName={tournament_id} />}
 
-        {/* Основная информация */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h1 className="text-3xl font-bold mb-4 text-center">{tournament.name}</h1>
           <h2 className="text-2xl font-bold mb-4 text-center">Основная информация</h2>
@@ -146,7 +141,6 @@ function TournamentPage() {
           </div>
         </div>
 
-        {/* Команды */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-4 text-center">Команды</h2>
           {currentTeams.length > 0 ? (
@@ -180,7 +174,6 @@ function TournamentPage() {
           )}
         </div>
 
-        {/* Матчи */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-4 text-center">Матчи</h2>
           {currentMatches.length > 0 ? (
@@ -213,6 +206,38 @@ function TournamentPage() {
             </>
           ) : (
             <p className="text-gray-400 text-center">Матчи отсутствуют</p>
+          )}
+        </div>
+
+        {/* Результаты */}
+        <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
+          <h2 className="text-2xl font-bold mb-4 text-center">Результаты</h2>
+          {tournament.results && tournament.results.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {tournament.results.map((result, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-700 p-4 rounded-lg flex flex-col items-center justify-center text-center"
+                >
+                  <p className="text-lg font-semibold">
+                    {result.place}
+                    {result.place === 1 ? 'st' : result.place === 2 ? 'nd' : result.place === 3 ? 'rd' : 'th'} Place
+                  </p>
+                  <p className="text-xl font-bold text-blue-400">
+                    {result.team ? (
+                      <Link to={`/teams/${result.team}`} className="hover:underline">
+                        {result.team}
+                      </Link>
+                    ) : (
+                      'TBD'
+                    )}
+                  </p>
+                  <p className="text-sm text-gray-300">{result.prize}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-400 text-center">Результаты отсутствуют</p>
           )}
         </div>
       </div>
