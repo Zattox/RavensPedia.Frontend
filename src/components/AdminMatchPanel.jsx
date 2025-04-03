@@ -1,14 +1,16 @@
 // src/components/AdminMatchPanel.jsx
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Form, Input, InputNumber, Button, Tooltip, Select } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { NotificationContext } from '@/context/NotificationContext';
 import api from '@/api';
 
 
 function AdminMatchPanel({ match_id, setMatch }) {
   const { Option } = Select;
   const navigate = useNavigate();
+  const notificationApi = useContext(NotificationContext);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isAddTeamModalVisible, setIsAddTeamModalVisible] = useState(false);
   const [isDeleteTeamModalVisible, setIsDeleteTeamModalVisible] = useState(false);
@@ -27,6 +29,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const [addStatsManualForm] = Form.useForm();
   const [updateStatusForm] = Form.useForm();
 
+  const showNotification = (type, message, description) => {
+    notificationApi[type]({
+      message,
+      description,
+      placement: 'bottomRight',
+    });
+  };
+
   // Обновить матч
   const showUpdateModal = () => {
     setIsUpdateModalVisible(true);
@@ -41,17 +51,17 @@ function AdminMatchPanel({ match_id, setMatch }) {
     if (Object.keys(updatedMatch).length > 0) {
       try {
         await api.patch(`/matches/${match_id}/`, updatedMatch);
-        alert('Матч успешно обновлен');
+        showNotification('success', 'Успех!', 'Матч успешно обновлен.'); // Заменяем alert
         const response = await api.get(`/matches/${match_id}/`);
         setMatch(response.data);
         setIsUpdateModalVisible(false);
         updateForm.resetFields();
       } catch (error) {
         console.error('Ошибка при обновлении матча:', error.response?.data || error);
-        alert('Не удалось обновить матч');
+        showNotification('error', 'Ошибка!', 'Не удалось обновить матч.'); // Заменяем alert
       }
     } else {
-      alert('Хотя бы одно поле должно быть заполнено для обновления.');
+      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.'); // Заменяем alert
     }
   };
 
@@ -65,17 +75,17 @@ function AdminMatchPanel({ match_id, setMatch }) {
     setIsAddTeamModalVisible(true);
   };
 
-  const handleAddTeam = async (values) => {
+ const handleAddTeam = async (values) => {
     try {
       await api.patch(`/matches/${match_id}/add_team/${values.teamName}/`);
-      alert(`Команда ${values.teamName} успешно добавлена`);
+      showNotification('success', 'Успех!', `Команда ${values.teamName} успешно добавлена.`); // Заменяем alert
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddTeamModalVisible(false);
       addTeamForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении команды:', error.response?.data || error);
-      alert('Не удалось добавить команду');
+      showNotification('error', 'Ошибка!', 'Не удалось добавить команду.'); // Заменяем alert
     }
   };
 
@@ -92,14 +102,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteTeam = async (values) => {
     try {
       await api.delete(`/matches/${match_id}/delete_team/${values.teamName}/`);
-      alert(`Команда ${values.teamName} успешно удалена`);
+      showNotification('success', 'Успех!', `Команда ${values.teamName} успешно удалена.`); // Заменяем alert
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsDeleteTeamModalVisible(false);
       deleteTeamForm.resetFields();
     } catch (error) {
       console.error('Ошибка при удалении команды:', error.response?.data || error);
-      alert('Не удалось удалить команду');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить команду.'); // Заменяем alert
     }
   };
 
@@ -118,14 +128,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
       await api.patch(`/matches/stats/${match_id}/add_faceit_stats/`, null, {
         params: { faceit_url: values.faceitUrl },
       });
-      alert('Статистика Faceit успешно добавлена');
+      showNotification('success', 'Успех!', 'Статистика Faceit успешно добавлена.'); // Заменяем alert
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddFaceitStatsModalVisible(false);
       addFaceitStatsForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении статистики Faceit:', error.response?.data || error);
-      alert('Не удалось добавить статистику Faceit');
+      showNotification('error', 'Ошибка!', 'Не удалось добавить статистику Faceit.'); // Заменяем alert
     }
   };
 
@@ -146,14 +156,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
         map_status: values.mapStatus,
         initiator: values.initiator,
       });
-      alert('Pick/Ban успешно добавлен');
+      showNotification('success', 'Успех!', 'Pick/Ban успешно добавлен.'); // Заменяем alert
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddPickBanModalVisible(false);
       addPickBanForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении Pick/Ban:', error.response?.data || error);
-      alert('Не удалось добавить Pick/Ban');
+      showNotification('error', 'Ошибка!', 'Не удалось добавить Pick/Ban.'); // Заменяем alert
     }
   };
 
@@ -166,12 +176,12 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeletePickBanInfo = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_last_pick_ban_info_from_match/`);
-      alert('Последний Pick/Ban успешно удален');
+      showNotification('success', 'Успех!', 'Последний Pick/Ban успешно удален.');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
     } catch (error) {
       console.error('Ошибка при удалении Pick/Ban:', error.response?.data || error);
-      alert('Не удалось удалить Pick/Ban');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить Pick/Ban.'); // Заменяем alert
     }
   };
 
@@ -195,14 +205,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
         overtime_score_second_team: values.overtimeScoreSecondTeam,
         total_score_second_team: values.totalScoreSecondTeam,
       });
-      alert('Результат карты успешно добавлен');
+      showNotification('success', 'Успех!', 'Результат карты успешно добавлен');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddMapResultModalVisible(false);
       addMapResultForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении результата карты:', error.response?.data || error);
-      alert('Не удалось добавить результат карты');
+      showNotification('error', 'Ошибка!', 'Не удалось добавить результат карты');
     }
   };
 
@@ -215,12 +225,12 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteMapResultInfo = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_last_map_result_info_from_match/`);
-      alert('Последний результат карты успешно удален');
+      showNotification('success', 'Успех!', 'Последний результат карты успешно удален');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
     } catch (error) {
       console.error('Ошибка при удалении результата карты:', error.response?.data || error);
-      alert('Не удалось удалить результат карты');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить результат карты');
     }
   };
 
@@ -242,14 +252,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
         ADR: values.adr,
         "Headshots %": values.headshotsPercentage,
       });
-      alert('Статистика вручную успешно добавлена');
+      showNotification('success', 'Успех!', 'Статистика вручную успешно добавлена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsAddStatsManualModalVisible(false);
       addStatsManualForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении статистики вручную:', error.response?.data || error);
-      alert('Не удалось добавить статистику вручную');
+      showNotification('error', 'Ошибка!', 'Не удалось добавить статистику вручную');
     }
   };
 
@@ -262,12 +272,12 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteLastStat = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_last_stat_from_match/`);
-      alert('Последняя статистика успешно удалена');
+      showNotification('success', 'Успех!', 'Последняя статистика успешно удалена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
     } catch (error) {
       console.error('Ошибка при удалении последней статистики:', error.response?.data || error);
-      alert('Не удалось удалить последнюю статистику');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить последнюю статистику');
     }
   };
 
@@ -275,12 +285,12 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteMatchStats = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_match_stats/`);
-      alert('Статистика матча успешно удалена');
+      showNotification('success', 'Успех!', 'Статистика матча успешно удалена');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
     } catch (error) {
       console.error('Ошибка при удалении статистики матча:', error.response?.data || error);
-      alert('Не удалось удалить статистику матча');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить статистику матча');
     }
   };
 
@@ -292,12 +302,12 @@ function AdminMatchPanel({ match_id, setMatch }) {
   const handleDeleteMatch = async () => {
     try {
       await api.delete(`/matches/${match_id}/`);
-      alert('Матч успешно удален');
+      showNotification('success', 'Успех!', 'Матч успешно удален');
       setIsDeleteMatchModalVisible(false);
       navigate('/matches');
     } catch (error) {
       console.error('Ошибка при удалении матча:', error.response?.data || error);
-      alert('Не удалось удалить матч');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить матч');
       setIsDeleteMatchModalVisible(false);
     }
   };
@@ -318,15 +328,14 @@ function AdminMatchPanel({ match_id, setMatch }) {
       await api.patch(`/schedules/matches/${values.match_id}/update_status/`, null, {
         params: { new_status: values.new_status },
       });
-      alert('Статус матча успешно обновлен');
+      showNotification('success', 'Успех!', 'Статус матча успешно обновлен');
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       setIsUpdateStatusModalVisible(false);
       updateStatusForm.resetFields();
     } catch (error) {
-      // Логируем полную информацию об ошибке
       console.error('Ошибка при обновлении статуса матча:', error.response?.data || error);
-      alert(`Не удалось обновить статус матча: ${error.response?.data?.detail || error.message}`);
+      showNotification('error', 'Ошибка!', `Не удалось обновить статус матча: ${error.response?.data?.detail || error.message}`);
     }
   };
 

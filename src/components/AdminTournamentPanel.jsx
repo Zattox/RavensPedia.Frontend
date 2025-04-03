@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Form, Input, Button, Tooltip, Select } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { NotificationContext } from '@/context/NotificationContext';
 import api from '@/api';
 
 const { Option } = Select;
 
 function AdminTournamentPanel({ tournamentName }) {
   const navigate = useNavigate();
+  const notificationApi = useContext(NotificationContext);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isAddTeamModalVisible, setIsAddTeamModalVisible] = useState(false);
   const [isDeleteTeamModalVisible, setIsDeleteTeamModalVisible] = useState(false);
@@ -23,6 +25,14 @@ function AdminTournamentPanel({ tournamentName }) {
   const [addResultForm] = Form.useForm(); // Новая форма для добавления результата
   const [assignTeamToResultForm] = Form.useForm(); // Новая форма для привязки команды
   const [removeTeamFromResultForm] = Form.useForm(); // Новая форма для отвязки команды
+
+  const showNotification = (type, message, description) => {
+    notificationApi[type]({
+      message,
+      description,
+      placement: 'bottomRight',
+    });
+  };
 
   // Update Tournament Modal
   const showUpdateModal = () => {
@@ -40,16 +50,16 @@ function AdminTournamentPanel({ tournamentName }) {
     if (Object.keys(updatedTournament).length > 0) {
       try {
         await api.patch(`/tournaments/${tournamentName}/`, updatedTournament);
-        alert('Турнир успешно обновлен!');
+        showNotification('success', 'Успех!', 'Турнир успешно обновлен!'); // Заменяем alert
         setIsUpdateModalVisible(false);
         updateForm.resetFields();
         window.location.reload();
       } catch (error) {
         console.error('Ошибка при обновлении турнира:', error);
-        alert('Не удалось обновить турнир.');
+        showNotification('error', 'Ошибка!', 'Не удалось обновить турнир.'); // Заменяем alert
       }
     } else {
-      alert('Хотя бы одно поле должно быть заполнено для обновления.');
+      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.'); // Заменяем alert
     }
   };
 
@@ -69,13 +79,13 @@ function AdminTournamentPanel({ tournamentName }) {
       await api.patch(`/schedules/tournaments/${values.tournament_name}/update_status/`, null, {
         params: { new_status: values.new_status },
       });
-      alert('Статус турнира успешно обновлен!');
+      showNotification('success', 'Успех!', 'Статус турнира успешно обновлен!'); // Заменяем alert
       setIsUpdateStatusModalVisible(false);
       updateStatusForm.resetFields();
       window.location.reload();
     } catch (error) {
-        console.error('Ошибка при обновлении статуса турнира:', error.response?.data || error);
-        alert(`Не удалось обновить статус турнира: ${error.response?.data?.detail || error.message}`);
+      console.error('Ошибка при обновлении статуса турнира:', error.response?.data || error);
+      showNotification('error', 'Ошибка!', `Не удалось обновить статус турнира: ${error.response?.data?.detail || error.message}`); // Заменяем alert
     }
   };
 
@@ -94,12 +104,12 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleDeleteTournament = async () => {
     try {
       await api.delete(`/tournaments/${tournamentName}/`);
-      alert('Турнир успешно удален!');
+      showNotification('success', 'Успех!', 'Турнир успешно удален!'); // Заменяем alert
       setIsDeleteTournamentModalVisible(false);
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении турнира:', error);
-      alert('Не удалось удалить турнир.');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить турнир.'); // Заменяем alert
       setIsDeleteTournamentModalVisible(false);
     }
   };
@@ -116,13 +126,13 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleAddTeam = async (values) => {
     try {
       await api.patch(`/tournaments/${tournamentName}/add_team/${values.team_name}/`);
-      alert('Команда успешно добавлена в турнир!');
+      showNotification('success', 'Успех!', 'Команда успешно добавлена в турнир!'); // Заменяем alert
       setIsAddTeamModalVisible(false);
       addTeamForm.resetFields();
       window.location.reload();
     } catch (error) {
       console.error('Ошибка при добавлении команды:', error);
-      alert('Не удалось добавить команду в турнир.');
+      showNotification('error', 'Ошибка!', 'Не удалось добавить команду в турнир.'); // Заменяем alert
     }
   };
 
@@ -139,13 +149,13 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleDeleteTeam = async (values) => {
     try {
       await api.delete(`/tournaments/${tournamentName}/delete_team/${values.team_name}/`);
-      alert('Команда успешно удалена из турнира!');
+      showNotification('success', 'Успех!', 'Команда успешно удалена из турнира!'); // Заменяем alert
       setIsDeleteTeamModalVisible(false);
       deleteTeamForm.resetFields();
       window.location.reload();
     } catch (error) {
       console.error('Ошибка при удалении команды:', error);
-      alert('Не удалось удалить команду из турнира.');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить команду из турнира.'); // Заменяем alert
     }
   };
 
@@ -165,13 +175,13 @@ function AdminTournamentPanel({ tournamentName }) {
         place: values.place,
         prize: values.prize,
       });
-      alert('Результат успешно добавлен!');
+      showNotification('success', 'Успех!', 'Результат успешно добавлен!'); // Заменяем alert
       setIsAddResultModalVisible(false);
       addResultForm.resetFields();
       window.location.reload();
     } catch (error) {
       console.error('Ошибка при добавлении результата:', error);
-      alert('Не удалось добавить результат.');
+      showNotification('error', 'Ошибка!', 'Не удалось добавить результат.'); // Заменяем alert
     }
   };
 
@@ -188,12 +198,12 @@ function AdminTournamentPanel({ tournamentName }) {
   const handleDeleteResult = async () => {
     try {
       await api.delete(`/tournaments/${tournamentName}/delete_last_result/`);
-      alert('Последний результат успешно удален!');
+      showNotification('success', 'Успех!', 'Последний результат успешно удален!'); // Заменяем alert
       setIsDeleteResultModalVisible(false);
       window.location.reload();
     } catch (error) {
       console.error('Ошибка при удалении результата:', error);
-      alert('Не удалось удалить результат.');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить результат.'); // Заменяем alert
     }
   };
 
@@ -211,13 +221,13 @@ function AdminTournamentPanel({ tournamentName }) {
       await api.patch(`/tournaments/${tournamentName}/assign_team_to_result/`, null, {
         params: { place: values.place, team_name: values.team_name },
       });
-      alert('Команда успешно привязана к результату!');
+      showNotification('success', 'Успех!', 'Команда успешно привязана к результату!'); // Заменяем alert
       setIsAssignTeamToResultModalVisible(false);
       assignTeamToResultForm.resetFields();
       window.location.reload();
     } catch (error) {
       console.error('Ошибка при привязке команды к результату:', error);
-      alert('Не удалось привязать команду к результату.');
+      showNotification('error', 'Ошибка!', 'Не удалось привязать команду к результату.'); // Заменяем alert
     }
   };
 
@@ -236,13 +246,13 @@ function AdminTournamentPanel({ tournamentName }) {
       await api.delete(`/tournaments/${tournamentName}/remove_team_from_result/`, {
         params: { place: values.place },
       });
-      alert('Команда успешно отвязана от результата!');
+      showNotification('success', 'Успех!', 'Команда успешно отвязана от результата!'); // Заменяем alert
       setIsRemoveTeamFromResultModalVisible(false);
       removeTeamFromResultForm.resetFields();
       window.location.reload();
     } catch (error) {
       console.error('Ошибка при отвязке команды от результата:', error);
-      alert('Не удалось отвязать команду от результата.');
+      showNotification('error', 'Ошибка!', 'Не удалось отвязать команду от результата.'); // Заменяем alert
     }
   };
 

@@ -45,13 +45,13 @@ function AdminMainPanel() {
         content: values.content,
         author: values.author,
       });
-      alert('Новость успешно создана!');
-      setIsNewsModalVisible(false);
       newsForm.resetFields();
       window.location.reload(); // Refresh to show new news
+      showNotification('success', 'Успех!', 'Новость успешно создана!');
+      setIsNewsModalVisible(false);
     } catch (error) {
       console.error('Ошибка при создании новости:', error);
-      alert('Не удалось создать новость.');
+      showNotification('error', 'Ошибка!', 'Не удалось создать новость.');
     }
   };
 
@@ -67,12 +67,12 @@ function AdminMainPanel() {
         date: values.date,
         description: values.description,
       });
-      alert('Матч успешно создан!');
+      showNotification('success', 'Успех!', 'Матч успешно создан!');
       setIsMatchModalVisible(false);
       matchForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании матча:', error);
-      alert('Не удалось создать матч.');
+      showNotification('error', 'Ошибка!', 'Не удалось создать матч.');
     }
   };
 
@@ -86,12 +86,12 @@ function AdminMainPanel() {
         name: values.name || undefined,
         surname: values.surname || undefined,
       });
-      alert('Игрок успешно создан!');
+      showNotification('success', 'Успех!', 'Игрок успешно создан!');
       setIsPlayerModalVisible(false);
       playerForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании игрока:', error);
-      alert('Не удалось создать игрока.');
+      showNotification('error', 'Ошибка!', 'Не удалось создать игрока.');
     }
   };
 
@@ -104,12 +104,12 @@ function AdminMainPanel() {
         name: values.name,
         description: values.description || undefined,
       });
-      alert('Команда успешно создана!');
+      showNotification('success', 'Успех!', 'Команда успешно создана!');
       setIsTeamModalVisible(false);
       teamForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании команды:', error);
-      alert('Не удалось создать команду.');
+      showNotification('error', 'Ошибка!', 'Не удалось создать команду.');
     }
   };
 
@@ -125,12 +125,12 @@ function AdminMainPanel() {
         start_date: values.start_date,
         end_date: values.end_date,
       });
-      alert('Турнир успешно создан!');
+      showNotification('success', 'Успех!', 'Турнир успешно создан!');
       setIsTournamentModalVisible(false);
       tournamentForm.resetFields();
     } catch (error) {
       console.error('Ошибка при создании турнира:', error);
-      alert('Не удалось создать турнир');
+      showNotification('error', 'Ошибка!', 'Не удалось создать турнир');
     }
   };
 

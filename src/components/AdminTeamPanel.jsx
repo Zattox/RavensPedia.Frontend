@@ -1,12 +1,14 @@
 // src/components/AdminTeamPanel.jsx
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Form, Input, Button, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { NotificationContext } from '@/context/NotificationContext';
 import api from '@/api';
 
 function AdminTeamPanel({ team_name, setTeam }) {
   const navigate = useNavigate();
+  const notificationApi = useContext(NotificationContext);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isAddPlayerModalVisible, setIsAddPlayerModalVisible] = useState(false);
   const [isDeletePlayerModalVisible, setIsDeletePlayerModalVisible] = useState(false);
@@ -14,6 +16,14 @@ function AdminTeamPanel({ team_name, setTeam }) {
   const [updateForm] = Form.useForm();
   const [addPlayerForm] = Form.useForm();
   const [deletePlayerForm] = Form.useForm();
+
+  const showNotification = (type, message, description) => {
+    notificationApi[type]({
+      message,
+      description,
+      placement: 'bottomRight',
+    });
+  };
 
   // Обновить информацию о команде
   const showUpdateModal = () => {
@@ -29,15 +39,15 @@ function AdminTeamPanel({ team_name, setTeam }) {
       try {
         const response = await api.patch(`/teams/${team_name}/`, updatedTeam);
         setTeam(response.data);
-        alert('Информация о команде успешно обновлена!');
+        showNotification('success', 'Успех!', 'Информация о команде успешно обновлена.'); // Заменяем alert
         setIsUpdateModalVisible(false);
         updateForm.resetFields();
       } catch (error) {
         console.error('Ошибка при обновлении команды:', error);
-        alert('Не удалось обновить информацию о команде.');
+        showNotification('error', 'Ошибка!', 'Не удалось обновить информацию о команде.'); // Заменяем alert
       }
     } else {
-      alert('Хотя бы одно поле должно быть заполнено для обновления.');
+      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.'); // Заменяем alert
     }
   };
 
@@ -54,14 +64,14 @@ function AdminTeamPanel({ team_name, setTeam }) {
   const handleAddPlayer = async (values) => {
     try {
       await api.patch(`/teams/${team_name}/add_player/${values.player_nickname}/`);
-      alert(`Игрок ${values.player_nickname} успешно добавлен!`);
+      showNotification('success', 'Успех!', `Игрок ${values.player_nickname} успешно добавлен!`); // Заменяем alert
       const response = await api.get(`/teams/${team_name}/`);
       setTeam(response.data);
       setIsAddPlayerModalVisible(false);
       addPlayerForm.resetFields();
     } catch (error) {
       console.error('Ошибка при добавлении игрока:', error.response?.data || error);
-      alert('Не удалось добавить игрока.');
+      showNotification('error', 'Ошибка!', 'Не удалось добавить игрока.'); // Заменяем alert
     }
   };
 
@@ -78,14 +88,14 @@ function AdminTeamPanel({ team_name, setTeam }) {
   const handleDeletePlayer = async (values) => {
     try {
       await api.delete(`/teams/${team_name}/delete_player/${values.player_nickname}/`);
-      alert(`Игрок ${values.player_nickname} успешно удален!`);
+      showNotification('success', 'Успех!', `Игрок ${values.player_nickname} успешно удален!`); // Заменяем alert
       const response = await api.get(`/teams/${team_name}/`);
       setTeam(response.data);
       setIsDeletePlayerModalVisible(false);
       deletePlayerForm.resetFields();
     } catch (error) {
       console.error('Ошибка при удалении игрока:', error.response?.data || error);
-      alert('Не удалось удалить игрока.');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить игрока.'); // Заменяем alert
     }
   };
 
@@ -102,12 +112,12 @@ function AdminTeamPanel({ team_name, setTeam }) {
   const handleDeleteTeam = async () => {
     try {
       await api.delete(`/teams/${team_name}/`);
-      alert('Команда успешно удалена!');
+      showNotification('success', 'Успех!', 'Команда успешно удалена!'); // Заменяем alert
       setIsDeleteTeamConfirmModalVisible(false);
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении команды:', error);
-      alert('Не удалось удалить команду.');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить команду.'); // Заменяем alert
       setIsDeleteTeamConfirmModalVisible(false);
     }
   };

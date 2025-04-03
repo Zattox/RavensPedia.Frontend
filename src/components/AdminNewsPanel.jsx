@@ -1,41 +1,49 @@
 // src/components/AdminNewsPanel.jsx
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Form, Input, Button, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { NotificationContext } from '@/context/NotificationContext';
 import api from '@/api';
 
 function AdminNewsPanel({ newsId, setNews }) {
   const navigate = useNavigate();
+  const notificationApi = useContext(NotificationContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteNewsModalVisible, setIsDeleteNewsModalVisible] = useState(false);
   const [form] = Form.useForm();
+
+  const showNotification = (type, message, description) => {
+    notificationApi[type]({
+      message,
+      description,
+      placement: 'bottomRight',
+    });
+  };
 
   const showModal = () => {
     setIsModalVisible(true);
   };
 
   const handleUpdateNews = async (values) => {
-    // Фильтруем только заполненные поля
     const updatedNews = {};
     if (values.title) updatedNews.title = values.title;
     if (values.content) updatedNews.content = values.content;
     if (values.author) updatedNews.author = values.author;
 
-    // Если есть хотя бы одно заполненное поле, отправляем запрос
     if (Object.keys(updatedNews).length > 0) {
       try {
         const response = await api.patch(`/news/${newsId}/`, updatedNews);
         setNews(response.data);
-        alert('Новость успешно обновлена!');
+        showNotification('success', 'Успех!', 'Новость успешно обновлена!'); // Заменяем alert
         setIsModalVisible(false);
         form.resetFields();
       } catch (error) {
         console.error('Ошибка при обновлении новости:', error);
-        alert('Не удалось обновить новость.');
+        showNotification('error', 'Ошибка!', 'Не удалось обновить новость.'); // Заменяем alert
       }
     } else {
-      alert('Хотя бы одно поле должно быть заполнено для обновления.');
+      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.'); // Заменяем alert
     }
   };
 
@@ -51,12 +59,12 @@ function AdminNewsPanel({ newsId, setNews }) {
   const handleDeleteNews = async () => {
     try {
       await api.delete(`/news/${newsId}/`);
-      alert('Новость успешно удалена!');
+      showNotification('success', 'Успех!', 'Новость успешно удалена!'); // Заменяем alert
       setIsDeleteNewsModalVisible(false);
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении новости:', error);
-      alert('Не удалось удалить новость.');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить новость.'); // Заменяем alert
       setIsDeleteNewsModalVisible(false);
     }
   };

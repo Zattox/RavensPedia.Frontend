@@ -1,22 +1,32 @@
 // src/components/AdminPlayerPanel.jsx
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal, Form, Input, Button, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { NotificationContext } from '@/context/NotificationContext';
 import api from '@/api';
 
 function AdminPlayerPanel({ player_nickname }) {
   const navigate = useNavigate();
+  const notificationApi = useContext(NotificationContext);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isDeletePlayerModalVisible, setIsDeletePlayerModalVisible] = useState(false);
   const [updateForm] = Form.useForm();
+
+  const showNotification = (type, message, description) => {
+    notificationApi[type]({
+      message,
+      description,
+      placement: 'bottomRight',
+    });
+  };
 
   // Update Player Modal
   const showUpdateModal = () => {
     setIsUpdateModalVisible(true);
   };
 
-  const handleUpdatePlayer = async (values) => {
+ const handleUpdatePlayer = async (values) => {
     const updatedPlayer = {};
     if (values.steam_id) updatedPlayer.steam_id = values.steam_id;
     if (values.nickname) updatedPlayer.nickname = values.nickname;
@@ -26,16 +36,16 @@ function AdminPlayerPanel({ player_nickname }) {
     if (Object.keys(updatedPlayer).length > 0) {
       try {
         await api.patch(`/players/${player_nickname}/`, updatedPlayer);
-        alert('Информация об игроке успешно обновлена!');
+        showNotification('success', 'Успех!', 'Информация об игроке успешно обновлена.'); // Заменяем alert
         setIsUpdateModalVisible(false);
         updateForm.resetFields();
-        window.location.reload(); // Refresh to show updated data
+        window.location.reload();
       } catch (error) {
         console.error('Ошибка при обновлении игрока:', error);
-        alert('Не удалось обновить информацию об игроке.');
+        showNotification('error', 'Ошибка!', 'Не удалось обновить информацию об игроке.'); // Заменяем alert
       }
     } else {
-      alert('Хотя бы одно поле должно быть заполнено для обновления.');
+      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.'); // Заменяем alert
     }
   };
 
@@ -52,12 +62,12 @@ function AdminPlayerPanel({ player_nickname }) {
   const handleDeletePlayer = async () => {
     try {
       await api.delete(`/players/${player_nickname}/`);
-      alert('Игрок успешно удален!');
+      showNotification('success', 'Успех!', 'Игрок успешно удален!'); // Заменяем alert
       setIsDeletePlayerModalVisible(false);
       navigate('/');
     } catch (error) {
       console.error('Ошибка при удалении игрока:', error);
-      alert('Не удалось удалить игрока.');
+      showNotification('error', 'Ошибка!', 'Не удалось удалить игрока.'); // Заменяем alert
       setIsDeletePlayerModalVisible(false);
     }
   };
