@@ -426,14 +426,18 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 name="date"
                 label={
                   <span className="text-gray-300">
-                    Дата (YYYY-MM-DDTHH:MM:SSZ){' '}
+                    Дата начала матча{' '}
                     <Tooltip title="Введите новую дату и время матча в формате ISO (оставьте пустым, чтобы не изменять)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
                 }
               >
-                <Input className="custom-input" placeholder="Новая дата матча (необязательно)" />
+                <Input
+                  type="date"
+                  className="custom-input"
+                  placeholder="Дата начала матча"
+                />
               </Form.Item>
               <Form.Item
                 name="description"
