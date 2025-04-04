@@ -438,11 +438,15 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
                 }
                 rules={[{ required: true, message: 'Пожалуйста, выберите новый статус' }]}
               >
-                <Select className="custom-select" placeholder="Выберите статус">
-                  <Option value="SCHEDULED">SCHEDULED</Option>
-                  <Option value="IN_PROGRESS">IN_PROGRESS</Option>
-                  <Option value="COMPLETED">COMPLETED</Option>
-                </Select>
+                <Select
+                  className="custom-select"
+                  placeholder="Выберите статус"
+                  options={[
+                    { value: "SCHEDULED", label: 'Турнир запланирован' },
+                    { value: "IN_PROGRESS", label: 'Турнир идет' },
+                    { value: "COMPLETED", label: 'Турнир завершен' },
+                  ]}
+                />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
@@ -631,7 +635,7 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) { // Доб
                 label={
                   <span className="text-gray-300">
                     Приз{' '}
-                    <Tooltip title="Введите приз (например, $1000 + Club share: $500)">
+                    <Tooltip title="Введите приз (например, $1000)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
