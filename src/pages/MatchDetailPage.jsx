@@ -42,7 +42,7 @@ function MatchDetailPage() {
       }
     };
     fetchMatch();
-  }, [match_id, refreshTrigger]); // Добавляем refreshTrigger
+  }, [match_id, refreshTrigger]);
 
   const refreshMatch = () => setRefreshTrigger((prev) => prev + 1);
 
@@ -485,7 +485,7 @@ function MatchDetailPage() {
         </div>
       </div>
 
-      {isAdmin && <AdminMatchPanel match_id={match_id} setMatch={setMatch} refreshMatch={refreshMatch} />}
+      {isAdmin && <AdminMatchPanel match_id={match_id} setMatch={setMatch} refreshMatch={refreshMatch} match={match} />}
     </div>
   );
 }
