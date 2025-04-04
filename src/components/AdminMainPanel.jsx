@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { Modal, Form, Input, InputNumber, Button, Tooltip } from 'antd';
+import {Modal, Form, Input, InputNumber, Button, Tooltip, Select} from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import api from '@/api';
 import { useAuth } from '@/context/AuthContext';
@@ -63,25 +63,25 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
 
   // Match handlers
   const showMatchModal = () => setIsMatchModalVisible(true);
-  const handleAddMatch = async (values) => {
-    try {
-      await api.post('/matches/', {
-        best_of: values.best_of,
-        max_number_of_teams: values.max_number_of_teams,
-        max_number_of_players: values.max_number_of_players,
-        tournament: values.tournament,
-        date: values.date,
-        description: values.description,
-      });
-      showNotification('success', 'Успех!', 'Матч успешно создан!');
-      setIsMatchModalVisible(false);
-      matchForm.resetFields();
-    } catch (error) {
-      console.error('Ошибка при создании матча:', error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось создать матч';
-      showNotification('error', 'Ошибка!', errorDetail);
-    }
-  };
+  const handleCreateMatch = async (values) => {
+  try {
+    await api.post('/matches/', {
+      best_of: values.best_of,
+      max_number_of_teams: 2,
+      max_number_of_players: 10,
+      tournament: values.tournament,
+      date: values.date,
+      description: values.description,
+    });
+    showNotification('success', 'Успех!', 'Матч успешно создан!');
+    setIsMatchModalVisible(false);
+    matchForm.resetFields();
+  } catch (error) {
+    console.error('Ошибка при создании матча:', error);
+    const errorDetail = error.response?.data?.detail || 'Не удалось создать матч';
+    showNotification('error', 'Ошибка!', errorDetail);
+  }
+};
 
   // Player handlers
   const showPlayerModal = () => setIsPlayerModalVisible(true);
@@ -108,7 +108,7 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
   const handleCreateTeam = async (values) => {
     try {
       await api.post('/teams/', {
-        max_number_of_players: values.max_number_of_players,
+        max_number_of_players: 10,
         name: values.name,
         description: values.description || undefined,
       });
@@ -230,13 +230,13 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
         >
           <Form form={newsForm} onFinish={handleCreateNews} layout="vertical" className="text-white">
             <Form.Item name="title" label={<span className="text-gray-300">Заголовок</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="Например, TORSZ: THIS COULD BE MY YEAR" />
+              <Input className="custom-input" placeholder="Например, Media: m0NESY set to join Falcons in blockbuster move" />
             </Form.Item>
             <Form.Item name="content" label={<span className="text-gray-300">Содержание</span>} rules={[{ required: true }]}>
               <Input.TextArea rows={4} className="custom-textarea" placeholder="Например, It feels amazing..." />
             </Form.Item>
             <Form.Item name="author" label={<span className="text-gray-300">Автор</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="Например, Vladislav" />
+              <Input className="custom-input" placeholder="Например, MIRAA" />
             </Form.Item>
             <Form.Item>
               <div className="flex justify-end gap-2">
@@ -265,24 +265,38 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
           footer={null}
           className="custom-modal"
         >
-          <Form form={matchForm} onFinish={handleAddMatch} layout="vertical" className="text-white">
+          <Form form={matchForm} onFinish={handleCreateMatch} layout="vertical" className="text-white">
             <Form.Item name="best_of" label={<span className="text-gray-300">Best of</span>} rules={[{ required: true }]}>
-              <InputNumber min={1} className="w-full custom-input-number" placeholder="Например, 3" />
-            </Form.Item>
-            <Form.Item name="max_number_of_teams" label={<span className="text-gray-300">Макс. команд</span>} rules={[{ required: true }]}>
-              <InputNumber min={2} className="w-full custom-input-number" placeholder="Например, 2" />
-            </Form.Item>
-            <Form.Item name="max_number_of_players" label={<span className="text-gray-300">Макс. игроков</span>} rules={[{ required: true }]}>
-              <InputNumber min={1} className="w-full custom-input-number" placeholder="Например, 10" />
+              <Select
+                className="custom-select"
+                placeholder="Выберите максимальное количество карт матча"
+                options={[
+                  { value: 1, label: 'Best of 1' },
+                  { value: 2, label: 'Best of 2' },
+                  { value: 3, label: 'Best of 3' },
+                  { value: 5, label: 'Best of 5' },
+                ]}
+              />
             </Form.Item>
             <Form.Item name="tournament" label={<span className="text-gray-300">Турнир</span>} rules={[{ required: true }]}>
               <Input className="custom-input" placeholder="Например, ESL Pro League" />
             </Form.Item>
             <Form.Item name="date" label={<span className="text-gray-300">Дата</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="2025-03-31T16:00:00" />
+                <Input
+                  type="date"
+                  className="custom-input"
+                  placeholder="Дата начала матча"
+                />
             </Form.Item>
             <Form.Item name="description" label={<span className="text-gray-300">Описание (необязательно)</span>}>
               <Input.TextArea rows={4} className="custom-textarea" placeholder="Например, Финал турнира..." />
+            </Form.Item>
+            {/* Скрытые поля для max_number_of_teams и max_number_of_players */}
+            <Form.Item name="max_number_of_teams" hidden initialValue={2}>
+              <Input type="hidden" />
+            </Form.Item>
+            <Form.Item name="max_number_of_players" hidden initialValue={10}>
+              <Input type="hidden" />
             </Form.Item>
             <Form.Item>
               <div className="flex justify-end gap-2">
@@ -352,14 +366,14 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
           className="custom-modal"
         >
           <Form form={teamForm} onFinish={handleCreateTeam} layout="vertical" className="text-white">
-            <Form.Item name="max_number_of_players" label={<span className="text-gray-300">Макс. игроков</span>} rules={[{ required: true }]}>
-              <InputNumber min={1} className="w-full custom-input-number" placeholder="Например, 5" />
-            </Form.Item>
             <Form.Item name="name" label={<span className="text-gray-300">Название</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="Например, Natus Vincere" />
+              <Input className="custom-input" placeholder="Например, Team Spirit" />
             </Form.Item>
             <Form.Item name="description" label={<span className="text-gray-300">Описание (необязательно)</span>}>
-              <Input.TextArea rows={4} className="custom-textarea" placeholder="Например, Украинская киберспортивная команда..." />
+              <Input.TextArea rows={4} className="custom-textarea" placeholder="Например, Киберспортивная команда..." />
+            </Form.Item>
+            <Form.Item name="max_number_of_players" hidden initialValue={10}>
+              <Input type="hidden" />
             </Form.Item>
             <Form.Item>
               <div className="flex justify-end gap-2">
@@ -395,17 +409,25 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) { // Принимае�
             <Form.Item name="name" label={<span className="text-gray-300">Название</span>} rules={[{ required: true }]}>
               <Input className="custom-input" placeholder="Например, ESL Pro League" />
             </Form.Item>
+             <Form.Item name="start_date" label={<span className="text-gray-300">Дата начала</span>} rules={[{ required: true }]}>
+               <Input
+                  type="date"
+                  className="custom-input"
+                  placeholder="Дата начала турнира"
+                />
+            </Form.Item>
+            <Form.Item name="end_date" label={<span className="text-gray-300">Дата окончания</span>} rules={[{ required: true }]}>
+                <Input
+                  type="date"
+                  className="custom-input"
+                  placeholder="Дата конца турнира"
+                />
+            </Form.Item>
             <Form.Item name="prize" label={<span className="text-gray-300">Призовой фонд (необязательно)</span>}>
               <Input className="custom-input" placeholder="Например, $100,000" />
             </Form.Item>
             <Form.Item name="description" label={<span className="text-gray-300">Описание (необязательно)</span>}>
               <Input.TextArea rows={4} className="custom-textarea" placeholder="Например, Международный турнир..." />
-            </Form.Item>
-            <Form.Item name="start_date" label={<span className="text-gray-300">Дата начала</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="2025-04-02T20:20:00" />
-            </Form.Item>
-            <Form.Item name="end_date" label={<span className="text-gray-300">Дата окончания</span>} rules={[{ required: true }]}>
-              <Input className="custom-input" placeholder="2025-04-03T20:20:00" />
             </Form.Item>
             <Form.Item>
               <div className="flex justify-end gap-2">
