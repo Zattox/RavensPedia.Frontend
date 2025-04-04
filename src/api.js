@@ -2,7 +2,7 @@ import axios from 'axios';
 import 'antd/dist/reset.css';
 
 const api = axios.create({
-  baseURL: 'https://127.0.0.1:8001',
+  baseURL: 'https://127.0.0.1:8001/api',
   headers: {
     'Content-Type': 'application/json',
   },
