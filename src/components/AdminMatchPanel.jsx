@@ -511,11 +511,15 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 }
                 rules={[{ required: true, message: 'Пожалуйста, выберите новый статус' }]}
               >
-                <Select className="custom-select" placeholder="Выберите статус">
-                  <Option value="SCHEDULED">SCHEDULED</Option>
-                  <Option value="IN_PROGRESS">IN_PROGRESS</Option>
-                  <Option value="COMPLETED">COMPLETED</Option>
-                </Select>
+                <Select
+                  className="custom-select"
+                  placeholder="Выберите статус"
+                  options={[
+                    { value: "SCHEDULED", label: 'Матч запланирован' },
+                    { value: "IN_PROGRESS", label: 'Матч идет' },
+                    { value: "COMPLETED", label: 'Матч завершен' },
+                  ]}
+                />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
@@ -762,7 +766,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <Select
                   className="custom-select"
-                  placeholder="Выберете раунд матча"
+                  placeholder="Выберите раунд матча"
                   options={[
                     { value: 1, label: 'Первая карта' },
                     { value: 2, label: 'Вторая карта' },
@@ -813,7 +817,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <Select
                   className="custom-select"
-                  placeholder="Выберете результат"
+                  placeholder="Выберите результат"
                   options={[
                     { value: 0, label: 'Поражение' },
                     { value: 1, label: 'Победа' },
