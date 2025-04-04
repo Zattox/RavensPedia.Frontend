@@ -93,9 +93,14 @@ function Header() {
               </button>
             </>
           ) : (
-            <Link to="/login" className="text-white hover:bg-gray-700 px-3 py-2 rounded">
-              Войти
-            </Link>
+            <>
+              <Link to="/login" className="text-white hover:bg-gray-700 px-3 py-2 rounded">
+                Войти
+              </Link>
+              <Link to="/register" className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+                Регистрация
+              </Link>
+            </>
           )}
         </div>
       </nav>
