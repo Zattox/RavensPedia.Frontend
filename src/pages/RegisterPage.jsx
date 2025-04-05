@@ -1,6 +1,6 @@
 // src/pages/RegisterPage.jsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '@/api';
 
 function RegisterPage() {
@@ -8,6 +8,11 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Извлекаем предыдущий путь, но исключаем /login и /register
+  const from = location.state?.from?.pathname || '/';
+  const redirectTo = ['/login', '/register'].includes(from) ? '/' : from;
 
   const handleRegister = async () => {
     if (!email || !password) {
@@ -25,7 +30,7 @@ function RegisterPage() {
       const { access_token, refresh_token } = response.data;
       localStorage.setItem('accessToken', access_token);
       localStorage.setItem('refreshToken', refresh_token);
-      navigate('/login');
+      navigate('/login', { state: { from: redirectTo } }); // Передаем redirectTo в /login
     } catch (error) {
       const errorMessage = error.response?.data?.email || error.response?.data?.detail || 'Ошибка при регистрации.';
       setError(errorMessage);

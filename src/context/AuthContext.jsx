@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '@/api';
 
@@ -8,12 +9,9 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  // Проверка авторизации
   const checkAuth = async () => {
     try {
-      const response = await api.get('/auth/me/', {
-        withCredentials: true,
-      });
+      const response = await api.get('/auth/me/', { withCredentials: true });
       console.log('checkAuth: Ответ от /auth/me/:', response.data);
       const userData = { email: response.data.email, role: response.data.role };
       setUser(userData);
@@ -29,7 +27,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Функция для обновления токена
   const refreshToken = async (attempt = 1, maxAttempts = 3) => {
     if (attempt > maxAttempts) {
       console.error('refreshToken: Достигнуто максимальное количество попыток обновления токена');
@@ -49,7 +46,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Перехватчик запросов
   const setupApiInterceptors = () => {
     api.interceptors.response.use(
       (response) => response,

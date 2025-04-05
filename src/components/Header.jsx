@@ -1,17 +1,21 @@
 // src/components/Header.jsx
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import SearchBar from './SearchBar';
 
 function Header() {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isEventsDropdownOpen, setIsEventsDropdownOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    // Определяем, куда перенаправить после выхода
+    const from = location.pathname || '/';
+    const redirectTo = ['/login', '/register'].includes(from) ? '/' : from;
+    navigate(redirectTo); // Перенаправляем на предыдущую страницу или на главную
   };
 
   return (
@@ -78,7 +82,6 @@ function Header() {
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          {/* Add SearchBar here */}
           <SearchBar />
           {isAuthenticated ? (
             <>
@@ -94,10 +97,18 @@ function Header() {
             </>
           ) : (
             <>
-              <Link to="/login" className="text-white hover:bg-gray-700 px-3 py-2 rounded">
+              <Link
+                to="/login"
+                state={{ from: location }} // Передаем текущую локацию в state
+                className="text-white hover:bg-gray-700 px-3 py-2 rounded"
+              >
                 Войти
               </Link>
-              <Link to="/register" className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded">
+              <Link
+                to="/register"
+                state={{ from: location }} // Передаем текущую локацию в state
+                className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded"
+              >
                 Регистрация
               </Link>
             </>

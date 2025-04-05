@@ -1,6 +1,6 @@
 // src/pages/LoginPage.jsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext.jsx';
 
 function LoginPage() {
@@ -8,7 +8,12 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+
+  // Извлекаем предыдущий путь, но исключаем /login и /register
+  const from = location.state?.from?.pathname || '/';
+  const redirectTo = ['/login', '/register'].includes(from) ? '/' : from;
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -22,8 +27,8 @@ function LoginPage() {
 
     try {
       setError('');
-      await login(email, password); // Используем функцию login из контекста
-      navigate('/');
+      await login(email, password);
+      navigate(redirectTo, { replace: true }); // Используем redirectTo вместо from
     } catch (error) {
       const errorMessage = error.response?.data?.detail || 'Ошибка при входе. Проверьте email и пароль.';
       setError(errorMessage);
