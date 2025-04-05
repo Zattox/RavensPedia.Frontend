@@ -485,7 +485,7 @@ function MatchDetailPage() {
         </div>
       </div>
 
-      {isAdmin && <AdminMatchPanel match_id={match_id} setMatch={setMatch} refreshMatch={refreshMatch} match={match} />}
+      {isAdmin() && <AdminMatchPanel match_id={match_id} setMatch={setMatch} refreshMatch={refreshMatch} match={match} />}
     </div>
   );
 }

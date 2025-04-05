@@ -24,8 +24,9 @@ export function AuthProvider({ children }) {
   }, [navigate]);
 
   const checkAuth = useCallback(async () => {
-    try {
-      const response = await api.get('/auth/me/');
+  try {
+    const response = await api.get('/auth/me/');
+    if (response.data.role) {
       setAuthState({
         isAuthenticated: true,
         loading: false,
@@ -35,25 +36,21 @@ export function AuthProvider({ children }) {
         },
         error: null
       });
-      return true;
-    } catch (error) {
-      if (error.response?.status === 401) {
-        try {
-          await api.post('/auth/refresh/');
-          return await checkAuth();
-        } catch (refreshError) {
-          handleLogout();
-          return false;
-        }
-      }
-      setAuthState(prev => ({
-        ...prev,
-        loading: false,
-        error: error.response?.data?.detail || 'Auth check failed'
-      }));
-      return false;
     }
-  }, [handleLogout]);
+    return true;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      try {
+        await api.post('/auth/refresh/');
+        return await checkAuth();
+      } catch (refreshError) {
+        console.log(refreshError)
+        return false;
+      }
+    }
+    return false;
+  }
+}, []);
 
   const login = async (email, password) => {
     try {

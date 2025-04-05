@@ -325,7 +325,7 @@ function TeamPage() {
         </div>
 
         {/* Панель администратора */}
-        {isAdmin && <AdminTeamPanel team_name={team_name} refreshTeam={refreshTeam} />}
+        {isAdmin() && <AdminTeamPanel team_name={team_name} refreshTeam={refreshTeam} />}
 
         {/* Секция игроков */}
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">

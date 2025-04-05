@@ -85,7 +85,7 @@ function HomePage() {
     <div className="min-h-screen flex flex-col items-center justify-center p-4 pt-24 bg-gray-900">
       <div className="w-full max-w-6xl relative">
         <h2 className="text-2xl font-bold mb-4 text-white text-center">Последние новости</h2>
-        {isAdmin && <AdminMainPanel setNewsData={setNewsData} refreshNewsData={refreshNewsData} />}
+        {isAdmin() && <AdminMainPanel setNewsData={setNewsData} refreshNewsData={refreshNewsData} />}
         {newsData.length > 0 ? (
           <>
             <div className="flex flex-wrap justify-center gap-4">

@@ -291,7 +291,7 @@ function PlayerPage() {
           Назад
         </button>
 
-        {isAdmin && <AdminPlayerPanel player_nickname={player_id} refreshPlayer={refreshPlayer}/>}
+        {isAdmin() && <AdminPlayerPanel player_nickname={player_id} refreshPlayer={refreshPlayer}/>}
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h1 className="text-3xl font-bold mb-4 text-center">Профиль игрока: {playerData.nickname}</h1>

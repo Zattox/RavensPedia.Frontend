@@ -131,7 +131,7 @@ function TournamentPage() {
           Назад
         </button>
 
-        {isAdmin && <AdminTournamentPanel tournamentName={tournament_id} refreshTournament={refreshTournament} />}
+        {isAdmin() && <AdminTournamentPanel tournamentName={tournament_id} refreshTournament={refreshTournament} />}
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h1 className="text-3xl font-bold mb-4 text-center">{tournament.name}</h1>

@@ -116,7 +116,7 @@ function NewsDetailPage() {
           </div>
         </div>
       </div>
-      {isAdmin && <AdminNewsPanel newsId={news_id} setNews={setNews} refreshNews={refreshNews} />}
+      {isAdmin() && <AdminNewsPanel newsId={news_id} setNews={setNews} refreshNews={refreshNews} />}
     </div>
   );
 }

@@ -81,7 +81,7 @@ function ProfilePage() {
             </div>
 
             {/* Форма для изменения роли (только для super_admin) */}
-            {isSuperAdmin && (
+            {isSuperAdmin() && (
               <div className="bg-gray-700 p-6 rounded-lg">
                 <h3 className="text-2xl font-semibold text-white mb-4">Изменить роль пользователя</h3>
                 <form onSubmit={handleChangeRole} className="space-y-4">
