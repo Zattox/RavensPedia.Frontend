@@ -1,119 +1,111 @@
-// src/context/AuthContext.jsx
-import { createContext, useState, useEffect, useContext } from 'react';
-import api from '@/api';
+import { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import api from '../api';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [authState, setAuthState] = useState({
+    isAuthenticated: false,
+    loading: true,
+    user: null,
+    error: null
+  });
+  const navigate = useNavigate();
 
-  const checkAuth = async () => {
+  const handleLogout = useCallback(() => {
+    setAuthState({
+      isAuthenticated: false,
+      loading: false,
+      user: null,
+      error: null
+    });
+    navigate('/login');
+  }, [navigate]);
+
+  const checkAuth = useCallback(async () => {
     try {
-      const response = await api.get('/auth/me/', { withCredentials: true });
-      console.log('checkAuth: Ответ от /auth/me/:', response.data);
-      const userData = { email: response.data.email, role: response.data.role };
-      setUser(userData);
-      setIsAuthenticated(true);
+      const response = await api.get('/auth/me/');
+      setAuthState({
+        isAuthenticated: true,
+        loading: false,
+        user: {
+          email: response.data.email,
+          role: response.data.role
+        },
+        error: null
+      });
       return true;
     } catch (error) {
-      console.error('checkAuth: Ошибка проверки авторизации:', error.response?.data || error.message);
-      setIsAuthenticated(false);
-      setUser(null);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const refreshToken = async (attempt = 1, maxAttempts = 3) => {
-    if (attempt > maxAttempts) {
-      console.error('refreshToken: Достигнуто максимальное количество попыток обновления токена');
-      await logout();
-      return false;
-    }
-
-    try {
-      console.log(`refreshToken: Попытка обновления токена ${attempt} из ${maxAttempts}`);
-      const response = await api.post('/auth/refresh/', {}, { withCredentials: true });
-      console.log('refreshToken: Токены успешно обновлены:', response.data);
-      await checkAuth();
-      return true;
-    } catch (error) {
-      console.error('refreshToken: Ошибка обновления токена (попытка', attempt, '):', error.response?.data || error.message);
-      return await refreshToken(attempt + 1, maxAttempts);
-    }
-  };
-
-  const setupApiInterceptors = () => {
-    api.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
-        if (originalRequest.url.includes('/auth/refresh/') || originalRequest.url.includes('/auth/login/') || originalRequest.url.includes('/auth/logout/')) {
-          return Promise.reject(error);
+      if (error.response?.status === 401) {
+        try {
+          await api.post('/auth/refresh/');
+          return await checkAuth();
+        } catch (refreshError) {
+          handleLogout();
+          return false;
         }
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          console.log('Interceptor: Получен 401, пытаемся обновить токен...');
-          const refreshed = await refreshToken();
-          if (refreshed) {
-            return api(originalRequest);
-          }
-        }
-        console.error('Interceptor: Ошибка в перехватчике ответов:', error.response?.data || error.message);
-        return Promise.reject(error);
       }
-    );
-  };
-
-  useEffect(() => {
-    console.log('AuthProvider: Инициализация перехватчиков и проверка авторизации');
-    setupApiInterceptors();
-    checkAuth();
-  }, []);
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: error.response?.data?.detail || 'Auth check failed'
+      }));
+      return false;
+    }
+  }, [handleLogout]);
 
   const login = async (email, password) => {
     try {
-      const response = await api.post('/auth/login/', { email, password }, { withCredentials: true });
-      console.log('login: Успешный логин:', response.data);
+      setAuthState(prev => ({ ...prev, loading: true, error: null }));
+      await api.post('/auth/login/', { email, password });
       await checkAuth();
       return true;
     } catch (error) {
-      console.error('login: Ошибка при входе:', error.response?.data || error.message);
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: error.response?.data?.detail || 'Login failed'
+      }));
       throw error;
     }
   };
 
   const logout = async () => {
     try {
-      await api.post('/auth/logout/', {}, { withCredentials: true });
-    } catch (error) {
-      console.error('logout: Ошибка при выходе:', error.response?.data || error.message);
+      await api.post('/auth/logout/');
     } finally {
-      document.cookie = 'user_access_token=; Max-Age=0; path=/; secure; samesite=None';
-      document.cookie = 'user_refresh_token=; Max-Age=0; path=/; secure; samesite=None';
-      setIsAuthenticated(false);
-      setUser(null);
-      setLoading(false);
-      console.log('logout: Пользователь разлогинен');
+      handleLogout();
     }
   };
 
-  const isAdmin = user && user.role && user.role !== 'user';
-  const isSuperAdmin = user && user.role && user.role === 'super_admin';
+  useEffect(() => {
+    const initializeAuth = async () => {
+      await checkAuth();
+    };
+    initializeAuth();
+  }, [checkAuth]);
+
+  const value = {
+    ...authState,
+    login,
+    logout,
+    isAdmin: () => authState.user?.role === 'admin' || authState.user?.role === 'super_admin',
+    isSuperAdmin: () => authState.user?.role === 'super_admin',
+    checkAuth
+  };
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, loading, user, login, logout, isAdmin, isSuperAdmin, checkAuth, refreshToken }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }

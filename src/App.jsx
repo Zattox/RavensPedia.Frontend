@@ -1,7 +1,7 @@
 // src/App.jsx
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { NotificationProvider } from './context/NotificationContext';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {AuthProvider} from './context/AuthContext';
+import {NotificationProvider} from './context/NotificationContext';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -19,41 +19,43 @@ import ProtectedRoute from './components/ProtectedRoute'; // Импорт Protec
 import './index.css';
 
 function App() {
-  return (
-    <NotificationProvider>
-      <AuthProvider>
+    return (
         <Router>
-          <div className="min-h-screen flex flex-col bg-gray-900">
-            <Header />
-            <Routes>
-              {/* Общедоступные маршруты */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/news/:news_id" element={<NewsDetailPage />} />
-              <Route path="/matches" element={<MatchesPage />} />
-              <Route path="/matches/:match_id" element={<MatchDetailPage />} />
-              <Route path="/results" element={<MatchesResultsPage />} />
-              <Route path="/events" element={<EventsPage />} />
-              <Route path="/teams/:team_name" element={<TeamPage />} />
-              <Route path="/players/:player_id" element={<PlayerPage />} />
-              <Route path="/tournaments/:tournament_id" element={<TournamentPage />} />
+            <NotificationProvider>
+                <AuthProvider>
 
-              {/* Защищенный маршрут */}
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </div>
+                    <div className="min-h-screen flex flex-col bg-gray-900">
+                        <Header/>
+                        <Routes>
+                            {/* Общедоступные маршруты */}
+                            <Route path="/" element={<HomePage/>}/>
+                            <Route path="/login" element={<LoginPage/>}/>
+                            <Route path="/register" element={<RegisterPage/>}/>
+                            <Route path="/news/:news_id" element={<NewsDetailPage/>}/>
+                            <Route path="/matches" element={<MatchesPage/>}/>
+                            <Route path="/matches/:match_id" element={<MatchDetailPage/>}/>
+                            <Route path="/results" element={<MatchesResultsPage/>}/>
+                            <Route path="/events" element={<EventsPage/>}/>
+                            <Route path="/teams/:team_name" element={<TeamPage/>}/>
+                            <Route path="/players/:player_id" element={<PlayerPage/>}/>
+                            <Route path="/tournaments/:tournament_id" element={<TournamentPage/>}/>
+
+                            {/* Защищенный маршрут */}
+                            <Route
+                                path="/profile"
+                                element={
+                                    <ProtectedRoute>
+                                        <ProfilePage/>
+                                    </ProtectedRoute>
+                                }
+                            />
+                        </Routes>
+                    </div>
+
+                </AuthProvider>
+            </NotificationProvider>
         </Router>
-      </AuthProvider>
-    </NotificationProvider>
-  );
+    );
 }
 
 export default App;
