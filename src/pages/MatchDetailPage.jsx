@@ -1,11 +1,10 @@
-// src/pages/MatchDetailPage.jsx
-import { useState, useEffect,useContext } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Pagination } from 'antd';
-import api from '@/api';
-import { useAuth } from '@/context/AuthContext';
-import AdminMatchPanel from '@/components/AdminMatchPanel.jsx';
-import { NotificationContext } from '@/context/NotificationContext';
+import { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { Pagination, Button } from "antd";
+import api from "@/api";
+import { useAuth } from "@/context/AuthContext";
+import AdminMatchPanel from "@/components/AdminMatchPanel.jsx";
+import { NotificationContext } from "@/context/NotificationContext";
 
 function MatchDetailPage() {
   const { match_id } = useParams();
@@ -16,16 +15,24 @@ function MatchDetailPage() {
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
-  const [winnersSortConfig, setWinnersSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [winnersSortConfig, setWinnersSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
   const [sortedWinnersStats, setSortedWinnersStats] = useState([]);
-  const [losersSortConfig, setLosersSortConfig] = useState({ key: null, direction: 'ascending' });
+  const [losersSortConfig, setLosersSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
   const [sortedLosersStats, setSortedLosersStats] = useState([]);
   const notificationApi = useContext(NotificationContext);
 
+  // Function to display notifications
   const showNotification = (type, message, description) => {
-    notificationApi[type]({ message, description, placement: 'bottomRight' });
+    notificationApi[type]({ message, description, placement: "bottomRight" });
   };
 
+  // Fetch match data when match_id or refreshTrigger changes
   useEffect(() => {
     const fetchMatch = async () => {
       try {
@@ -34,9 +41,12 @@ function MatchDetailPage() {
         setMatch(response.data);
         setError(null);
       } catch (error) {
-        console.error('Ошибка при загрузке матча:', error.response?.data || error.message);
-        setError('Не удалось загрузить данные о матче. Проверьте подключение к серверу.');
-        showNotification('error', 'Ошибка!', 'Не удалось загрузить данные о матче.');
+        console.error(
+          "Error fetching match:",
+          error.response?.data || error.message,
+        );
+        setError("Failed to load match data. Check server connection.");
+        showNotification("error", "Error!", "Failed to load match data.");
       } finally {
         setLoading(false);
       }
@@ -44,98 +54,115 @@ function MatchDetailPage() {
     fetchMatch();
   }, [match_id, refreshTrigger]);
 
+  // Trigger a refresh of match data
   const refreshMatch = () => setRefreshTrigger((prev) => prev + 1);
 
+  // Update sorted winners and losers stats based on current round
   useEffect(() => {
     if (match) {
-      const winners = match.stats?.filter(
-        (stat) => stat.Result === 1 && stat.round_of_match === currentRound
-      ) || [];
-      const losers = match.stats?.filter(
-        (stat) => stat.Result === 0 && stat.round_of_match === currentRound
-      ) || [];
+      const winners =
+        match.stats?.filter(
+          (stat) => stat.Result === 1 && stat.round_of_match === currentRound,
+        ) || [];
+      const losers =
+        match.stats?.filter(
+          (stat) => stat.Result === 0 && stat.round_of_match === currentRound,
+        ) || [];
       setSortedWinnersStats(winners);
       setSortedLosersStats(losers);
     }
   }, [match, currentRound]);
 
+  // Sort winners stats when sort configuration changes
   useEffect(() => {
     if (winnersSortConfig.key && match) {
-      const winners = match.stats?.filter(
-        (stat) => stat.Result === 1 && stat.round_of_match === currentRound
-      ) || [];
+      const winners =
+        match.stats?.filter(
+          (stat) => stat.Result === 1 && stat.round_of_match === currentRound,
+        ) || [];
       const sorted = [...winners].sort((a, b) => {
         let aValue = a[winnersSortConfig.key];
         let bValue = b[winnersSortConfig.key];
 
-        if (winnersSortConfig.key === 'Headshots %') {
-          aValue = a['Headshots %'];
-          bValue = b['Headshots %'];
-        } else if (winnersSortConfig.key === 'K/D') {
+        if (winnersSortConfig.key === "Headshots %") {
+          aValue = a["Headshots %"];
+          bValue = b["Headshots %"];
+        } else if (winnersSortConfig.key === "K/D") {
           aValue = a.Deaths === 0 ? a.Kills : a.Kills / a.Deaths;
           bValue = b.Deaths === 0 ? b.Kills : b.Kills / b.Deaths;
         }
 
-        if (aValue < bValue) return winnersSortConfig.direction === 'ascending' ? -1 : 1;
-        if (aValue > bValue) return winnersSortConfig.direction === 'ascending' ? 1 : -1;
+        if (aValue < bValue)
+          return winnersSortConfig.direction === "ascending" ? -1 : 1;
+        if (aValue > bValue)
+          return winnersSortConfig.direction === "ascending" ? 1 : -1;
         return 0;
       });
       setSortedWinnersStats(sorted);
     }
   }, [winnersSortConfig, match, currentRound]);
 
+  // Sort losers stats when sort configuration changes
   useEffect(() => {
     if (losersSortConfig.key && match) {
-      const losers = match.stats?.filter(
-        (stat) => stat.Result === 0 && stat.round_of_match === currentRound
-      ) || [];
+      const losers =
+        match.stats?.filter(
+          (stat) => stat.Result === 0 && stat.round_of_match === currentRound,
+        ) || [];
       const sorted = [...losers].sort((a, b) => {
         let aValue = a[losersSortConfig.key];
         let bValue = b[losersSortConfig.key];
 
-        if (losersSortConfig.key === 'Headshots %') {
-          aValue = a['Headshots %'];
-          bValue = b['Headshots %'];
-        } else if (losersSortConfig.key === 'K/D') {
+        if (losersSortConfig.key === "Headshots %") {
+          aValue = a["Headshots %"];
+          bValue = b["Headshots %"];
+        } else if (losersSortConfig.key === "K/D") {
           aValue = a.Deaths === 0 ? a.Kills : a.Kills / a.Deaths;
           bValue = b.Deaths === 0 ? b.Kills : b.Kills / b.Deaths;
         }
 
-        if (aValue < bValue) return losersSortConfig.direction === 'ascending' ? -1 : 1;
-        if (aValue > bValue) return losersSortConfig.direction === 'ascending' ? 1 : -1;
+        if (aValue < bValue)
+          return losersSortConfig.direction === "ascending" ? -1 : 1;
+        if (aValue > bValue)
+          return losersSortConfig.direction === "ascending" ? 1 : -1;
         return 0;
       });
       setSortedLosersStats(sorted);
     }
   }, [losersSortConfig, match, currentRound]);
 
+  // Handle sorting for winners or losers table
   const handleSort = (key, type) => {
-    if (type === 'winners') {
+    if (type === "winners") {
       const direction =
-        winnersSortConfig.key === key && winnersSortConfig.direction === 'ascending'
-          ? 'descending'
-          : 'ascending';
+        winnersSortConfig.key === key &&
+        winnersSortConfig.direction === "ascending"
+          ? "descending"
+          : "ascending";
       setWinnersSortConfig({ key, direction });
     } else {
       const direction =
-        losersSortConfig.key === key && losersSortConfig.direction === 'ascending'
-          ? 'descending'
-          : 'ascending';
+        losersSortConfig.key === key &&
+        losersSortConfig.direction === "ascending"
+          ? "descending"
+          : "ascending";
       setLosersSortConfig({ key, direction });
     }
   };
 
+  // Format date string to a localized format
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleDateString("ru-RU", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
+  // Calculate overall score from match results
   const calculateOverallScore = () => {
     if (!match?.result) return { winsFirstTeam: 0, winsSecondTeam: 0 };
     let winsFirstTeam = 0;
@@ -158,20 +185,25 @@ function MatchDetailPage() {
       ? match?.teams?.[0]
       : match?.teams?.[1];
 
-  // Определяем общее количество раундов: максимум из result или stats
+  // Determine total number of rounds from results or stats
   const totalRounds = Math.max(
     match?.result?.length || 0,
-    match?.stats?.reduce((max, stat) => Math.max(max, stat.round_of_match), 0) || 1
+    match?.stats?.reduce(
+      (max, stat) => Math.max(max, stat.round_of_match),
+      0,
+    ) || 1,
   );
 
+  // Render loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-white text-center">Загрузка...</p>
+        <p className="text-white text-center">Loading...</p>
       </div>
     );
   }
 
+  // Render error state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -180,10 +212,11 @@ function MatchDetailPage() {
     );
   }
 
+  // Render match not found state
   if (!match) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-white text-center">Матч не найден.</p>
+        <p className="text-white text-center">Match not found.</p>
       </div>
     );
   }
@@ -192,70 +225,85 @@ function MatchDetailPage() {
     <div className="min-h-screen flex flex-col items-center p-4 pt-24 bg-gray-900 relative">
       {/* Main Content */}
       <div className="w-full max-w-4xl">
-        <button
-          onClick={() => navigate('/matches')}
-          className="mb-4 text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+        <Button
+          onClick={() => navigate("/matches")}
+          className="mb-4 bg-blue-600 hover:!bg-blue-700 text-white font-bold px-3 py-5 border border-gray-500"
         >
-          Назад к матчам
-        </button>
+          Back to Matches
+        </Button>
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
-          <h2 className="text-2xl font-bold mb-4 text-center">Основная информация</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Match Information
+          </h2>
           <h3 className="text-lg font-semibold mb-2">
-            Формат: Best of {match.best_of || 'Не указан'}
+            Format: Best of {match.best_of || "Not specified"}
           </h3>
           <p className="text-gray-300">
-            <span className="font-semibold">Турнир:</span>{' '}
+            <span className="font-semibold">Tournament:</span>{" "}
             {match.tournament ? (
-              <Link to={`/tournaments/${match.tournament}`} className="text-blue-400 hover:underline">
+              <Link
+                to={`/tournaments/${match.tournament}`}
+                className="text-blue-400 hover:underline"
+              >
                 {match.tournament}
               </Link>
             ) : (
-              'N/A'
+              "N/A"
             )}
           </p>
           <p className="text-gray-300">
-            <span className="font-semibold">Описание:</span> {match.description || 'N/A'}
+            <span className="font-semibold">Description:</span>{" "}
+            {match.description || "N/A"}
           </p>
           <p className="text-gray-300">
-            <span className="font-semibold">Дата:</span>{' '}
-            {match.date ? formatDate(match.date) : 'N/A'}
+            <span className="font-semibold">Date:</span>{" "}
+            {match.date ? formatDate(match.date) : "N/A"}
           </p>
           <p className="text-gray-300">
-            <span className="font-semibold">Матч:</span>{' '}
+            <span className="font-semibold">Match:</span>{" "}
             {Array.isArray(match.teams) && match.teams.length === 2 ? (
               <span>
-                <Link to={`/teams/${match.teams[0]}`} className="text-blue-400 hover:underline">
+                <Link
+                  to={`/teams/${match.teams[0]}`}
+                  className="text-blue-400 hover:underline"
+                >
                   {match.teams[0]}
-                </Link>{' '}
-                vs{' '}
-                <Link to={`/teams/${match.teams[1]}`} className="text-red-400 hover:underline">
+                </Link>{" "}
+                vs{" "}
+                <Link
+                  to={`/teams/${match.teams[1]}`}
+                  className="text-red-400 hover:underline"
+                >
                   {match.teams[1]}
                 </Link>
               </span>
             ) : (
-              'N/A'
+              "N/A"
             )}
           </p>
           <p className="text-gray-300">
-            <span className="font-semibold">Статус:</span> {match.status || 'N/A'}
+            <span className="font-semibold">Status:</span>{" "}
+            {match.status || "N/A"}
           </p>
           <p className="text-gray-300">
-            <span className="font-semibold">Общий счёт:</span>{' '}
+            <span className="font-semibold">Overall Score:</span>{" "}
             {overallScore.winsFirstTeam} - {overallScore.winsSecondTeam}
           </p>
           {Array.isArray(match.result) && match.result.length > 0 && (
             <div>
-              <span className="font-semibold">Результаты по картам:</span>
+              <span className="font-semibold">Map Results:</span>
               <ul className="list-disc list-inside text-gray-300 mt-2">
                 {match.result.map((res, index) => (
                   <li key={index}>
-                    Карта {index + 1} ({res.map}): {res.total_score_first_team} -{' '}
-                    {res.total_score_second_team} (Первая половина:{' '}
-                    {res.first_half_score_first_team} - {res.first_half_score_second_team}, Вторая
-                    половина: {res.second_half_score_first_team} -{' '}
-                    {res.second_half_score_second_team}, Овертайм:{' '}
-                    {res.overtime_score_first_team} - {res.overtime_score_second_team})
+                    Map {index + 1} ({res.map}): {res.total_score_first_team} -{" "}
+                    {res.total_score_second_team} (First Half:{" "}
+                    {res.first_half_score_first_team} -{" "}
+                    {res.first_half_score_second_team}, Second Half:{" "}
+                    {res.second_half_score_first_team} -{" "}
+                    {res.second_half_score_second_team}, Overtime:{" "}
+                    {res.overtime_score_first_team} -{" "}
+                    {res.overtime_score_second_team})
                   </li>
                 ))}
               </ul>
@@ -270,14 +318,18 @@ function MatchDetailPage() {
               {match.veto.map((vetoItem, index) => (
                 <li
                   key={index}
-                  className={vetoItem.map_status === 'Banned' ? 'text-red-400' : 'text-green-400'}
+                  className={
+                    vetoItem.map_status === "Banned"
+                      ? "text-red-400"
+                      : "text-green-400"
+                  }
                 >
                   {vetoItem.initiator} ({vetoItem.map_status}): {vetoItem.map}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-300 text-center">Veto не указано.</p>
+            <p className="text-gray-300 text-center">No veto specified.</p>
           )}
         </div>
 
@@ -295,66 +347,82 @@ function MatchDetailPage() {
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-2 text-center">
-            Статистика игроков (
-            <Link to={`/teams/${winningTeam}`} className="text-blue-400 hover:underline">
+            Player Statistics (
+            <Link
+              to={`/teams/${winningTeam}`}
+              className="text-blue-400 hover:underline"
+            >
               {winningTeam}
             </Link>
-            ) - Карта {currentRound}: {match.result?.[currentRound - 1]?.map || 'N/A'}
+            ) - Map {currentRound}:{" "}
+            {match.result?.[currentRound - 1]?.map || "N/A"}
           </h2>
-          <p className="text-gray-300 text-center mb-4">Результат: Победа</p>
+          <p className="text-gray-300 text-center mb-4">Result: Victory</p>
           {sortedWinnersStats.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-gray-300">
                 <thead>
                   <tr className="bg-gray-700">
-                    <th className="p-3">Никнейм</th>
+                    <th className="p-3">Nickname</th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('Kills', 'winners')}
+                      onClick={() => handleSort("Kills", "winners")}
                     >
-                      Убийства{' '}
-                      {winnersSortConfig.key === 'Kills' &&
-                        (winnersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      Kills{" "}
+                      {winnersSortConfig.key === "Kills" &&
+                        (winnersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('Assists', 'winners')}
+                      onClick={() => handleSort("Assists", "winners")}
                     >
-                      Ассисты{' '}
-                      {winnersSortConfig.key === 'Assists' &&
-                        (winnersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      Assists{" "}
+                      {winnersSortConfig.key === "Assists" &&
+                        (winnersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('Deaths', 'winners')}
+                      onClick={() => handleSort("Deaths", "winners")}
                     >
-                      Смерти{' '}
-                      {winnersSortConfig.key === 'Deaths' &&
-                        (winnersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      Deaths{" "}
+                      {winnersSortConfig.key === "Deaths" &&
+                        (winnersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('K/D', 'winners')}
+                      onClick={() => handleSort("K/D", "winners")}
                     >
-                      K/D{' '}
-                      {winnersSortConfig.key === 'K/D' &&
-                        (winnersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      K/D{" "}
+                      {winnersSortConfig.key === "K/D" &&
+                        (winnersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('ADR', 'winners')}
+                      onClick={() => handleSort("ADR", "winners")}
                     >
-                      ADR{' '}
-                      {winnersSortConfig.key === 'ADR' &&
-                        (winnersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      ADR{" "}
+                      {winnersSortConfig.key === "ADR" &&
+                        (winnersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('Headshots %', 'winners')}
+                      onClick={() => handleSort("Headshots %", "winners")}
                     >
-                      Headshots %{' '}
-                      {winnersSortConfig.key === 'Headshots %' &&
-                        (winnersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      Headshots %{" "}
+                      {winnersSortConfig.key === "Headshots %" &&
+                        (winnersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                   </tr>
                 </thead>
@@ -373,85 +441,100 @@ function MatchDetailPage() {
                       <td className="p-3">{stat.Assists}</td>
                       <td className="p-3">{stat.Deaths}</td>
                       <td className="p-3">
-                        {stat.Deaths === 0 ? stat.Kills : (stat.Kills / stat.Deaths).toFixed(2)}
+                        {stat.Deaths === 0
+                          ? stat.Kills
+                          : (stat.Kills / stat.Deaths).toFixed(2)}
                       </td>
                       <td className="p-3">{stat.ADR}</td>
-                      <td className="p-3">{stat['Headshots %']}%</td>
+                      <td className="p-3">{stat["Headshots %"]}%</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-gray-300 text-center">Статистика недоступна.</p>
+            <p className="text-gray-300 text-center">Statistics unavailable.</p>
           )}
         </div>
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
           <h2 className="text-2xl font-bold mb-2 text-center">
-            Статистика игроков (
+            Player Statistics (
             <Link
               to={`/teams/${winningTeam === match.teams[0] ? match.teams[1] : match.teams[0]}`}
               className="text-red-400 hover:underline"
             >
               {winningTeam === match.teams[0] ? match.teams[1] : match.teams[0]}
             </Link>
-            ) - Карта {currentRound}: {match.result?.[currentRound - 1]?.map || 'N/A'}
+            ) - Map {currentRound}:{" "}
+            {match.result?.[currentRound - 1]?.map || "N/A"}
           </h2>
-          <p className="text-gray-300 text-center mb-4">Результат: Поражение</p>
+          <p className="text-gray-300 text-center mb-4">Result: Defeat</p>
           {sortedLosersStats.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-gray-300">
                 <thead>
                   <tr className="bg-gray-700">
-                    <th className="p-3">Никнейм</th>
+                    <th className="p-3">Nickname</th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('Kills', 'losers')}
+                      onClick={() => handleSort("Kills", "losers")}
                     >
-                      Убийства{' '}
-                      {losersSortConfig.key === 'Kills' &&
-                        (losersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      Kills{" "}
+                      {losersSortConfig.key === "Kills" &&
+                        (losersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('Assists', 'losers')}
+                      onClick={() => handleSort("Assists", "losers")}
                     >
-                      Ассисты{' '}
-                      {losersSortConfig.key === 'Assists' &&
-                        (losersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      Assists{" "}
+                      {losersSortConfig.key === "Assists" &&
+                        (losersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('Deaths', 'losers')}
+                      onClick={() => handleSort("Deaths", "losers")}
                     >
-                      Смерти{' '}
-                      {losersSortConfig.key === 'Deaths' &&
-                        (losersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      Deaths{" "}
+                      {losersSortConfig.key === "Deaths" &&
+                        (losersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('K/D', 'losers')}
+                      onClick={() => handleSort("K/D", "losers")}
                     >
-                      K/D{' '}
-                      {losersSortConfig.key === 'K/D' &&
-                        (losersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      K/D{" "}
+                      {losersSortConfig.key === "K/D" &&
+                        (losersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('ADR', 'losers')}
+                      onClick={() => handleSort("ADR", "losers")}
                     >
-                      ADR{' '}
-                      {losersSortConfig.key === 'ADR' &&
-                        (losersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      ADR{" "}
+                      {losersSortConfig.key === "ADR" &&
+                        (losersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                     <th
                       className="p-3 cursor-pointer hover:text-blue-400"
-                      onClick={() => handleSort('Headshots %', 'losers')}
+                      onClick={() => handleSort("Headshots %", "losers")}
                     >
-                      Headshots %{' '}
-                      {losersSortConfig.key === 'Headshots %' &&
-                        (losersSortConfig.direction === 'ascending' ? '↑' : '↓')}
+                      Headshots %{" "}
+                      {losersSortConfig.key === "Headshots %" &&
+                        (losersSortConfig.direction === "ascending"
+                          ? "↑"
+                          : "↓")}
                     </th>
                   </tr>
                 </thead>
@@ -470,22 +553,31 @@ function MatchDetailPage() {
                       <td className="p-3">{stat.Assists}</td>
                       <td className="p-3">{stat.Deaths}</td>
                       <td className="p-3">
-                        {stat.Deaths === 0 ? stat.Kills : (stat.Kills / stat.Deaths).toFixed(2)}
+                        {stat.Deaths === 0
+                          ? stat.Kills
+                          : (stat.Kills / stat.Deaths).toFixed(2)}
                       </td>
                       <td className="p-3">{stat.ADR}</td>
-                      <td className="p-3">{stat['Headshots %']}%</td>
+                      <td className="p-3">{stat["Headshots %"]}%</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p className="text-gray-300 text-center">Статистика недоступна.</p>
+            <p className="text-gray-300 text-center">Statistics unavailable.</p>
           )}
         </div>
       </div>
 
-      {isAdmin() && <AdminMatchPanel match_id={match_id} setMatch={setMatch} refreshMatch={refreshMatch} match={match} />}
+      {isAdmin() && (
+        <AdminMatchPanel
+          match_id={match_id}
+          setMatch={setMatch}
+          refreshMatch={refreshMatch}
+          match={match}
+        />
+      )}
     </div>
   );
 }
