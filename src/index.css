@@ -3,30 +3,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base styles for the application */
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
-
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
-
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Body styles */
 body {
     margin: 0;
     min-height: 100vh;
 }
 
+/* Heading styles */
 h1 {
     font-size: 3.2em;
     line-height: 1.1;
 }
 
+/* Base button styles */
 button {
     border-radius: 8px;
     border: 1px solid transparent;
@@ -48,6 +50,7 @@ button:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Light mode adjustments */
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
@@ -58,7 +61,7 @@ button:focus-visible {
     }
 }
 
-/* Кастомные стили для пагинации */
+/* Custom pagination styles */
 .custom-pagination .ant-pagination-item {
     background-color: #1f2937;
     border-color: #374151;
@@ -94,12 +97,12 @@ button:focus-visible {
     border-color: #3b82f6;
 }
 
-/* Чередование цветов строк в таблице */
+/* Table row alternating colors */
 tbody tr:nth-child(even) {
     background-color: #2d3748;
 }
 
-/* Кастомные стили для модального окна */
+/* Custom modal styles */
 .custom-modal .ant-modal-content {
     background-color: #1f2937;
     color: #ffffff;
@@ -122,7 +125,7 @@ tbody tr:nth-child(even) {
 .custom-modal .ant-input-number,
 .custom-modal .ant-input-textarea {
     background-color: #374151;
-    color: #e5e7eb !important; /* Унифицируем цвет текста */
+    color: #e5e7eb !important;
     border-color: #4b5563;
 }
 
@@ -147,12 +150,12 @@ tbody tr:nth-child(even) {
     color: #f87171;
 }
 
-/* Кастомные классы для полей ввода */
+/* Custom input field classes */
 .custom-input,
 .custom-input-number,
 .custom-textarea {
     background-color: #374151 !important;
-    color: #e5e7eb !important; /* Унифицируем цвет текста */
+    color: #e5e7eb !important;
     border-color: #4b5563 !important;
 }
 
@@ -169,47 +172,47 @@ tbody tr:nth-child(even) {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* Стили для плейсхолдеров */
+/* Placeholder styles */
 .custom-input::placeholder,
 .custom-input-number input::placeholder,
 .custom-textarea::placeholder {
     color: #9ca3af !important;
 }
 
-/* Стили для плейсхолдеров DatePicker */
+/* DatePicker placeholder styles */
 .custom-input .ant-picker-input > input::placeholder {
-    color: #9ca3af !important; /* Соответствует text-gray-400 */
+    color: #9ca3af !important;
 }
 
-/* Стили для плейсхолдеров Select */
+/* Select placeholder styles */
 .custom-select .ant-select-selection-placeholder {
-    color: #9ca3af !important; /* Соответствует text-gray-400 */
+    color: #9ca3af !important;
 }
 
-/* Унифицируем цвет текста внутри InputNumber */
+/* InputNumber text color */
 .custom-input-number .ant-input-number-input {
     color: #e5e7eb !important;
 }
 
-/* Стили для панели управления (AdminMatchPanel) */
+/* Admin panel styles */
 .admin-panel {
-    background-color: #1f2937 !important; /* Тот же фон, что у модального окна */
-    color: #e5e7eb !important; /* Тот же цвет текста */
+    background-color: #1f2937 !important;
+    color: #e5e7eb !important;
 }
 
-/* Унифицируем стили кнопок в панели */
+/* Admin panel button styles */
 .admin-panel button {
-    background-color: #374151 !important; /* Фон кнопок, как у полей ввода */
-    color: #e5e7eb !important; /* Цвет текста кнопок */
-    border-color: #4b5563 !important; /* Цвет границы */
+    background-color: #374151 !important;
+    color: #e5e7eb !important;
+    border-color: #4b5563 !important;
 }
 
 .admin-panel button:hover {
-    background-color: #4b5563 !important; /* Цвет фона при наведении */
-    border-color: #3b82f6 !important; /* Цвет границы при наведении */
+    background-color: #4b5563 !important;
+    border-color: #3b82f6 !important;
 }
 
-/* Специфические стили для кнопок действий (добавить, удалить) */
+/* Specific action button styles */
 .admin-panel .bg-blue-600 {
     background-color: #3b82f6 !important;
 }
@@ -234,16 +237,16 @@ tbody tr:nth-child(even) {
     background-color: #b91c1c !important;
 }
 
-/* Стили для формы фильтров */
+/* Filter form styles */
 .custom-form .ant-form-item-label > label {
-    color: #d1d5db !important; /* Соответствует text-gray-300 */
+    color: #d1d5db !important;
 }
 
 .custom-form .ant-form-item-label > label .anticon {
-    color: #9ca3af !important; /* Соответствует text-gray-500 для иконок */
+    color: #9ca3af !important;
 }
 
-/* Стили для таблицы */
+/* Table styles */
 .custom-table .ant-table {
     background: #1f2937 !important;
     color: #d1d5db !important;
@@ -262,7 +265,7 @@ tbody tr:nth-child(even) {
     background: #374151 !important;
 }
 
-/* Стили для полей ввода и селектов */
+/* Input and select styles */
 .custom-input,
 .custom-select .ant-select-selector {
     background-color: #2d3748 !important;
@@ -272,4 +275,25 @@ tbody tr:nth-child(even) {
 
 .custom-select .ant-select-arrow {
     color: #e2e8f0 !important;
+}
+
+/* Custom styles for Select dropdown options */
+.custom-select .ant-select-dropdown {
+    background-color: #374151 !important;
+    border: 1px solid #4b5563 !important;
+}
+
+.custom-select .ant-select-item-option {
+    background-color: #374151 !important;
+    color: #e5e7eb !important;
+}
+
+.custom-select .ant-select-item-option:hover {
+    background-color: #4b5563 !important;
+    color: #ffffff !important;
+}
+
+.custom-select .ant-select-item-option-selected {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
 }
