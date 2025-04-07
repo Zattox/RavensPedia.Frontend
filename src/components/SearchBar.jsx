@@ -1,71 +1,82 @@
-// src/components/SearchBar.jsx
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import api from '@/api';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Input } from "antd";
+import api from "@/api";
 
+// SearchBar component for searching players, teams, and tournaments
 function SearchBar() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(""); // State for search query
   const [results, setResults] = useState({
     players: [],
     teams: [],
     tournaments: [],
-  });
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  }); // State for search results
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to control dropdown visibility
 
+  // Effect to fetch search results with debouncing
   useEffect(() => {
     const fetchResults = async () => {
-      console.log('Fetching results for query:', query); // Лог запроса
+      console.log("Fetching results for query:", query); // Log the query
       if (query.length < 2) {
-        setResults({ players: [], teams: [], tournaments: [] });
-        setIsDropdownOpen(false);
+        setResults({ players: [], teams: [], tournaments: [] }); // Clear results if query is too short
+        setIsDropdownOpen(false); // Hide dropdown
         return;
       }
 
       try {
-        const response = await api.get(`/search/?query=${query}`);
-        console.log('API Response:', response.data); // Лог ответа
-        const data = response.data || { players: [], teams: [], tournaments: [] };
+        const response = await api.get(`/search/?query=${query}`); // Fetch search results from API
+        console.log("API Response:", response.data); // Log the API response
+        const data = response.data || {
+          players: [],
+          teams: [],
+          tournaments: [],
+        }; // Fallback to empty arrays
         setResults({
           players: Array.isArray(data.players) ? data.players : [],
           teams: Array.isArray(data.teams) ? data.teams : [],
           tournaments: Array.isArray(data.tournaments) ? data.tournaments : [],
-        });
-        setIsDropdownOpen(true);
+        }); // Update results state
+        setIsDropdownOpen(true); // Show dropdown
       } catch (error) {
-        console.error('Error fetching search results:', error);
-        setResults({ players: [], teams: [], tournaments: [] });
-        setIsDropdownOpen(false);
+        console.error("Error fetching search results:", error); // Log any errors
+        setResults({ players: [], teams: [], tournaments: [] }); // Clear results on error
+        setIsDropdownOpen(false); // Hide dropdown
       }
     };
 
-    const debounce = setTimeout(fetchResults, 300);
-    return () => clearTimeout(debounce);
+    const debounce = setTimeout(fetchResults, 300); // Debounce API call by 300ms
+    return () => clearTimeout(debounce); // Cleanup timeout on unmount or query change
   }, [query]);
 
+  // Handler for input change
   const handleInputChange = (e) => {
-    setQuery(e.target.value);
+    setQuery(e.target.value); // Update query state
   };
 
+  // Handler to close dropdown after losing focus
   const handleBlur = () => {
-    setTimeout(() => setIsDropdownOpen(false), 200);
+    setTimeout(() => setIsDropdownOpen(false), 200); // Delay to allow link clicks
   };
 
   return (
     <div className="relative">
-      <input
+      <Input
         type="text"
         value={query}
         onChange={handleInputChange}
         onBlur={handleBlur}
-        onFocus={() => query.length >= 2 && setIsDropdownOpen(true)}
+        onFocus={() => query.length >= 2 && setIsDropdownOpen(true)} // Show dropdown on focus if query is valid
         placeholder="Search teams, players, tournaments..."
-        className="bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+        className="custom-input w-64" // Use custom-input class from index.css
       />
       {isDropdownOpen && (
         <div className="absolute top-full left-0 bg-gray-800 text-white rounded-lg shadow-md w-64 max-h-96 overflow-y-auto z-20">
+          {/* Players Section */}
           {(results.players || []).length > 0 && (
             <div className="border-b border-gray-700">
-              <div className="px-4 py-2 text-sm font-semibold text-gray-400">Players</div>
+              <div className="px-4 py-2 text-sm font-semibold text-gray-400">
+                Players
+              </div>
               {results.players.map((player) => (
                 <Link
                   key={player.nickname}
@@ -75,16 +86,21 @@ function SearchBar() {
                   <div className="flex items-center">
                     <span>{player.nickname}</span>
                     {player.team && (
-                      <span className="ml-2 text-xs text-gray-400">({player.team})</span>
+                      <span className="ml-2 text-xs text-gray-400">
+                        ({player.team})
+                      </span>
                     )}
                   </div>
                 </Link>
               ))}
             </div>
           )}
+          {/* Teams Section */}
           {(results.teams || []).length > 0 && (
             <div className="border-b border-gray-700">
-              <div className="px-4 py-2 text-sm font-semibold text-gray-400">Teams</div>
+              <div className="px-4 py-2 text-sm font-semibold text-gray-400">
+                Teams
+              </div>
               {results.teams.map((team) => (
                 <Link
                   key={team.name}
@@ -96,9 +112,12 @@ function SearchBar() {
               ))}
             </div>
           )}
+          {/* Tournaments Section */}
           {(results.tournaments || []).length > 0 && (
             <div>
-              <div className="px-4 py-2 text-sm font-semibold text-gray-400">Tournaments</div>
+              <div className="px-4 py-2 text-sm font-semibold text-gray-400">
+                Tournaments
+              </div>
               {results.tournaments.map((tournament) => (
                 <Link
                   key={tournament.name}
@@ -110,10 +129,13 @@ function SearchBar() {
               ))}
             </div>
           )}
+          {/* No Results Message */}
           {(results.players || []).length === 0 &&
             (results.teams || []).length === 0 &&
             (results.tournaments || []).length === 0 && (
-              <div className="px-4 py-2 text-sm text-gray-400">No results found</div>
+              <div className="px-4 py-2 text-sm text-gray-400">
+                No results found
+              </div>
             )}
         </div>
       )}

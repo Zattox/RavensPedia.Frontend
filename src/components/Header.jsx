@@ -1,41 +1,52 @@
-// src/components/Header.jsx
-import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import SearchBar from './SearchBar';
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Button } from "antd";
+import { useAuth } from "@/context/AuthContext";
+import SearchBar from "./SearchBar";
 
+// Header component for navigation and user authentication controls
 function Header() {
-  const { isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [isEventsDropdownOpen, setIsEventsDropdownOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth(); // Access authentication status and logout function
+  const navigate = useNavigate(); // Hook to programmatically navigate
+  const location = useLocation(); // Hook to get current location
+  const [isEventsDropdownOpen, setIsEventsDropdownOpen] = useState(false); // State for events dropdown visibility
 
+  // Handler to perform logout and redirect
   const handleLogout = async () => {
-    await logout();
-    // Определяем, куда перенаправить после выхода
-    const from = location.pathname || '/';
-    const redirectTo = ['/login', '/register'].includes(from) ? '/' : from;
-    navigate(redirectTo); // Перенаправляем на предыдущую страницу или на главную
+    await logout(); // Call logout function from AuthContext
+    const from = location.pathname || "/"; // Determine redirect path
+    const redirectTo = ["/login", "/register"].includes(from) ? "/" : from; // Avoid redirecting to login/register
+    navigate(redirectTo); // Redirect after logout
   };
 
   return (
     <header className="fixed top-0 left-0 w-full bg-gray-900 p-4 shadow-md z-10">
       <nav className="flex justify-between items-center max-w-6xl mx-auto">
+        {/* Navigation Links */}
         <div className="space-x-4 flex items-center">
-          <Link to="/" className="text-white hover:bg-gray-700 px-3 py-2 rounded">
+          <Link
+            to="/"
+            className="text-white hover:bg-gray-700 px-3 py-2 rounded"
+          >
             News
           </Link>
-          <Link to="/matches" className="text-white hover:bg-gray-700 px-3 py-2 rounded">
+          <Link
+            to="/matches"
+            className="text-white hover:bg-gray-700 px-3 py-2 rounded"
+          >
             Matches
           </Link>
-          <Link to="/results" className="text-white hover:bg-gray-700 px-3 py-2 rounded">
+          <Link
+            to="/results"
+            className="text-white hover:bg-gray-700 px-3 py-2 rounded"
+          >
             Results
           </Link>
-          {/* Выпадающий список для Events */}
+          {/* Events Dropdown */}
           <div
             className="relative"
-            onMouseEnter={() => setIsEventsDropdownOpen(true)}
-            onMouseLeave={() => setIsEventsDropdownOpen(false)}
+            onMouseEnter={() => setIsEventsDropdownOpen(true)} // Show dropdown on hover
+            onMouseLeave={() => setIsEventsDropdownOpen(false)} // Hide dropdown on hover out
           >
             <Link
               to="/events"
@@ -63,54 +74,56 @@ function Header() {
                   to="/events?type=ongoing"
                   className="block px-4 py-2 hover:bg-gray-700 rounded-t-lg"
                 >
-                  Текущие турниры
+                  Ongoing Tournaments
                 </Link>
                 <Link
                   to="/events?type=archive"
                   className="block px-4 py-2 hover:bg-gray-700"
                 >
-                  Прошедшие турниры
+                  Past Tournaments
                 </Link>
                 <Link
                   to="/events?type=calendar"
                   className="block px-4 py-2 hover:bg-gray-700 rounded-b-lg"
                 >
-                  Запланированные турниры
+                  Upcoming Tournaments
                 </Link>
               </div>
             )}
           </div>
         </div>
+        {/* Authentication and Search Controls */}
         <div className="flex items-center space-x-4">
-          <SearchBar />
+          <SearchBar /> {/* Search bar component */}
           {isAuthenticated ? (
             <>
-              <Link to="/profile" className="text-white hover:bg-gray-700 px-3 py-2 rounded">
-                Профиль
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded"
+              <Link
+                to="/profile"
+                className="text-white hover:bg-gray-700 px-3 py-2 rounded"
               >
-                Выйти
-              </button>
+                Profile
+              </Link>
+              <Button
+                onClick={handleLogout}
+                className="bg-red-600 hover:!bg-red-700 text-white font-bold px-3 py-5 border border-gray-500"
+              >
+                Logout
+              </Button>
             </>
           ) : (
             <>
               <Link
                 to="/login"
-                state={{ from: location }} // Передаем текущую локацию в state
+                state={{ from: location }} // Pass current location to login
                 className="text-white hover:bg-gray-700 px-3 py-2 rounded"
               >
-                Войти
+                Login
               </Link>
-              <Link
-                to="/register"
-                state={{ from: location }} // Передаем текущую локацию в state
-                className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded"
-              >
-                Регистрация
-              </Link>
+              <Button className="bg-blue-600 hover:!bg-blue-700 text-white font-bold px-3 py-5 border border-gray-500">
+                <Link to="/register" state={{ from: location }}>
+                  Register
+                </Link>
+              </Button>
             </>
           )}
         </div>
