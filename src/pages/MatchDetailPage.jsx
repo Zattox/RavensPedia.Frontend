@@ -290,6 +290,21 @@ function MatchDetailPage() {
             <span className="font-semibold">Overall Score:</span>{" "}
             {overallScore.winsFirstTeam} - {overallScore.winsSecondTeam}
           </p>
+          <p className="text-gray-300">
+            <span className="font-semibold">Source:</span>{" "}
+            {match.original_source && match.original_source !== "null" ? (
+              <a
+                href={match.original_source}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:underline"
+              >
+                {match.original_source}
+              </a>
+            ) : (
+              "(No link)"
+            )}
+          </p>
           {Array.isArray(match.result) && match.result.length > 0 && (
             <div>
               <span className="font-semibold">Map Results:</span>

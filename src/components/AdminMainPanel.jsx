@@ -87,6 +87,7 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
         tournament: values.tournament,
         date: values.date,
         description: values.description,
+        original_source: values.original_source || undefined,
       });
       showNotification("success", "Success!", "Match created successfully!");
       setIsMatchModalVisible(false);
@@ -398,6 +399,24 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
                 rows={4}
                 className="custom-textarea"
                 placeholder="e.g., Tournament final..."
+              />
+            </Form.Item>
+            <Form.Item
+              name="original_source"
+              label={
+                <span className="text-gray-300">Source URL (optional)</span>
+              }
+              rules={[
+                {
+                  type: "url",
+                  message: "Please enter a valid URL",
+                  warningOnly: true,
+                },
+              ]}
+            >
+              <Input
+                className="custom-input"
+                placeholder="e.g., https://www.faceit.com/en/match/12345"
               />
             </Form.Item>
             <Form.Item name="max_number_of_teams" hidden initialValue={2}>

@@ -66,6 +66,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
     if (values.tournament) updatedMatch.tournament = values.tournament;
     if (values.date) updatedMatch.date = values.date;
     if (values.description) updatedMatch.description = values.description;
+    if (values.original_source)
+      updatedMatch.original_source = values.original_source;
 
     if (Object.keys(updatedMatch).length > 0) {
       try {
@@ -592,6 +594,29 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   rows={4}
                   className="custom-textarea"
                   placeholder="New description (optional)"
+                />
+              </Form.Item>
+              <Form.Item
+                name="original_source"
+                label={
+                  <span className="text-gray-300">
+                    Source URL{" "}
+                    <Tooltip title="Enter new source URL (leave blank to keep unchanged)">
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                  </span>
+                }
+                rules={[
+                  {
+                    type: "url",
+                    message: "Please enter a valid URL",
+                    warningOnly: true,
+                  },
+                ]}
+              >
+                <Input
+                  className="custom-input"
+                  placeholder="e.g., https://www.faceit.com/en/match/12345 (optional)"
                 />
               </Form.Item>
               <Form.Item>
