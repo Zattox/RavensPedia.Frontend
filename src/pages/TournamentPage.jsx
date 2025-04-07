@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import api from '@/api';
-import { useAuth } from '@/context/AuthContext';
-import AdminTournamentPanel from '../components/AdminTournamentPanel';
-import { Spin, Alert, Pagination } from 'antd';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import api from "@/api";
+import { useAuth } from "@/context/AuthContext";
+import AdminTournamentPanel from "../components/AdminTournamentPanel";
+import { Spin, Alert, Pagination, Button } from "antd";
 
 function TournamentPage() {
   const { tournament_id } = useParams();
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
+
+  // State for managing tournament data, loading status, errors, matches, and pagination
   const [tournament, setTournament] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,32 +20,39 @@ function TournamentPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const itemsPerPage = 5;
 
+  // Fetch tournament data from the API
   const fetchTournament = async () => {
     try {
       const response = await api.get(`/tournaments/${tournament_id}/`);
       setTournament(response.data);
       setError(null);
     } catch (err) {
-      console.error('Ошибка при загрузке турнира:', err);
-      setError('Не удалось загрузить данные турнира.');
+      console.log(err);
+      setError("Failed to load tournament data.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Trigger tournament fetch on mount or when tournament_id/refreshTrigger changes
   useEffect(() => {
     fetchTournament();
   }, [tournament_id, refreshTrigger]);
 
+  // Fetch details of matches associated with the tournament
   useEffect(() => {
     const fetchMatchesDetails = async () => {
-      if (tournament && tournament.matches_id && tournament.matches_id.length > 0) {
+      if (
+        tournament &&
+        tournament.matches_id &&
+        tournament.matches_id.length > 0
+      ) {
         const matchPromises = tournament.matches_id.map(async (matchId) => {
           try {
             const response = await api.get(`/matches/${matchId}/`);
             return response.data;
           } catch (error) {
-            console.error(`Ошибка при загрузке матча ${matchId}:`, error);
+            console.log(error);
             return null;
           }
         });
@@ -56,17 +65,18 @@ function TournamentPage() {
     fetchMatchesDetails();
   }, [tournament]);
 
+  // Format date string to a readable format
   const formatDate = (dateString) => {
-    if (!dateString) return 'Не указано';
+    if (!dateString) return "Not specified";
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return date.toLocaleDateString("ru-RU", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
-  // Добавляем функцию для подсчета итогового счета матча
+  // Calculate overall score for a match based on results
   const calculateOverallScore = (match) => {
     if (!match?.result) return { winsFirstTeam: 0, winsSecondTeam: 0 };
     let winsFirstTeam = 0;
@@ -83,20 +93,24 @@ function TournamentPage() {
     return { winsFirstTeam, winsSecondTeam };
   };
 
+  // Handle pagination change for teams and scroll to top
   const handleTeamPageChange = (page) => {
     setCurrentTeamPage(page);
     window.scrollTo(0, 0);
   };
 
+  // Handle pagination change for matches and scroll to top
   const handleMatchPageChange = (page) => {
     setCurrentMatchPage(page);
     window.scrollTo(0, 0);
   };
 
+  // Refresh tournament data
   const refreshTournament = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  // Render loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -105,6 +119,7 @@ function TournamentPage() {
     );
   }
 
+  // Render error state
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -113,54 +128,71 @@ function TournamentPage() {
     );
   }
 
+  // Calculate pagination indices for teams
   const indexOfLastTeam = currentTeamPage * itemsPerPage;
   const indexOfFirstTeam = indexOfLastTeam - itemsPerPage;
-  const currentTeams = tournament.teams.slice(indexOfFirstTeam, indexOfLastTeam);
+  const currentTeams = tournament.teams.slice(
+    indexOfFirstTeam,
+    indexOfLastTeam,
+  );
 
+  // Calculate pagination indices for matches
   const indexOfLastMatch = currentMatchPage * itemsPerPage;
   const indexOfFirstMatch = indexOfLastMatch - itemsPerPage;
-  const currentMatches = matchesDetails.slice(indexOfFirstMatch, indexOfLastMatch);
+  const currentMatches = matchesDetails.slice(
+    indexOfFirstMatch,
+    indexOfLastMatch,
+  );
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 pt-24 bg-gray-900">
       <div className="w-full max-w-4xl">
-        <button
+        <Button
           onClick={() => navigate(-1)}
-          className="mb-4 text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+          className="mb-4 text-white bg-blue-600 hover:!bg-blue-700 px-4 py-2 rounded"
         >
-          Назад
-        </button>
+          Back
+        </Button>
 
-        {isAdmin() && <AdminTournamentPanel tournamentName={tournament_id} refreshTournament={refreshTournament} />}
+        {isAdmin() && (
+          <AdminTournamentPanel
+            tournamentName={tournament_id}
+            refreshTournament={refreshTournament}
+          />
+        )}
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
-          <h1 className="text-3xl font-bold mb-4 text-center">{tournament.name}</h1>
-          <h2 className="text-2xl font-bold mb-4 text-center">Основная информация</h2>
+          <h1 className="text-3xl font-bold mb-4 text-center">
+            {tournament.name}
+          </h1>
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Basic Information
+          </h2>
           <div className="space-y-4">
             <p>
-              <span className="font-semibold">Статус:</span> {tournament.status}
+              <span className="font-semibold">Status:</span> {tournament.status}
             </p>
             <p>
-              <span className="font-semibold">Описание:</span>{' '}
-              {tournament.description || 'Нет описания'}
+              <span className="font-semibold">Description:</span>{" "}
+              {tournament.description || "No description"}
             </p>
             <p>
-              <span className="font-semibold">Призовой фонд:</span>{' '}
-              {tournament.prize || 'Не указан'}
+              <span className="font-semibold">Prize Pool:</span>{" "}
+              {tournament.prize || "Not specified"}
             </p>
             <p>
-              <span className="font-semibold">Дата начала:</span>{' '}
+              <span className="font-semibold">Start Date:</span>{" "}
               {formatDate(tournament.start_date)}
             </p>
             <p>
-              <span className="font-semibold">Дата окончания:</span>{' '}
+              <span className="font-semibold">End Date:</span>{" "}
               {formatDate(tournament.end_date)}
             </p>
           </div>
         </div>
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
-          <h2 className="text-2xl font-bold mb-4 text-center">Команды</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">Teams</h2>
           {currentTeams.length > 0 ? (
             <>
               <div className="flex flex-col gap-2">
@@ -188,17 +220,17 @@ function TournamentPage() {
               )}
             </>
           ) : (
-            <p className="text-gray-400 text-center">Команды отсутствуют</p>
+            <p className="text-gray-400 text-center">No teams available</p>
           )}
         </div>
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
-          <h2 className="text-2xl font-bold mb-4 text-center">Матчи</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">Matches</h2>
           {currentMatches.length > 0 ? (
             <>
               <div className="flex flex-col gap-2 text-gray-300">
                 {currentMatches.map((match, index) => {
-                  const overallScore = calculateOverallScore(match); // Подсчитываем итоговый счет
+                  const overallScore = calculateOverallScore(match);
                   return (
                     <div key={index} className="flex items-center">
                       <Link
@@ -207,11 +239,12 @@ function TournamentPage() {
                       >
                         {match.teams && match.teams.length === 2
                           ? `${match.teams[0]} vs ${match.teams[1]}`
-                          : 'Матч с неизвестными командами'}
+                          : "Match with unknown teams"}
                       </Link>
                       <span className="ml-2">
-                        ({overallScore.winsFirstTeam} - {overallScore.winsSecondTeam},{' '}
-                        {match.date ? formatDate(match.date) : 'Дата неизвестна'})
+                        ({overallScore.winsFirstTeam} -{" "}
+                        {overallScore.winsSecondTeam},{" "}
+                        {match.date ? formatDate(match.date) : "Date unknown"})
                       </span>
                     </div>
                   );
@@ -231,12 +264,12 @@ function TournamentPage() {
               )}
             </>
           ) : (
-            <p className="text-gray-400 text-center">Матчи отсутствуют</p>
+            <p className="text-gray-400 text-center">No matches available</p>
           )}
         </div>
 
         <div className="mb-8 bg-gray-800 p-6 rounded-lg shadow-md text-white">
-          <h2 className="text-2xl font-bold mb-4 text-center">Результаты</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">Results</h2>
           {tournament.results && tournament.results.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {tournament.results.map((result, index) => (
@@ -246,15 +279,25 @@ function TournamentPage() {
                 >
                   <p className="text-lg font-semibold">
                     {result.place}
-                    {result.place === 1 ? 'st' : result.place === 2 ? 'nd' : result.place === 3 ? 'rd' : 'th'} Place
+                    {result.place === 1
+                      ? "st"
+                      : result.place === 2
+                        ? "nd"
+                        : result.place === 3
+                          ? "rd"
+                          : "th"}{" "}
+                    Place
                   </p>
                   <p className="text-xl font-bold text-blue-400">
                     {result.team ? (
-                      <Link to={`/teams/${result.team}`} className="hover:underline">
+                      <Link
+                        to={`/teams/${result.team}`}
+                        className="hover:underline"
+                      >
                         {result.team}
                       </Link>
                     ) : (
-                      'TBD'
+                      "TBD"
                     )}
                   </p>
                   <p className="text-sm text-gray-300">{result.prize}</p>
@@ -262,7 +305,7 @@ function TournamentPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-center">Результаты отсутствуют</p>
+            <p className="text-gray-400 text-center">No results available</p>
           )}
         </div>
       </div>
