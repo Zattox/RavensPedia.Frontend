@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { publicRoutes } from "@/config/routes";
+import { publicRoutes } from "@/config/routes.jsx";
 
 // ProtectedRoute component to restrict access based on authentication and admin status
 function ProtectedRoute({ children, adminOnly = false }) {
