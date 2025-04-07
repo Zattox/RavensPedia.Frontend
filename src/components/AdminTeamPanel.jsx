@@ -147,7 +147,7 @@ function AdminTeamPanel({ team_name, refreshTeam }) {
 
   // Render admin team panel UI
   return (
-    <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20 admin-panel">
+    <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20 max-h-[90vh] overflow-y-auto admin-panel">
       <h2 className="text-2xl font-bold mb-4 text-center">
         Team Management (Admin)
       </h2>
