@@ -1,27 +1,44 @@
-import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Modal, Form, Input, InputNumber, Button, Tooltip, Select } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { NotificationContext } from '@/context/NotificationContext';
-import api from '@/api';
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { Modal, Form, Input, InputNumber, Button, Tooltip, Select } from "antd";
 
+import api from "@/api";
+import { NotificationContext } from "@/context/NotificationContext";
+
+// AdminMatchPanel component for managing match-related admin functionalities
 function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
-  const { Option } = Select;
-  const navigate = useNavigate();
-  const notificationApi = useContext(NotificationContext);
+  const { Option } = Select; // Destructuring Option from Select for potential use
+  const navigate = useNavigate(); // Hook for programmatic navigation
+  const notificationApi = useContext(NotificationContext); // Accessing notification system from context
+
+  // State for controlling visibility of modals
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [isAddTeamModalVisible, setIsAddTeamModalVisible] = useState(false);
-  const [isDeleteTeamModalVisible, setIsDeleteTeamModalVisible] = useState(false);
-  const [isAddFaceitStatsModalVisible, setIsAddFaceitStatsModalVisible] = useState(false);
-  const [isAddPickBanModalVisible, setIsAddPickBanModalVisible] = useState(false);
-  const [isAddMapResultModalVisible, setIsAddMapResultModalVisible] = useState(false);
-  const [isAddStatsManualModalVisible, setIsAddStatsManualModalVisible] = useState(false);
-  const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] = useState(false);
-  const [isDeleteMatchModalVisible, setIsDeleteMatchModalVisible] = useState(false);
-  const [isDeleteMatchStatsModalVisible, setIsDeleteMatchStatsModalVisible] = useState(false);
-  const [isDeleteLastStatModalVisible, setIsDeleteLastStatModalVisible] = useState(false);
-  const [isDeletePickBanModalVisible, setIsDeletePickBanModalVisible] = useState(false);
-  const [isDeleteMapResultModalVisible, setIsDeleteMapResultModalVisible] = useState(false);
+  const [isDeleteTeamModalVisible, setIsDeleteTeamModalVisible] =
+    useState(false);
+  const [isAddFaceitStatsModalVisible, setIsAddFaceitStatsModalVisible] =
+    useState(false);
+  const [isAddPickBanModalVisible, setIsAddPickBanModalVisible] =
+    useState(false);
+  const [isAddMapResultModalVisible, setIsAddMapResultModalVisible] =
+    useState(false);
+  const [isAddStatsManualModalVisible, setIsAddStatsManualModalVisible] =
+    useState(false);
+  const [isUpdateStatusModalVisible, setIsUpdateStatusModalVisible] =
+    useState(false);
+  const [isDeleteMatchModalVisible, setIsDeleteMatchModalVisible] =
+    useState(false);
+  const [isDeleteMatchStatsModalVisible, setIsDeleteMatchStatsModalVisible] =
+    useState(false);
+  const [isDeleteLastStatModalVisible, setIsDeleteLastStatModalVisible] =
+    useState(false);
+  const [isDeletePickBanModalVisible, setIsDeletePickBanModalVisible] =
+    useState(false);
+  const [isDeleteMapResultModalVisible, setIsDeleteMapResultModalVisible] =
+    useState(false);
+
+  // Form instances for managing form data and validation
   const [updateForm] = Form.useForm();
   const [addTeamForm] = Form.useForm();
   const [deleteTeamForm] = Form.useForm();
@@ -31,19 +48,19 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
   const [addStatsManualForm] = Form.useForm();
   const [updateStatusForm] = Form.useForm();
 
+  // Utility function to display notifications
   const showNotification = (type, message, description) => {
     notificationApi[type]({
       message,
       description,
-      placement: 'bottomRight',
+      placement: "bottomRight",
     });
   };
 
-  // Обновить матч
-  const showUpdateModal = () => {
-    setIsUpdateModalVisible(true);
-  };
+  // Handler to show update match modal
+  const showUpdateModal = () => setIsUpdateModalVisible(true);
 
+  // Handler to update match information
   const handleUpdateMatchInfo = async (values) => {
     const updatedMatch = {};
     if (values.tournament) updatedMatch.tournament = values.tournament;
@@ -54,159 +71,202 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
       try {
         await api.patch(`/matches/${match_id}/`, updatedMatch);
         const response = await api.get(`/matches/${match_id}/`);
-        setMatch(response.data);
-        refreshMatch();
-        showNotification('success', 'Успех!', 'Матч успешно обновлен.');
+        setMatch(response.data); // Update parent component state
+        refreshMatch(); // Trigger refresh of match data
+        showNotification("success", "Success!", "Match updated successfully.");
         setIsUpdateModalVisible(false);
         updateForm.resetFields();
       } catch (error) {
-        console.error('Ошибка при обновлении матча:', error.response?.data || error);
-        const errorDetail = error.response?.data?.detail || 'Не удалось обновить матч';
-        showNotification('error', 'Ошибка!', errorDetail);
+        console.error("Error updating match:", error.response?.data || error);
+        const errorDetail =
+          error.response?.data?.detail || "Failed to update match";
+        showNotification("error", "Error!", errorDetail);
       }
     } else {
-      showNotification('error', 'Ошибка!', 'Хотя бы одно поле должно быть заполнено для обновления.');
+      showNotification(
+        "error",
+        "Error!",
+        "At least one field must be filled to update.",
+      );
     }
   };
 
+  // Handler to cancel update match modal
   const handleUpdateCancel = () => {
     setIsUpdateModalVisible(false);
     updateForm.resetFields();
   };
 
-  // Добавить команду
-  const showAddTeamModal = () => {
-    setIsAddTeamModalVisible(true);
-  };
+  // Handler to show add team modal
+  const showAddTeamModal = () => setIsAddTeamModalVisible(true);
 
+  // Handler to add a team to the match
   const handleAddTeam = async (values) => {
     try {
       await api.patch(`/matches/${match_id}/add_team/${values.teamName}/`);
-      showNotification('success', 'Успех!', `Команда ${values.teamName} успешно добавлена.`);
+      showNotification(
+        "success",
+        "Success!",
+        `Team ${values.teamName} added successfully.`,
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
       setIsAddTeamModalVisible(false);
       addTeamForm.resetFields();
     } catch (error) {
-      console.error('Ошибка при добавлении команды:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось добавить команду';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error("Error adding team:", error.response?.data || error);
+      const errorDetail = error.response?.data?.detail || "Failed to add team";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
+  // Handler to cancel add team modal
   const handleAddTeamCancel = () => {
     setIsAddTeamModalVisible(false);
     addTeamForm.resetFields();
   };
 
-  // Удалить команду
-  const showDeleteTeamModal = () => {
-    setIsDeleteTeamModalVisible(true);
-  };
+  // Handler to show delete team modal
+  const showDeleteTeamModal = () => setIsDeleteTeamModalVisible(true);
 
+  // Handler to delete a team from the match
   const handleDeleteTeam = async (values) => {
     try {
       await api.delete(`/matches/${match_id}/delete_team/${values.teamName}/`);
-      showNotification('success', 'Успех!', `Команда ${values.teamName} успешно удалена.`);
+      showNotification(
+        "success",
+        "Success!",
+        `Team ${values.teamName} deleted successfully.`,
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
       setIsDeleteTeamModalVisible(false);
       deleteTeamForm.resetFields();
     } catch (error) {
-      console.error('Ошибка при удалении команды:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось удалить команду';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error("Error deleting team:", error.response?.data || error);
+      const errorDetail =
+        error.response?.data?.detail || "Failed to delete team";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
+  // Handler to cancel delete team modal
   const handleDeleteTeamCancel = () => {
     setIsDeleteTeamModalVisible(false);
     deleteTeamForm.resetFields();
   };
 
-  // Добавить Faceit статистику
-  const showAddFaceitStatsModal = () => {
-    setIsAddFaceitStatsModalVisible(true);
-  };
+  // Handler to show add Faceit stats modal
+  const showAddFaceitStatsModal = () => setIsAddFaceitStatsModalVisible(true);
 
+  // Handler to add Faceit stats to the match
   const handleAddFaceitStats = async (values) => {
     try {
       await api.patch(`/matches/stats/${match_id}/add_faceit_stats/`, null, {
         params: { faceit_url: values.faceitUrl },
       });
-      showNotification('success', 'Успех!', 'Статистика Faceit успешно добавлена.');
+      showNotification(
+        "success",
+        "Success!",
+        "Faceit stats added successfully.",
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
       setIsAddFaceitStatsModalVisible(false);
       addFaceitStatsForm.resetFields();
     } catch (error) {
-      console.error('Ошибка при добавлении статистики Faceit:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось добавить статистику Faceit';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error(
+        "Error adding Faceit stats:",
+        error.response?.data || error,
+      );
+      const errorDetail =
+        error.response?.data?.detail || "Failed to add Faceit stats";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
+  // Handler to cancel add Faceit stats modal
   const handleAddFaceitStatsCancel = () => {
     setIsAddFaceitStatsModalVisible(false);
     addFaceitStatsForm.resetFields();
   };
 
-  // Добавить Pick/Ban
-  const showAddPickBanModal = () => {
-    setIsAddPickBanModalVisible(true);
-  };
+  // Handler to show add pick/ban modal
+  const showAddPickBanModal = () => setIsAddPickBanModalVisible(true);
 
+  // Handler to add pick/ban information to the match
   const handleAddPickBanInfo = async (values) => {
     try {
-      await api.patch(`/matches/stats/${match_id}/add_pick_ban_info_in_match/`, {
-        map: values.map,
-        map_status: values.mapStatus,
-        initiator: values.initiator,
-      });
-      showNotification('success', 'Успех!', 'Pick/Ban успешно добавлен.');
+      await api.patch(
+        `/matches/stats/${match_id}/add_pick_ban_info_in_match/`,
+        {
+          map: values.map,
+          map_status: values.mapStatus,
+          initiator: values.initiator,
+        },
+      );
+      showNotification("success", "Success!", "Pick/Ban added successfully.");
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
       setIsAddPickBanModalVisible(false);
       addPickBanForm.resetFields();
     } catch (error) {
-      console.error('Ошибка при добавлении Pick/Ban:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось добавить Pick/Ban';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error("Error adding Pick/Ban:", error.response?.data || error);
+      const errorDetail =
+        error.response?.data?.detail || "Failed to add Pick/Ban";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
+  // Handler to cancel add pick/ban modal
   const handleAddPickBanCancel = () => {
     setIsAddPickBanModalVisible(false);
     addPickBanForm.resetFields();
   };
 
-  // Удалить последний Pick/Ban
+  // Handler to delete the last pick/ban entry
   const handleDeletePickBanInfo = async () => {
     try {
-      await api.delete(`/matches/stats/${match_id}/delete_last_pick_ban_info_from_match/`);
-      showNotification('success', 'Успех!', 'Последний Pick/Ban успешно удален.');
+      await api.delete(
+        `/matches/stats/${match_id}/delete_last_pick_ban_info_from_match/`,
+      );
+      showNotification(
+        "success",
+        "Success!",
+        "Last Pick/Ban deleted successfully.",
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
     } catch (error) {
-      console.error('Ошибка при удалении Pick/Ban:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось удалить Pick/Ban';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error("Error deleting Pick/Ban:", error.response?.data || error);
+      const errorDetail =
+        error.response?.data?.detail || "Failed to delete Pick/Ban";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
+  // Handler to show add map result modal with validation
   const showAddMapResultModal = () => {
-    console.log('match:', match);
+    console.log("match:", match);
     if (!match) {
-      showNotification('error', 'Ошибка!', 'Данные матча недоступны. Пожалуйста, обновите страницу.');
+      showNotification(
+        "error",
+        "Error!",
+        "Match data unavailable. Please refresh the page.",
+      );
       return;
     }
     if (!match.teams || match.teams.length < 2) {
-      showNotification('error', 'Ошибка!', 'В матче недостаточно команд. Добавьте команды перед добавлением результата.');
+      showNotification(
+        "error",
+        "Error!",
+        "Not enough teams in the match. Add teams first.",
+      );
       return;
     }
     setIsAddMapResultModalVisible(true);
@@ -216,63 +276,82 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
     });
   };
 
+  // Handler to add map result information to the match
   const handleAddMapResultInfo = async (values) => {
     if (!match?.teams || match.teams.length < 2) {
-      showNotification('error', 'Ошибка!', 'В матче недостаточно команд для добавления результата.');
+      showNotification(
+        "error",
+        "Error!",
+        "Not enough teams to add map result.",
+      );
       return;
     }
     try {
-      await api.patch(`/matches/stats/${match_id}/add_map_result_info_in_match/`, {
-        map: values.map,
-        first_team: match.teams[0],
-        second_team: match.teams[1],
-        first_half_score_first_team: values.firstHalfScoreFirstTeam,
-        second_half_score_first_team: values.secondHalfScoreFirstTeam,
-        overtime_score_first_team: values.overtimeScoreFirstTeam,
-        total_score_first_team: values.totalScoreFirstTeam,
-        first_half_score_second_team: values.firstHalfScoreSecondTeam,
-        second_half_score_second_team: values.secondHalfScoreSecondTeam,
-        overtime_score_second_team: values.overtimeScoreSecondTeam,
-        total_score_second_team: values.totalScoreSecondTeam,
-      });
-      showNotification('success', 'Успех!', 'Результат карты успешно добавлен');
+      await api.patch(
+        `/matches/stats/${match_id}/add_map_result_info_in_match/`,
+        {
+          map: values.map,
+          first_team: match.teams[0],
+          second_team: match.teams[1],
+          first_half_score_first_team: values.firstHalfScoreFirstTeam,
+          second_half_score_first_team: values.secondHalfScoreFirstTeam,
+          overtime_score_first_team: values.overtimeScoreFirstTeam,
+          total_score_first_team: values.totalScoreFirstTeam,
+          first_half_score_second_team: values.firstHalfScoreSecondTeam,
+          second_half_score_second_team: values.secondHalfScoreSecondTeam,
+          overtime_score_second_team: values.overtimeScoreSecondTeam,
+          total_score_second_team: values.totalScoreSecondTeam,
+        },
+      );
+      showNotification("success", "Success!", "Map result added successfully.");
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
       setIsAddMapResultModalVisible(false);
       addMapResultForm.resetFields();
     } catch (error) {
-      console.error('Ошибка при добавлении результата карты:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось добавить результат карты';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error("Error adding map result:", error.response?.data || error);
+      const errorDetail =
+        error.response?.data?.detail || "Failed to add map result";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
+  // Handler to cancel add map result modal
   const handleAddMapResultCancel = () => {
     setIsAddMapResultModalVisible(false);
     addMapResultForm.resetFields();
   };
 
-  // Удалить последний результат карты
+  // Handler to delete the last map result entry
   const handleDeleteMapResultInfo = async () => {
     try {
-      await api.delete(`/matches/stats/${match_id}/delete_last_map_result_info_from_match/`);
-      showNotification('success', 'Успех!', 'Последний результат карты успешно удален');
+      await api.delete(
+        `/matches/stats/${match_id}/delete_last_map_result_info_from_match/`,
+      );
+      showNotification(
+        "success",
+        "Success!",
+        "Last map result deleted successfully.",
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
     } catch (error) {
-      console.error('Ошибка при удалении результата карты:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось удалить результат карты';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error(
+        "Error deleting map result:",
+        error.response?.data || error,
+      );
+      const errorDetail =
+        error.response?.data?.detail || "Failed to delete map result";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
-  // Добавить статистику вручную
-  const showAddStatsManualModal = () => {
-    setIsAddStatsManualModalVisible(true);
-  };
+  // Handler to show add manual stats modal
+  const showAddStatsManualModal = () => setIsAddStatsManualModalVisible(true);
 
+  // Handler to add manual stats to the match
   const handleAddStatsManual = async (values) => {
     try {
       await api.patch(`/matches/stats/${match_id}/add_stats_manual/`, {
@@ -286,142 +365,174 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
         ADR: values.adr,
         "Headshots %": values.headshotsPercentage,
       });
-      showNotification('success', 'Успех!', 'Статистика вручную успешно добавлена');
+      showNotification(
+        "success",
+        "Success!",
+        "Manual stats added successfully.",
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
       setIsAddStatsManualModalVisible(false);
       addStatsManualForm.resetFields();
     } catch (error) {
-      console.error('Ошибка при добавлении статистики вручную:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось добавить статистику вручную';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error(
+        "Error adding manual stats:",
+        error.response?.data || error,
+      );
+      const errorDetail =
+        error.response?.data?.detail || "Failed to add manual stats";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
+  // Handler to cancel add manual stats modal
   const handleAddStatsManualCancel = () => {
     setIsAddStatsManualModalVisible(false);
     addStatsManualForm.resetFields();
   };
 
-  // Удалить последнюю статистику
+  // Handler to delete the last stat entry
   const handleDeleteLastStat = async () => {
     try {
-      await api.delete(`/matches/stats/${match_id}/delete_last_stat_from_match/`);
-      showNotification('success', 'Успех!', 'Последняя статистика успешно удалена');
+      await api.delete(
+        `/matches/stats/${match_id}/delete_last_stat_from_match/`,
+      );
+      showNotification(
+        "success",
+        "Success!",
+        "Last stat deleted successfully.",
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
     } catch (error) {
-      console.error('Ошибка при удалении последней статистики:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось удалить последнюю статистику';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error("Error deleting last stat:", error.response?.data || error);
+      const errorDetail =
+        error.response?.data?.detail || "Failed to delete last stat";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
-  // Удалить статистику матча
+  // Handler to delete all match stats
   const handleDeleteMatchStats = async () => {
     try {
       await api.delete(`/matches/stats/${match_id}/delete_match_stats/`);
-      showNotification('success', 'Успех!', 'Статистика матча успешно удалена');
+      showNotification(
+        "success",
+        "Success!",
+        "Match stats deleted successfully.",
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
     } catch (error) {
-      console.error('Ошибка при удалении статистики матча:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось удалить статистику матча';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error(
+        "Error deleting match stats:",
+        error.response?.data || error,
+      );
+      const errorDetail =
+        error.response?.data?.detail || "Failed to delete match stats";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
-  // Удалить матч
-  const showDeleteMatchModal = () => {
-    setIsDeleteMatchModalVisible(true);
-  };
+  // Handler to show delete match modal
+  const showDeleteMatchModal = () => setIsDeleteMatchModalVisible(true);
 
+  // Handler to delete the match
   const handleDeleteMatch = async () => {
     try {
       await api.delete(`/matches/${match_id}/`);
-      showNotification('success', 'Успех!', 'Матч успешно удален');
+      showNotification("success", "Success!", "Match deleted successfully.");
       setIsDeleteMatchModalVisible(false);
-      navigate('/matches');
+      navigate("/matches"); // Redirect to matches page
     } catch (error) {
-      console.error('Ошибка при удалении матча:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось удалить матч';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error("Error deleting match:", error.response?.data || error);
+      const errorDetail =
+        error.response?.data?.detail || "Failed to delete match";
+      showNotification("error", "Error!", errorDetail);
       setIsDeleteMatchModalVisible(false);
     }
   };
 
-  const handleDeleteMatchCancel = () => {
-    setIsDeleteMatchModalVisible(false);
-  };
+  // Handler to cancel delete match modal
+  const handleDeleteMatchCancel = () => setIsDeleteMatchModalVisible(false);
 
-  // Обновить статус матча
+  // Handler to show update status modal
   const showUpdateStatusModal = () => {
     setIsUpdateStatusModalVisible(true);
     updateStatusForm.setFieldsValue({ match_id });
   };
 
+  // Handler to update match status
   const handleUpdateStatus = async (values) => {
     try {
-      await api.patch(`/schedules/matches/${values.match_id}/update_status/`, null, {
-        params: { new_status: values.new_status },
-      });
-      showNotification('success', 'Успех!', 'Статус матча успешно обновлен');
+      await api.patch(
+        `/schedules/matches/${values.match_id}/update_status/`,
+        null,
+        {
+          params: { new_status: values.new_status },
+        },
+      );
+      showNotification(
+        "success",
+        "Success!",
+        "Match status updated successfully.",
+      );
       const response = await api.get(`/matches/${match_id}/`);
       setMatch(response.data);
       refreshMatch();
       setIsUpdateStatusModalVisible(false);
       updateStatusForm.resetFields();
     } catch (error) {
-      console.error('Ошибка при обновлении статуса матча:', error.response?.data || error);
-      const errorDetail = error.response?.data?.detail || 'Не удалось обновить статус матча';
-      showNotification('error', 'Ошибка!', errorDetail);
+      console.error(
+        "Error updating match status:",
+        error.response?.data || error,
+      );
+      const errorDetail =
+        error.response?.data?.detail || "Failed to update match status";
+      showNotification("error", "Error!", errorDetail);
     }
   };
 
+  // Handler to cancel update status modal
   const handleUpdateStatusCancel = () => {
     setIsUpdateStatusModalVisible(false);
     updateStatusForm.resetFields();
   };
 
-  // Удалить статистику матча
-  const showDeleteMatchStatsModal = () => {
+  // Handler to show delete match stats modal
+  const showDeleteMatchStatsModal = () =>
     setIsDeleteMatchStatsModalVisible(true);
-  };
 
-  // Удалить последнюю статистику
-  const showDeleteLastStatModal = () => {
-    setIsDeleteLastStatModalVisible(true);
-  };
+  // Handler to show delete last stat modal
+  const showDeleteLastStatModal = () => setIsDeleteLastStatModalVisible(true);
 
-  // Удалить последний Pick/Ban
-  const showDeletePickBanModal = () => {
-    setIsDeletePickBanModalVisible(true);
-  };
+  // Handler to show delete pick/ban modal
+  const showDeletePickBanModal = () => setIsDeletePickBanModalVisible(true);
 
-  // Удалить последний результат карты
-  const showDeleteMapResultModal = () => {
-    setIsDeleteMapResultModalVisible(true);
-  };
+  // Handler to show delete map result modal
+  const showDeleteMapResultModal = () => setIsDeleteMapResultModalVisible(true);
 
+  // JSX rendering of the admin match panel
   return (
     <div className="fixed top-24 right-4 w-80 max-h-[80vh] overflow-y-auto bg-gray-800 p-6 rounded-lg shadow-md text-white z-20">
-      <h2 className="text-2xl font-bold mb-4 text-center">Управление матчем (Админ)</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        Match Management (Admin)
+      </h2>
       <div className="space-y-4">
-        {/* Match Actions */}
+        {/* Match Actions Section */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Match Actions</h3>
           <button
             onClick={showUpdateModal}
             className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Обновить матч
+            Update Match
           </button>
-
           <Modal
-            title={<span className="text-white">Обновить матч</span>}
+            title={<span className="text-white">Update Match</span>}
             open={isUpdateModalVisible}
             onCancel={handleUpdateCancel}
             footer={null}
@@ -437,21 +548,24 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 name="tournament"
                 label={
                   <span className="text-gray-300">
-                    Турнир{' '}
-                    <Tooltip title="Введите новое название турнира (оставьте пустым, чтобы не изменять)">
+                    Tournament{" "}
+                    <Tooltip title="Enter new tournament name (leave blank to keep unchanged)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
                 }
               >
-                <Input className="custom-input" placeholder="Новый турнир (необязательно)" />
+                <Input
+                  className="custom-input"
+                  placeholder="New tournament (optional)"
+                />
               </Form.Item>
               <Form.Item
                 name="date"
                 label={
                   <span className="text-gray-300">
-                    Дата начала матча{' '}
-                    <Tooltip title="Введите новую дату и время матча в формате ISO (оставьте пустым, чтобы не изменять)">
+                    Match Start Date{" "}
+                    <Tooltip title="Enter new date and time in ISO format (leave blank to keep unchanged)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
@@ -460,15 +574,15 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 <Input
                   type="date"
                   className="custom-input"
-                  placeholder="Дата начала матча"
+                  placeholder="Match start date"
                 />
               </Form.Item>
               <Form.Item
                 name="description"
                 label={
                   <span className="text-gray-300">
-                    Описание{' '}
-                    <Tooltip title="Введите новое описание матча (оставьте пустым, чтобы не изменять)">
+                    Description{" "}
+                    <Tooltip title="Enter new match description (leave blank to keep unchanged)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
@@ -477,16 +591,23 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 <Input.TextArea
                   rows={4}
                   className="custom-textarea"
-                  placeholder="Новое описание (необязательно)"
+                  placeholder="New description (optional)"
                 />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleUpdateCancel} className="text-white border-gray-500">
-                    Отмена
+                  <Button
+                    onClick={handleUpdateCancel}
+                    className="text-white border-gray-500"
+                  >
+                    Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Обновить
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Update
                   </Button>
                 </div>
               </Form.Item>
@@ -497,11 +618,10 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             onClick={showUpdateStatusModal}
             className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Обновить статус матча
+            Update Match Status
           </button>
-
           <Modal
-            title={<span className="text-white">Обновить статус матча</span>}
+            title={<span className="text-white">Update Match Status</span>}
             open={isUpdateStatusModalVisible}
             onCancel={handleUpdateStatusCancel}
             footer={null}
@@ -517,13 +637,13 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 name="match_id"
                 label={
                   <span className="text-gray-300">
-                    ID матча{' '}
-                    <Tooltip title="ID матча (нельзя изменить)">
+                    Match ID{" "}
+                    <Tooltip title="Match ID (cannot be changed)">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
                 }
-                rules={[{ required: true, message: 'Пожалуйста, укажите ID матча' }]}
+                rules={[{ required: true, message: "Please specify match ID" }]}
               >
                 <Input className="custom-input" disabled />
               </Form.Item>
@@ -531,31 +651,36 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 name="new_status"
                 label={
                   <span className="text-gray-300">
-                    Новый статус{' '}
-                    <Tooltip title="Выберите новый статус матча">
+                    New Status{" "}
+                    <Tooltip title="Select new match status">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
                 }
-                rules={[{ required: true, message: 'Пожалуйста, выберите новый статус' }]}
+                rules={[
+                  { required: true, message: "Please select a new status" },
+                ]}
               >
-                <Select
-                  className="custom-select"
-                  placeholder="Выберите статус"
-                  options={[
-                    { value: "SCHEDULED", label: 'Матч запланирован' },
-                    { value: "IN_PROGRESS", label: 'Матч идет' },
-                    { value: "COMPLETED", label: 'Матч завершен' },
-                  ]}
-                />
+                <Select className="custom-select" placeholder="Select status">
+                  <Option value="SCHEDULED">Scheduled</Option>
+                  <Option value="IN_PROGRESS">In Progress</Option>
+                  <Option value="COMPLETED">Completed</Option>
+                </Select>
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleUpdateStatusCancel} className="text-white border-gray-500">
-                    Отмена
+                  <Button
+                    onClick={handleUpdateStatusCancel}
+                    className="text-white border-gray-500"
+                  >
+                    Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Обновить
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Update
                   </Button>
                 </div>
               </Form.Item>
@@ -566,40 +691,46 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             onClick={showDeleteMatchModal}
             className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
-            Удалить матч
+            Delete Match
           </button>
-
           <Modal
-            title={<span className="text-white">Удалить матч</span>}
+            title={<span className="text-white">Delete Match</span>}
             open={isDeleteMatchModalVisible}
             onCancel={handleDeleteMatchCancel}
             footer={null}
             className="custom-modal"
           >
-            <p className="text-white">Вы уверены, что хотите удалить этот матч?</p>
+            <p className="text-white">
+              Are you sure you want to delete this match?
+            </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button onClick={handleDeleteMatchCancel} className="text-white border-gray-500">
-                Отмена
+              <Button
+                onClick={handleDeleteMatchCancel}
+                className="text-white border-gray-500"
+              >
+                Cancel
               </Button>
-              <Button onClick={handleDeleteMatch} className="bg-red-600 hover:bg-red-700 text-white">
-                Удалить
+              <Button
+                onClick={handleDeleteMatch}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
               </Button>
             </div>
           </Modal>
         </div>
 
-        {/* Matches Manager */}
+        {/* Matches Manager Section */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Matches Manager</h3>
           <button
             onClick={showAddTeamModal}
             className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Добавить команду
+            Add Team
           </button>
-
           <Modal
-            title={<span className="text-white">Добавить команду</span>}
+            title={<span className="text-white">Add Team</span>}
             open={isAddTeamModalVisible}
             onCancel={handleAddTeamCancel}
             footer={null}
@@ -615,23 +746,35 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 name="teamName"
                 label={
                   <span className="text-gray-300">
-                    Название команды{' '}
-                    <Tooltip title="Введите название команды для добавления в матч">
+                    Team Name{" "}
+                    <Tooltip title="Enter team name to add to the match">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
                 }
-                rules={[{ required: true, message: 'Пожалуйста, укажите название команды' }]}
+                rules={[
+                  { required: true, message: "Please specify team name" },
+                ]}
               >
-                <Input className="custom-input" placeholder="Например, Team Liquid" />
+                <Input
+                  className="custom-input"
+                  placeholder="e.g., Team Liquid"
+                />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleAddTeamCancel} className="text-white border-gray-500">
-                    Отмена
+                  <Button
+                    onClick={handleAddTeamCancel}
+                    className="text-white border-gray-500"
+                  >
+                    Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Добавить
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Add
                   </Button>
                 </div>
               </Form.Item>
@@ -642,11 +785,10 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             onClick={showDeleteTeamModal}
             className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
-            Удалить команду
+            Delete Team
           </button>
-
           <Modal
-            title={<span className="text-white">Удалить команду</span>}
+            title={<span className="text-white">Delete Team</span>}
             open={isDeleteTeamModalVisible}
             onCancel={handleDeleteTeamCancel}
             footer={null}
@@ -662,23 +804,35 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 name="teamName"
                 label={
                   <span className="text-gray-300">
-                    Название команды{' '}
-                    <Tooltip title="Введите название команды для удаления из матча">
+                    Team Name{" "}
+                    <Tooltip title="Enter team name to remove from the match">
                       <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
                 }
-                rules={[{ required: true, message: 'Пожалуйста, укажите название команды' }]}
+                rules={[
+                  { required: true, message: "Please specify team name" },
+                ]}
               >
-                <Input className="custom-input" placeholder="Например, Team Liquid" />
+                <Input
+                  className="custom-input"
+                  placeholder="e.g., Team Liquid"
+                />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleDeleteTeamCancel} className="text-white border-gray-500">
-                    Отмена
+                  <Button
+                    onClick={handleDeleteTeamCancel}
+                    className="text-white border-gray-500"
+                  >
+                    Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Удалить
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Delete
                   </Button>
                 </div>
               </Form.Item>
@@ -686,53 +840,61 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
           </Modal>
         </div>
 
-        {/* Matches Stats Manager */}
+        {/* Matches Stats Manager Section */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Matches Stats Manager</h3>
           <button
-              onClick={showAddFaceitStatsModal}
-              className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showAddFaceitStatsModal}
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Добавить Faceit статистику
+            Add Faceit Stats
           </button>
-
           <Modal
-              title={<span className="text-white">Добавить Faceit статистику</span>}
-              open={isAddFaceitStatsModalVisible}
-              onCancel={handleAddFaceitStatsCancel}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Add Faceit Stats</span>}
+            open={isAddFaceitStatsModalVisible}
+            onCancel={handleAddFaceitStatsCancel}
+            footer={null}
+            className="custom-modal"
           >
             <Form
-                form={addFaceitStatsForm}
-                onFinish={handleAddFaceitStats}
-                layout="vertical"
-                className="text-white"
+              form={addFaceitStatsForm}
+              onFinish={handleAddFaceitStats}
+              layout="vertical"
+              className="text-white"
             >
               <Form.Item
-                  name="faceitUrl"
-                  label={
-                    <span className="text-gray-300">
-                    Faceit URL{' '}
-                      <Tooltip title="Введите URL матча на Faceit для получения статистики">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="faceitUrl"
+                label={
+                  <span className="text-gray-300">
+                    Faceit URL{" "}
+                    <Tooltip title="Enter Faceit match URL to fetch stats">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите Faceit URL'}]}
+                }
+                rules={[
+                  { required: true, message: "Please specify Faceit URL" },
+                ]}
               >
                 <Input
-                    className="custom-input"
-                    placeholder="Например, https://www.faceit.com/en/match/12345"
+                  className="custom-input"
+                  placeholder="e.g., https://www.faceit.com/en/match/12345"
                 />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleAddFaceitStatsCancel} className="text-white border-gray-500">
-                    Отмена
+                  <Button
+                    onClick={handleAddFaceitStatsCancel}
+                    className="text-white border-gray-500"
+                  >
+                    Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Добавить
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Add
                   </Button>
                 </div>
               </Form.Item>
@@ -740,235 +902,260 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
           </Modal>
 
           <button
-              onClick={showDeleteMatchStatsModal} // Обновляем обработчик
-              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showDeleteMatchStatsModal}
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Удалить всю статистику матча
+            Delete All Match Stats
           </button>
-
           <Modal
-              title={<span className="text-white">Удалить всю статистику матча</span>}
-              open={isDeleteMatchStatsModalVisible}
-              onCancel={() => setIsDeleteMatchStatsModalVisible(false)}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Delete All Match Stats</span>}
+            open={isDeleteMatchStatsModalVisible}
+            onCancel={() => setIsDeleteMatchStatsModalVisible(false)}
+            footer={null}
+            className="custom-modal"
           >
-            <p className="text-white">Вы уверены, что хотите удалить всю статистику этого матча?</p>
+            <p className="text-white">
+              Are you sure you want to delete all stats for this match?
+            </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button onClick={() => setIsDeleteMatchStatsModalVisible(false)} className="text-white border-gray-500">
-                Отмена
+              <Button
+                onClick={() => setIsDeleteMatchStatsModalVisible(false)}
+                className="text-white border-gray-500"
+              >
+                Cancel
               </Button>
-              <Button onClick={handleDeleteMatchStats} className="bg-red-600 hover:bg-red-700 text-white">
-                Удалить
+              <Button
+                onClick={handleDeleteMatchStats}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
               </Button>
             </div>
           </Modal>
 
           <button
-              onClick={showAddStatsManualModal}
-              className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showAddStatsManualModal}
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Добавить статистику вручную
+            Add Manual Stats
           </button>
-
           <Modal
-              title={<span className="text-white">Добавить статистику вручную</span>}
-              open={isAddStatsManualModalVisible}
-              onCancel={handleAddStatsManualCancel}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Add Manual Stats</span>}
+            open={isAddStatsManualModalVisible}
+            onCancel={handleAddStatsManualCancel}
+            footer={null}
+            className="custom-modal"
           >
             <Form
-                form={addStatsManualForm}
-                onFinish={handleAddStatsManual}
-                layout="vertical"
-                className="text-white"
+              form={addStatsManualForm}
+              onFinish={handleAddStatsManual}
+              layout="vertical"
+              className="text-white"
             >
               <Form.Item
-                  name="nickname"
-                  label={
-                    <span className="text-gray-300">
-                    Никнейм игрока{' '}
-                      <Tooltip title="Введите никнейм игрока">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="nickname"
+                label={
+                  <span className="text-gray-300">
+                    Player Nickname{" "}
+                    <Tooltip title="Enter player nickname">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите никнейм игрока'}]}
+                }
+                rules={[
+                  { required: true, message: "Please specify player nickname" },
+                ]}
               >
-                <Input className="custom-input" placeholder="Например, s1mple"/>
+                <Input className="custom-input" placeholder="e.g., s1mple" />
               </Form.Item>
               <Form.Item
-                  name="roundOfMatch"
-                  label={
-                    <span className="text-gray-300">
-                    Раунд матча{' '}
-                      <Tooltip title="Введите номер раунда матча (например, 1 для первой карты)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="roundOfMatch"
+                label={
+                  <span className="text-gray-300">
+                    Match Round{" "}
+                    <Tooltip title="Enter match round number (e.g., 1 for first map)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите номер раунда'}]}
+                }
+                rules={[
+                  { required: true, message: "Please specify round number" },
+                ]}
               >
                 <Select
-                    className="custom-select"
-                    placeholder="Выберите раунд матча"
-                    options={[
-                      {value: 1, label: 'Первая карта'},
-                      {value: 2, label: 'Вторая карта'},
-                      {value: 3, label: 'Третья карта'},
-                      {value: 4, label: 'Четвертая карта'},
-                      {value: 5, label: 'Пятая карта'},
-                    ]}
-                />
+                  className="custom-select"
+                  placeholder="Select match round"
+                >
+                  <Option value={1}>First Map</Option>
+                  <Option value={2}>Second Map</Option>
+                  <Option value={3}>Third Map</Option>
+                  <Option value={4}>Fourth Map</Option>
+                  <Option value={5}>Fifth Map</Option>
+                </Select>
               </Form.Item>
               <Form.Item
-                  name="map"
-                  label={
-                    <span className="text-gray-300">
-                    Карта{' '}
-                      <Tooltip title="Введите название карты (например, de_dust2)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="map"
+                label={
+                  <span className="text-gray-300">
+                    Map{" "}
+                    <Tooltip title="Enter map name (e.g., de_dust2)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите название карты'}]}
+                }
+                rules={[{ required: true, message: "Please specify map name" }]}
               >
-                <Select
-                    className="custom-select"
-                    placeholder="Выберите карту"
-                    options={[
-                      {value: 'Anubis', label: 'Anubis'},
-                      {value: 'Dust2', label: 'Dust2'},
-                      {value: 'Mirage', label: 'Mirage'},
-                      {value: 'Nuke', label: 'Nuke'},
-                      {value: 'Vertigo', label: 'Vertigo'},
-                      {value: 'Ancient', label: 'Ancient'},
-                      {value: 'Inferno', label: 'Inferno'},
-                      {value: 'Train', label: 'Train'},
-                    ]}
-                />
+                <Select className="custom-select" placeholder="Select map">
+                  <Option value="Anubis">Anubis</Option>
+                  <Option value="Dust2">Dust2</Option>
+                  <Option value="Mirage">Mirage</Option>
+                  <Option value="Nuke">Nuke</Option>
+                  <Option value="Vertigo">Vertigo</Option>
+                  <Option value="Ancient">Ancient</Option>
+                  <Option value="Inferno">Inferno</Option>
+                  <Option value="Train">Train</Option>
+                </Select>
               </Form.Item>
               <Form.Item
-                  name="result"
-                  label={
-                    <span className="text-gray-300">
-                    Результат{' '}
-                      <Tooltip title="Укажите результат (1 - победа, 0 - поражение)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="result"
+                label={
+                  <span className="text-gray-300">
+                    Result{" "}
+                    <Tooltip title="Specify result (1 for win, 0 for loss)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите результат'}]}
+                }
+                rules={[{ required: true, message: "Please specify result" }]}
               >
-                <Select
-                    className="custom-select"
-                    placeholder="Выберите результат"
-                    options={[
-                      {value: 0, label: 'Поражение'},
-                      {value: 1, label: 'Победа'},
-                    ]}
-                />
+                <Select className="custom-select" placeholder="Select result">
+                  <Option value={0}>Loss</Option>
+                  <Option value={1}>Win</Option>
+                </Select>
               </Form.Item>
               <Form.Item
-                  name="kills"
-                  label={
-                    <span className="text-gray-300">
-                    Убийства{' '}
-                      <Tooltip title="Введите количество убийств">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="kills"
+                label={
+                  <span className="text-gray-300">
+                    Kills{" "}
+                    <Tooltip title="Enter number of kills">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите количество убийств'}]}
+                }
+                rules={[
+                  { required: true, message: "Please specify number of kills" },
+                ]}
               >
                 <InputNumber
-                    min={0}
-                    className="custom-input-number w-full"
-                    placeholder="Например, 20"
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 20"
                 />
               </Form.Item>
               <Form.Item
-                  name="assists"
-                  label={
-                    <span className="text-gray-300">
-                    Ассисты{' '}
-                      <Tooltip title="Введите количество ассистов">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="assists"
+                label={
+                  <span className="text-gray-300">
+                    Assists{" "}
+                    <Tooltip title="Enter number of assists">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите количество ассистов'}]}
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please specify number of assists",
+                  },
+                ]}
               >
                 <InputNumber
-                    min={0}
-                    className="custom-input-number w-full"
-                    placeholder="Например, 5"
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 5"
                 />
               </Form.Item>
               <Form.Item
-                  name="deaths"
-                  label={
-                    <span className="text-gray-300">
-                    Смерти{' '}
-                      <Tooltip title="Введите количество смертей">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="deaths"
+                label={
+                  <span className="text-gray-300">
+                    Deaths{" "}
+                    <Tooltip title="Enter number of deaths">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите количество смертей'}]}
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please specify number of deaths",
+                  },
+                ]}
               >
                 <InputNumber
-                    min={0}
-                    className="custom-input-number w-full"
-                    placeholder="Например, 15"
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 15"
                 />
               </Form.Item>
               <Form.Item
-                  name="adr"
-                  label={
-                    <span className="text-gray-300">
-                    ADR{' '}
-                      <Tooltip title="Введите средний урон за раунд">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="adr"
+                label={
+                  <span className="text-gray-300">
+                    ADR{" "}
+                    <Tooltip title="Enter average damage per round">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите ADR'}]}
+                }
+                rules={[{ required: true, message: "Please specify ADR" }]}
               >
                 <InputNumber
-                    min={0}
-                    step={0.1}
-                    className="custom-input-number w-full"
-                    placeholder="Например, 85.5"
+                  min={0}
+                  step={0.1}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 85.5"
                 />
               </Form.Item>
               <Form.Item
-                  name="headshotsPercentage"
-                  label={
-                    <span className="text-gray-300">
-                    Процент хедшотов{' '}
-                      <Tooltip title="Введите процент хедшотов (0-100)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="headshotsPercentage"
+                label={
+                  <span className="text-gray-300">
+                    Headshots %{" "}
+                    <Tooltip title="Enter headshots percentage (0-100)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите процент хедшотов'}]}
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please specify headshots percentage",
+                  },
+                ]}
               >
                 <InputNumber
-                    min={0}
-                    max={100}
-                    className="custom-input-number w-full"
-                    placeholder="Например, 40"
+                  min={0}
+                  max={100}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 40"
                 />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleAddStatsManualCancel} className="text-white border-gray-500">
-                    Отмена
+                  <Button
+                    onClick={handleAddStatsManualCancel}
+                    className="text-white border-gray-500"
+                  >
+                    Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Добавить
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Add
                   </Button>
                 </div>
               </Form.Item>
@@ -976,131 +1163,146 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
           </Modal>
 
           <button
-              onClick={showDeleteLastStatModal} // Обновляем обработчик
-              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+            onClick={showDeleteLastStatModal}
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
-            Удалить последнюю статистику
+            Delete Last Stat
           </button>
-
           <Modal
-              title={<span className="text-white">Удалить последнюю статистику матча</span>}
-              open={isDeleteLastStatModalVisible}
-              onCancel={() => setIsDeleteLastStatModalVisible(false)}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Delete Last Stat</span>}
+            open={isDeleteLastStatModalVisible}
+            onCancel={() => setIsDeleteLastStatModalVisible(false)}
+            footer={null}
+            className="custom-modal"
           >
-            <p className="text-white">Вы уверены, что хотите удалить последнюю добавленную статистику?</p>
+            <p className="text-white">
+              Are you sure you want to delete the last added stat?
+            </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button onClick={() => setIsDeleteLastStatModalVisible(false)} className="text-white border-gray-500">
-                Отмена
+              <Button
+                onClick={() => setIsDeleteLastStatModalVisible(false)}
+                className="text-white border-gray-500"
+              >
+                Cancel
               </Button>
-              <Button onClick={handleDeleteLastStat} className="bg-red-600 hover:bg-red-700 text-white">
-                Удалить
+              <Button
+                onClick={handleDeleteLastStat}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
               </Button>
             </div>
           </Modal>
         </div>
 
-        {/* Matches Info Manager */}
+        {/* Matches Info Manager Section */}
         <div>
           <h3 className="text-lg font-semibold mb-2">Matches Info Manager</h3>
           <button
-              onClick={showAddPickBanModal}
-              className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showAddPickBanModal}
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Добавить Pick/Ban
+            Add Pick/Ban
           </button>
-
           <Modal
-              title={<span className="text-white">Добавить Pick/Ban</span>}
-              open={isAddPickBanModalVisible}
-              onCancel={handleAddPickBanCancel}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Add Pick/Ban</span>}
+            open={isAddPickBanModalVisible}
+            onCancel={handleAddPickBanCancel}
+            footer={null}
+            className="custom-modal"
           >
             <Form
-                form={addPickBanForm}
-                onFinish={handleAddPickBanInfo}
-                layout="vertical"
-                className="text-white"
+              form={addPickBanForm}
+              onFinish={handleAddPickBanInfo}
+              layout="vertical"
+              className="text-white"
             >
               <Form.Item
-                  name="map"
-                  label={
-                    <span className="text-gray-300">
-                    Карта{' '}
-                      <Tooltip title="Введите название карты (например, Anubis)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="map"
+                label={
+                  <span className="text-gray-300">
+                    Map{" "}
+                    <Tooltip title="Enter map name (e.g., Anubis)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите название карты'}]}
+                }
+                rules={[{ required: true, message: "Please specify map name" }]}
               >
-                <Select
-                    className="custom-select"
-                    placeholder="Выберите карту"
-                    options={[
-                      {value: 'Anubis', label: 'Anubis'},
-                      {value: 'Dust2', label: 'Dust2'},
-                      {value: 'Mirage', label: 'Mirage'},
-                      {value: 'Nuke', label: 'Nuke'},
-                      {value: 'Vertigo', label: 'Vertigo'},
-                      {value: 'Ancient', label: 'Ancient'},
-                      {value: 'Inferno', label: 'Inferno'},
-                      {value: 'Train', label: 'Train'},
-                    ]}
-                />
+                <Select className="custom-select" placeholder="Select map">
+                  <Option value="Anubis">Anubis</Option>
+                  <Option value="Dust2">Dust2</Option>
+                  <Option value="Mirage">Mirage</Option>
+                  <Option value="Nuke">Nuke</Option>
+                  <Option value="Vertigo">Vertigo</Option>
+                  <Option value="Ancient">Ancient</Option>
+                  <Option value="Inferno">Inferno</Option>
+                  <Option value="Train">Train</Option>
+                </Select>
               </Form.Item>
               <Form.Item
-                  name="mapStatus"
-                  label={
-                    <span className="text-gray-300">
-                    Статус карты{' '}
-                      <Tooltip title="Укажите статус карты (например, Banned или Picked)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="mapStatus"
+                label={
+                  <span className="text-gray-300">
+                    Map Status{" "}
+                    <Tooltip title="Specify map status (e.g., Banned or Picked)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите статус карты'}]}
+                }
+                rules={[
+                  { required: true, message: "Please specify map status" },
+                ]}
               >
                 <Select
-                    className="custom-select"
-                    placeholder="Выберите статус карты"
-                    options={[
-                      {value: 'Banned', label: 'Banned'},
-                      {value: 'Picked', label: 'Picked'},
-                      {value: 'Default', label: 'Default'},
-                    ]}
-                />
+                  className="custom-select"
+                  placeholder="Select map status"
+                >
+                  <Option value="Banned">Banned</Option>
+                  <Option value="Picked">Picked</Option>
+                  <Option value="Default">Default</Option>
+                </Select>
               </Form.Item>
               <Form.Item
-                  name="initiator"
-                  label={
-                    <span className="text-gray-300">
-                    Инициатор{' '}
-                      <Tooltip title="Укажите, какая команда инициировала действие (например, first_team)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="initiator"
+                label={
+                  <span className="text-gray-300">
+                    Initiator{" "}
+                    <Tooltip title="Specify which team initiated the action (e.g., first_team)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите инициатора'}]}
+                }
+                rules={[
+                  { required: true, message: "Please specify initiator" },
+                ]}
               >
                 <Select
-                    className="custom-select"
-                    placeholder="Выберите инициатора"
-                    options={[
-                      {value: match.teams[0], label: match.teams[0]},
-                      {value: match.teams[1], label: match.teams[1]},
-                    ]}
-                />
+                  className="custom-select"
+                  placeholder="Select initiator"
+                >
+                  {match?.teams?.[0] && (
+                    <Option value={match.teams[0]}>{match.teams[0]}</Option>
+                  )}
+                  {match?.teams?.[1] && (
+                    <Option value={match.teams[1]}>{match.teams[1]}</Option>
+                  )}
+                </Select>
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleAddPickBanCancel} className="text-white border-gray-500">
-                    Отмена
+                  <Button
+                    onClick={handleAddPickBanCancel}
+                    className="text-white border-gray-500"
+                  >
+                    Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Добавить
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Add
                   </Button>
                 </div>
               </Form.Item>
@@ -1108,229 +1310,279 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
           </Modal>
 
           <button
-              onClick={showDeletePickBanModal} // Обновляем обработчик
-              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showDeletePickBanModal}
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Удалить последний Pick/Ban
+            Delete Last Pick/Ban
           </button>
-
           <Modal
-              title={<span className="text-white">Удалить последний Pick/Ban</span>}
-              open={isDeletePickBanModalVisible}
-              onCancel={() => setIsDeletePickBanModalVisible(false)}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Delete Last Pick/Ban</span>}
+            open={isDeletePickBanModalVisible}
+            onCancel={() => setIsDeletePickBanModalVisible(false)}
+            footer={null}
+            className="custom-modal"
           >
-            <p className="text-white">Вы уверены, что хотите удалить последний Pick/Ban этого матча?</p>
+            <p className="text-white">
+              Are you sure you want to delete the last Pick/Ban for this match?
+            </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button onClick={() => setIsDeletePickBanModalVisible(false)} className="text-white border-gray-500">
-                Отмена
+              <Button
+                onClick={() => setIsDeletePickBanModalVisible(false)}
+                className="text-white border-gray-500"
+              >
+                Cancel
               </Button>
-              <Button onClick={handleDeletePickBanInfo} className="bg-red-600 hover:bg-red-700 text-white">
-                Удалить
+              <Button
+                onClick={handleDeletePickBanInfo}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
               </Button>
             </div>
           </Modal>
 
           <button
-              onClick={showAddMapResultModal}
-              className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            onClick={showAddMapResultModal}
+            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
           >
-            Добавить результат карты
+            Add Map Result
           </button>
-
           <Modal
-              title={<span className="text-white">Добавить результат карты</span>}
-              open={isAddMapResultModalVisible}
-              onCancel={handleAddMapResultCancel}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Add Map Result</span>}
+            open={isAddMapResultModalVisible}
+            onCancel={handleAddMapResultCancel}
+            footer={null}
+            className="custom-modal"
           >
             <Form
-                form={addMapResultForm}
-                onFinish={handleAddMapResultInfo}
-                layout="vertical"
-                className="text-white"
+              form={addMapResultForm}
+              onFinish={handleAddMapResultInfo}
+              layout="vertical"
+              className="text-white"
             >
               <Form.Item
-                  name="map"
-                  label={
-                    <span className="text-gray-300">
-                    Карта{' '}
-                      <Tooltip title="Выберите карту из списка">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="map"
+                label={
+                  <span className="text-gray-300">
+                    Map{" "}
+                    <Tooltip title="Select map from the list">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, выберите карту'}]}
+                }
+                rules={[{ required: true, message: "Please select a map" }]}
               >
-                <Select
-                    className="custom-select"
-                    placeholder="Выберите карту"
-                    options={[
-                      {value: 'Anubis', label: 'Anubis'},
-                      {value: 'Dust2', label: 'Dust2'},
-                      {value: 'Mirage', label: 'Mirage'},
-                      {value: 'Nuke', label: 'Nuke'},
-                      {value: 'Vertigo', label: 'Vertigo'},
-                      {value: 'Ancient', label: 'Ancient'},
-                      {value: 'Inferno', label: 'Inferno'},
-                      {value: 'Train', label: 'Train'},
-                    ]}
+                <Select className="custom-select" placeholder="Select map">
+                  <Option value="Anubis">Anubis</Option>
+                  <Option value="Dust2">Dust2</Option>
+                  <Option value="Mirage">Mirage</Option>
+                  <Option value="Nuke">Nuke</Option>
+                  <Option value="Vertigo">Vertigo</Option>
+                  <Option value="Ancient">Ancient</Option>
+                  <Option value="Inferno">Inferno</Option>
+                  <Option value="Train">Train</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="firstTeam"
+                label={
+                  <span className="text-gray-300">
+                    First Team (Left){" "}
+                    <Tooltip title="First team from match data (cannot be changed)">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "First team is missing from match data",
+                  },
+                ]}
+              >
+                <Input className="custom-input" disabled />
+              </Form.Item>
+              <Form.Item
+                name="secondTeam"
+                label={
+                  <span className="text-gray-300">
+                    Second Team (Right){" "}
+                    <Tooltip title="Second team from match data (cannot be changed)">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Second team is missing from match data",
+                  },
+                ]}
+              >
+                <Input className="custom-input" disabled />
+              </Form.Item>
+              <Form.Item
+                name="firstHalfScoreFirstTeam"
+                label={
+                  <span className="text-gray-300">
+                    First Team First Half Score{" "}
+                    <Tooltip title="Enter first team’s score in first half">
+                      <InfoCircleOutlined className="text-gray-500" />
+                    </Tooltip>
+                  </span>
+                }
+                rules={[{ required: true, message: "Please specify score" }]}
+              >
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 4"
                 />
               </Form.Item>
-
-              {/* Поле для первой команды (левая, заблокировано) */}
               <Form.Item
-                  name="firstTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Первая команда (левая){' '}
-                      <Tooltip title="Первая команда из списка матча (нельзя изменить)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="firstHalfScoreSecondTeam"
+                label={
+                  <span className="text-gray-300">
+                    Second Team First Half Score{" "}
+                    <Tooltip title="Enter second team’s score in first half">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Первая команда отсутствует в данных матча'}]}
+                }
+                rules={[{ required: true, message: "Please specify score" }]}
               >
-                <Input className="custom-input" disabled/>
-              </Form.Item>
-
-              {/* Поле для второй команды (правая, заблокировано) */}
-              <Form.Item
-                  name="secondTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Вторая команда (правая){' '}
-                      <Tooltip title="Вторая команда из списка матча (нельзя изменить)">
-                      <InfoCircleOutlined className="text-gray-500"/>
-                    </Tooltip>
-                  </span>
-                  }
-                  rules={[{required: true, message: 'Вторая команда отсутствует в данных матча'}]}
-              >
-                <Input className="custom-input" disabled/>
-              </Form.Item>
-
-              <Form.Item
-                  name="firstHalfScoreFirstTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Счёт первой команды в первой половине{' '}
-                      <Tooltip title="Введите счёт первой команды в первой половине">
-                      <InfoCircleOutlined className="text-gray-500"/>
-                    </Tooltip>
-                  </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите счёт'}]}
-              >
-                <InputNumber min={0} className="custom-input-number w-full" placeholder="Например, 4"/>
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 8"
+                />
               </Form.Item>
               <Form.Item
-                  name="firstHalfScoreSecondTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Счёт второй команды в первой половине{' '}
-                      <Tooltip title="Введите счёт второй команды в первой половине">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="secondHalfScoreFirstTeam"
+                label={
+                  <span className="text-gray-300">
+                    First Team Second Half Score{" "}
+                    <Tooltip title="Enter first team’s score in second half">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите счёт'}]}
+                }
+                rules={[{ required: true, message: "Please specify score" }]}
               >
-                <InputNumber min={0} className="custom-input-number w-full" placeholder="Например, 8"/>
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 3"
+                />
               </Form.Item>
               <Form.Item
-                  name="secondHalfScoreFirstTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Счёт первой команды во второй половине{' '}
-                      <Tooltip title="Введите счёт первой команды во второй половине">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="secondHalfScoreSecondTeam"
+                label={
+                  <span className="text-gray-300">
+                    Second Team Second Half Score{" "}
+                    <Tooltip title="Enter second team’s score in second half">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите счёт'}]}
+                }
+                rules={[{ required: true, message: "Please specify score" }]}
               >
-                <InputNumber min={0} className="custom-input-number w-full" placeholder="Например, 3"/>
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 5"
+                />
               </Form.Item>
               <Form.Item
-                  name="secondHalfScoreSecondTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Счёт второй команды во второй половине{' '}
-                      <Tooltip title="Введите счёт второй команды во второй половине">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="overtimeScoreFirstTeam"
+                label={
+                  <span className="text-gray-300">
+                    First Team Overtime Score{" "}
+                    <Tooltip title="Enter first team’s score in overtime (0 if no overtime)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите счёт'}]}
+                }
+                rules={[{ required: true, message: "Please specify score" }]}
               >
-                <InputNumber min={0} className="custom-input-number w-full" placeholder="Например, 5"/>
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 0"
+                />
               </Form.Item>
               <Form.Item
-                  name="overtimeScoreFirstTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Счёт первой команды в овертайме{' '}
-                      <Tooltip title="Введите счёт первой команды в овертайме (0, если овертайма не было)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="overtimeScoreSecondTeam"
+                label={
+                  <span className="text-gray-300">
+                    Second Team Overtime Score{" "}
+                    <Tooltip title="Enter second team’s score in overtime (0 if no overtime)">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите счёт'}]}
+                }
+                rules={[{ required: true, message: "Please specify score" }]}
               >
-                <InputNumber min={0} className="custom-input-number w-full" placeholder="Например, 0"/>
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 0"
+                />
               </Form.Item>
               <Form.Item
-                  name="overtimeScoreSecondTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Счёт второй команды в овертайме{' '}
-                      <Tooltip title="Введите счёт второй команды в овертайме (0, если овертайма не было)">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="totalScoreFirstTeam"
+                label={
+                  <span className="text-gray-300">
+                    First Team Total Score{" "}
+                    <Tooltip title="Enter first team’s total score">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите счёт'}]}
+                }
+                rules={[
+                  { required: true, message: "Please specify total score" },
+                ]}
               >
-                <InputNumber min={0} className="custom-input-number w-full" placeholder="Например, 0"/>
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 7"
+                />
               </Form.Item>
               <Form.Item
-                  name="totalScoreFirstTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Общий счёт первой команды{' '}
-                      <Tooltip title="Введите общий счёт первой команды">
-                      <InfoCircleOutlined className="text-gray-500"/>
+                name="totalScoreSecondTeam"
+                label={
+                  <span className="text-gray-300">
+                    Second Team Total Score{" "}
+                    <Tooltip title="Enter second team’s total score">
+                      <InfoCircleOutlined className="text-gray-500" />
                     </Tooltip>
                   </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите общий счёт'}]}
+                }
+                rules={[
+                  { required: true, message: "Please specify total score" },
+                ]}
               >
-                <InputNumber min={0} className="custom-input-number w-full" placeholder="Например, 7"/>
-              </Form.Item>
-              <Form.Item
-                  name="totalScoreSecondTeam"
-                  label={
-                    <span className="text-gray-300">
-                    Общий счёт второй команды{' '}
-                      <Tooltip title="Введите общий счёт второй команды">
-                      <InfoCircleOutlined className="text-gray-500"/>
-                    </Tooltip>
-                  </span>
-                  }
-                  rules={[{required: true, message: 'Пожалуйста, укажите общий счёт'}]}
-              >
-                <InputNumber min={0} className="custom-input-number w-full" placeholder="Например, 13"/>
+                <InputNumber
+                  min={0}
+                  className="custom-input-number w-full"
+                  placeholder="e.g., 13"
+                />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button onClick={handleAddMapResultCancel} className="text-white border-gray-500">
-                    Отмена
+                  <Button
+                    onClick={handleAddMapResultCancel}
+                    className="text-white border-gray-500"
+                  >
+                    Cancel
                   </Button>
-                  <Button type="primary" htmlType="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Добавить
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Add
                   </Button>
                 </div>
               </Form.Item>
@@ -1338,26 +1590,33 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
           </Modal>
 
           <button
-              onClick={showDeleteMapResultModal} // Обновляем обработчик
-              className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+            onClick={showDeleteMapResultModal}
+            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
           >
-            Удалить последний результат
+            Delete Last Result
           </button>
-
           <Modal
-              title={<span className="text-white">Удалить последний результат</span>}
-              open={isDeleteMapResultModalVisible}
-              onCancel={() => setIsDeleteMapResultModalVisible(false)}
-              footer={null}
-              className="custom-modal"
+            title={<span className="text-white">Delete Last Result</span>}
+            open={isDeleteMapResultModalVisible}
+            onCancel={() => setIsDeleteMapResultModalVisible(false)}
+            footer={null}
+            className="custom-modal"
           >
-            <p className="text-white">Вы уверены, что хотите удалить последний результат карты?</p>
+            <p className="text-white">
+              Are you sure you want to delete the last map result?
+            </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button onClick={() => setIsDeleteMapResultModalVisible(false)} className="text-white border-gray-500">
-                Отмена
+              <Button
+                onClick={() => setIsDeleteMapResultModalVisible(false)}
+                className="text-white border-gray-500"
+              >
+                Cancel
               </Button>
-              <Button onClick={handleDeleteMapResultInfo} className="bg-red-600 hover:bg-red-700 text-white">
-                Удалить
+              <Button
+                onClick={handleDeleteMapResultInfo}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete
               </Button>
             </div>
           </Modal>
