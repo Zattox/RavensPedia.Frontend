@@ -1,4 +1,3 @@
-/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,52 +15,19 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Body styles */
+/* Body styles to ensure full height and no margins */
 body {
     margin: 0;
     min-height: 100vh;
 }
 
-/* Heading styles */
+/* Heading styles for large titles */
 h1 {
     font-size: 3.2em;
     line-height: 1.1;
 }
 
-/* Base button styles */
-button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #1a1a1a;
-    cursor: pointer;
-    transition: border-color 0.25s;
-}
-
-button:hover {
-    border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-}
-
-/* Light mode adjustments */
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-    }
-
-    button {
-        background-color: #f9f9f9;
-    }
-}
-
-/* Custom pagination styles */
+/* Custom pagination styles for Antd Pagination component */
 .custom-pagination .ant-pagination-item {
     background-color: #1f2937;
     border-color: #374151;
@@ -97,12 +63,12 @@ button:focus-visible {
     border-color: #3b82f6;
 }
 
-/* Table row alternating colors */
+/* Alternating row colors for tables */
 tbody tr:nth-child(even) {
     background-color: #2d3748;
 }
 
-/* Custom modal styles */
+/* Custom modal styles for Antd Modal component */
 .custom-modal .ant-modal-content {
     background-color: #1f2937;
     color: #ffffff;
@@ -150,7 +116,7 @@ tbody tr:nth-child(even) {
     color: #f87171;
 }
 
-/* Custom input field classes */
+/* Custom input styles for Antd Input, InputNumber, and TextArea */
 .custom-input,
 .custom-input-number,
 .custom-textarea {
@@ -172,7 +138,7 @@ tbody tr:nth-child(even) {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* Placeholder styles */
+/* Placeholder styles for inputs */
 .custom-input::placeholder,
 .custom-input-number input::placeholder,
 .custom-textarea::placeholder {
@@ -194,7 +160,7 @@ tbody tr:nth-child(even) {
     color: #e5e7eb !important;
 }
 
-/* Admin panel styles */
+/* Admin panel styles for admin-specific sections */
 .admin-panel {
     background-color: #1f2937 !important;
     color: #e5e7eb !important;
@@ -212,7 +178,7 @@ tbody tr:nth-child(even) {
     border-color: #3b82f6 !important;
 }
 
-/* Specific action button styles */
+/* Specific action button styles within admin panel */
 .admin-panel .bg-blue-600 {
     background-color: #3b82f6 !important;
 }
@@ -237,7 +203,7 @@ tbody tr:nth-child(even) {
     background-color: #b91c1c !important;
 }
 
-/* Filter form styles */
+/* Filter form styles for Antd Form component */
 .custom-form .ant-form-item-label > label {
     color: #d1d5db !important;
 }
@@ -246,7 +212,7 @@ tbody tr:nth-child(even) {
     color: #9ca3af !important;
 }
 
-/* Table styles */
+/* Table styles for Antd Table component */
 .custom-table .ant-table {
     background: #1f2937 !important;
     color: #d1d5db !important;
@@ -265,7 +231,7 @@ tbody tr:nth-child(even) {
     background: #374151 !important;
 }
 
-/* Input and select styles */
+/* Input and Select styles for consistency */
 .custom-input,
 .custom-select .ant-select-selector {
     background-color: #2d3748 !important;
