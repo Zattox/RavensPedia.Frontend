@@ -8,7 +8,7 @@ import { NotificationContext } from "@/context/NotificationContext";
 
 // AdminMatchPanel component for managing match-related admin functionalities
 function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
-  const { Option } = Select; // Destructuring Option from Select for potential use
+  const { Option } = Select; // Destructuring Option from Select for dropdown options
   const navigate = useNavigate(); // Hook for programmatic navigation
   const notificationApi = useContext(NotificationContext); // Accessing notification system from context
 
@@ -517,32 +517,32 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
 
   // JSX rendering of the admin match panel
   return (
-    <div className="fixed top-24 right-4 w-80 max-h-[80vh] overflow-y-auto bg-gray-800 p-6 rounded-lg shadow-md text-white z-20">
+    <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20 max-h-[80vh] overflow-y-auto">
       <h2 className="text-2xl font-bold mb-4 text-center">
         Match Management (Admin)
       </h2>
       <div className="space-y-4">
         {/* Match Actions Section */}
         <div>
-          <h3 className="text-lg font-semibold mb-2">Match Actions</h3>
-          <button
+          <h3 className="text-lg font-semibold mb-2 text-white">
+            Match Actions
+          </h3>
+          <Button
             onClick={showUpdateModal}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-blue-600 hover:bg-blue-700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Update Match
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Update Match</span>}
             open={isUpdateModalVisible}
             onCancel={handleUpdateCancel}
             footer={null}
-            className="custom-modal"
           >
             <Form
               form={updateForm}
               onFinish={handleUpdateMatchInfo}
               layout="vertical"
-              className="text-white"
             >
               <Form.Item
                 name="tournament"
@@ -550,15 +550,12 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Tournament{" "}
                     <Tooltip title="Enter new tournament name (leave blank to keep unchanged)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
               >
-                <Input
-                  className="custom-input"
-                  placeholder="New tournament (optional)"
-                />
+                <Input placeholder="New tournament (optional)" />
               </Form.Item>
               <Form.Item
                 name="date"
@@ -566,16 +563,12 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Match Start Date{" "}
                     <Tooltip title="Enter new date and time in ISO format (leave blank to keep unchanged)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
               >
-                <Input
-                  type="date"
-                  className="custom-input"
-                  placeholder="Match start date"
-                />
+                <Input type="date" placeholder="Match start date" />
               </Form.Item>
               <Form.Item
                 name="description"
@@ -583,30 +576,20 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Description{" "}
                     <Tooltip title="Enter new match description (leave blank to keep unchanged)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
               >
                 <Input.TextArea
                   rows={4}
-                  className="custom-textarea"
                   placeholder="New description (optional)"
                 />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={handleUpdateCancel}
-                    className="text-white border-gray-500"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  <Button onClick={handleUpdateCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">
                     Update
                   </Button>
                 </div>
@@ -614,24 +597,22 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             </Form>
           </Modal>
 
-          <button
+          <Button
             onClick={showUpdateStatusModal}
-            className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-blue-600 hover:bg-blue-700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Update Match Status
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Update Match Status</span>}
             open={isUpdateStatusModalVisible}
             onCancel={handleUpdateStatusCancel}
             footer={null}
-            className="custom-modal"
           >
             <Form
               form={updateStatusForm}
               onFinish={handleUpdateStatus}
               layout="vertical"
-              className="text-white"
             >
               <Form.Item
                 name="match_id"
@@ -639,13 +620,13 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Match ID{" "}
                     <Tooltip title="Match ID (cannot be changed)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
                 rules={[{ required: true, message: "Please specify match ID" }]}
               >
-                <Input className="custom-input" disabled />
+                <Input disabled />
               </Form.Item>
               <Form.Item
                 name="new_status"
@@ -653,7 +634,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     New Status{" "}
                     <Tooltip title="Select new match status">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -661,7 +642,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   { required: true, message: "Please select a new status" },
                 ]}
               >
-                <Select className="custom-select" placeholder="Select status">
+                <Select placeholder="Select status">
                   <Option value="SCHEDULED">Scheduled</Option>
                   <Option value="IN_PROGRESS">In Progress</Option>
                   <Option value="COMPLETED">Completed</Option>
@@ -669,17 +650,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={handleUpdateStatusCancel}
-                    className="text-white border-gray-500"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  <Button onClick={handleUpdateStatusCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">
                     Update
                   </Button>
                 </div>
@@ -687,33 +659,24 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             </Form>
           </Modal>
 
-          <button
+          <Button
             onClick={showDeleteMatchModal}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+            className="text-white font-bold bg-red-600 hover:bg-red-700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Delete Match
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Delete Match</span>}
             open={isDeleteMatchModalVisible}
             onCancel={handleDeleteMatchCancel}
             footer={null}
-            className="custom-modal"
           >
             <p className="text-white">
               Are you sure you want to delete this match?
             </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button
-                onClick={handleDeleteMatchCancel}
-                className="text-white border-gray-500"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDeleteMatch}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
+              <Button onClick={handleDeleteMatchCancel}>Cancel</Button>
+              <Button onClick={handleDeleteMatch} type="primary" danger>
                 Delete
               </Button>
             </div>
@@ -722,33 +685,29 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
 
         {/* Matches Manager Section */}
         <div>
-          <h3 className="text-lg font-semibold mb-2">Matches Manager</h3>
-          <button
+          <h3 className="text-lg font-semibold mb-2 text-white">
+            Matches Manager
+          </h3>
+          <Button
             onClick={showAddTeamModal}
-            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-green-600 hover:bg-green700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Add Team
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Add Team</span>}
             open={isAddTeamModalVisible}
             onCancel={handleAddTeamCancel}
             footer={null}
-            className="custom-modal"
           >
-            <Form
-              form={addTeamForm}
-              onFinish={handleAddTeam}
-              layout="vertical"
-              className="text-white"
-            >
+            <Form form={addTeamForm} onFinish={handleAddTeam} layout="vertical">
               <Form.Item
                 name="teamName"
                 label={
                   <span className="text-gray-300">
                     Team Name{" "}
                     <Tooltip title="Enter team name to add to the match">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -756,24 +715,12 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   { required: true, message: "Please specify team name" },
                 ]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="e.g., Team Liquid"
-                />
+                <Input placeholder="e.g., Team Liquid" />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={handleAddTeamCancel}
-                    className="text-white border-gray-500"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  <Button onClick={handleAddTeamCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">
                     Add
                   </Button>
                 </div>
@@ -781,24 +728,22 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             </Form>
           </Modal>
 
-          <button
+          <Button
             onClick={showDeleteTeamModal}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+            className="text-white font-bold bg-red-600 hover:bg-red-700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Delete Team
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Delete Team</span>}
             open={isDeleteTeamModalVisible}
             onCancel={handleDeleteTeamCancel}
             footer={null}
-            className="custom-modal"
           >
             <Form
               form={deleteTeamForm}
               onFinish={handleDeleteTeam}
               layout="vertical"
-              className="text-white"
             >
               <Form.Item
                 name="teamName"
@@ -806,7 +751,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Team Name{" "}
                     <Tooltip title="Enter team name to remove from the match">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -814,24 +759,12 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   { required: true, message: "Please specify team name" },
                 ]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="e.g., Team Liquid"
-                />
+                <Input placeholder="e.g., Team Liquid" />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={handleDeleteTeamCancel}
-                    className="text-white border-gray-500"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  <Button onClick={handleDeleteTeamCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">
                     Delete
                   </Button>
                 </div>
@@ -842,25 +775,25 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
 
         {/* Matches Stats Manager Section */}
         <div>
-          <h3 className="text-lg font-semibold mb-2">Matches Stats Manager</h3>
-          <button
+          <h3 className="text-lg font-semibold mb-2 text-white">
+            Matches Stats Manager
+          </h3>
+          <Button
             onClick={showAddFaceitStatsModal}
-            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-green-600 hover:bg-green700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Add Faceit Stats
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Add Faceit Stats</span>}
             open={isAddFaceitStatsModalVisible}
             onCancel={handleAddFaceitStatsCancel}
             footer={null}
-            className="custom-modal"
           >
             <Form
               form={addFaceitStatsForm}
               onFinish={handleAddFaceitStats}
               layout="vertical"
-              className="text-white"
             >
               <Form.Item
                 name="faceitUrl"
@@ -868,7 +801,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Faceit URL{" "}
                     <Tooltip title="Enter Faceit match URL to fetch stats">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -876,24 +809,12 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   { required: true, message: "Please specify Faceit URL" },
                 ]}
               >
-                <Input
-                  className="custom-input"
-                  placeholder="e.g., https://www.faceit.com/en/match/12345"
-                />
+                <Input placeholder="e.g., https://www.faceit.com/en/match/12345" />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={handleAddFaceitStatsCancel}
-                    className="text-white border-gray-500"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  <Button onClick={handleAddFaceitStatsCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">
                     Add
                   </Button>
                 </div>
@@ -901,56 +822,47 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             </Form>
           </Modal>
 
-          <button
+          <Button
             onClick={showDeleteMatchStatsModal}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-red-600 hover:bg-red-700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Delete All Match Stats
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Delete All Match Stats</span>}
             open={isDeleteMatchStatsModalVisible}
             onCancel={() => setIsDeleteMatchStatsModalVisible(false)}
             footer={null}
-            className="custom-modal"
           >
             <p className="text-white">
               Are you sure you want to delete all stats for this match?
             </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button
-                onClick={() => setIsDeleteMatchStatsModalVisible(false)}
-                className="text-white border-gray-500"
-              >
+              <Button onClick={() => setIsDeleteMatchStatsModalVisible(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleDeleteMatchStats}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
+              <Button onClick={handleDeleteMatchStats} type="primary" danger>
                 Delete
               </Button>
             </div>
           </Modal>
 
-          <button
+          <Button
             onClick={showAddStatsManualModal}
-            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-green-600 hover:bg-green700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Add Manual Stats
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Add Manual Stats</span>}
             open={isAddStatsManualModalVisible}
             onCancel={handleAddStatsManualCancel}
             footer={null}
-            className="custom-modal"
           >
             <Form
               form={addStatsManualForm}
               onFinish={handleAddStatsManual}
               layout="vertical"
-              className="text-white"
             >
               <Form.Item
                 name="nickname"
@@ -958,7 +870,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Player Nickname{" "}
                     <Tooltip title="Enter player nickname">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -966,7 +878,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   { required: true, message: "Please specify player nickname" },
                 ]}
               >
-                <Input className="custom-input" placeholder="e.g., s1mple" />
+                <Input placeholder="e.g., s1mple" />
               </Form.Item>
               <Form.Item
                 name="roundOfMatch"
@@ -974,7 +886,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Match Round{" "}
                     <Tooltip title="Enter match round number (e.g., 1 for first map)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -982,10 +894,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   { required: true, message: "Please specify round number" },
                 ]}
               >
-                <Select
-                  className="custom-select"
-                  placeholder="Select match round"
-                >
+                <Select placeholder="Select match round">
                   <Option value={1}>First Map</Option>
                   <Option value={2}>Second Map</Option>
                   <Option value={3}>Third Map</Option>
@@ -999,13 +908,13 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Map{" "}
                     <Tooltip title="Enter map name (e.g., de_dust2)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
                 rules={[{ required: true, message: "Please specify map name" }]}
               >
-                <Select className="custom-select" placeholder="Select map">
+                <Select placeholder="Select map">
                   <Option value="Anubis">Anubis</Option>
                   <Option value="Dust2">Dust2</Option>
                   <Option value="Mirage">Mirage</Option>
@@ -1022,13 +931,13 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Result{" "}
                     <Tooltip title="Specify result (1 for win, 0 for loss)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
                 rules={[{ required: true, message: "Please specify result" }]}
               >
-                <Select className="custom-select" placeholder="Select result">
+                <Select placeholder="Select result">
                   <Option value={0}>Loss</Option>
                   <Option value={1}>Win</Option>
                 </Select>
@@ -1039,7 +948,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Kills{" "}
                     <Tooltip title="Enter number of kills">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1049,8 +958,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 20"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1059,7 +968,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Assists{" "}
                     <Tooltip title="Enter number of assists">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1072,8 +981,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 5"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1082,7 +991,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Deaths{" "}
                     <Tooltip title="Enter number of deaths">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1095,8 +1004,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 15"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1105,7 +1014,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     ADR{" "}
                     <Tooltip title="Enter average damage per round">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1114,8 +1023,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 <InputNumber
                   min={0}
                   step={0.1}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 85.5"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1124,7 +1033,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Headshots %{" "}
                     <Tooltip title="Enter headshots percentage (0-100)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1138,23 +1047,14 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                 <InputNumber
                   min={0}
                   max={100}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 40"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={handleAddStatsManualCancel}
-                    className="text-white border-gray-500"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  <Button onClick={handleAddStatsManualCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">
                     Add
                   </Button>
                 </div>
@@ -1162,33 +1062,26 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             </Form>
           </Modal>
 
-          <button
+          <Button
             onClick={showDeleteLastStatModal}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+            className="text-white font-bold bg-red-600 hover:bg-red-700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Delete Last Stat
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Delete Last Stat</span>}
             open={isDeleteLastStatModalVisible}
             onCancel={() => setIsDeleteLastStatModalVisible(false)}
             footer={null}
-            className="custom-modal"
           >
             <p className="text-white">
               Are you sure you want to delete the last added stat?
             </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button
-                onClick={() => setIsDeleteLastStatModalVisible(false)}
-                className="text-white border-gray-500"
-              >
+              <Button onClick={() => setIsDeleteLastStatModalVisible(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleDeleteLastStat}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
+              <Button onClick={handleDeleteLastStat} type="primary" danger>
                 Delete
               </Button>
             </div>
@@ -1197,25 +1090,25 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
 
         {/* Matches Info Manager Section */}
         <div>
-          <h3 className="text-lg font-semibold mb-2">Matches Info Manager</h3>
-          <button
+          <h3 className="text-lg font-semibold mb-2 text-white">
+            Matches Info Manager
+          </h3>
+          <Button
             onClick={showAddPickBanModal}
-            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-green-600 hover:bg-green700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Add Pick/Ban
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Add Pick/Ban</span>}
             open={isAddPickBanModalVisible}
             onCancel={handleAddPickBanCancel}
             footer={null}
-            className="custom-modal"
           >
             <Form
               form={addPickBanForm}
               onFinish={handleAddPickBanInfo}
               layout="vertical"
-              className="text-white"
             >
               <Form.Item
                 name="map"
@@ -1223,13 +1116,13 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Map{" "}
                     <Tooltip title="Enter map name (e.g., Anubis)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
                 rules={[{ required: true, message: "Please specify map name" }]}
               >
-                <Select className="custom-select" placeholder="Select map">
+                <Select placeholder="Select map">
                   <Option value="Anubis">Anubis</Option>
                   <Option value="Dust2">Dust2</Option>
                   <Option value="Mirage">Mirage</Option>
@@ -1246,7 +1139,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Map Status{" "}
                     <Tooltip title="Specify map status (e.g., Banned or Picked)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1254,10 +1147,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   { required: true, message: "Please specify map status" },
                 ]}
               >
-                <Select
-                  className="custom-select"
-                  placeholder="Select map status"
-                >
+                <Select placeholder="Select map status">
                   <Option value="Banned">Banned</Option>
                   <Option value="Picked">Picked</Option>
                   <Option value="Default">Default</Option>
@@ -1269,7 +1159,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Initiator{" "}
                     <Tooltip title="Specify which team initiated the action (e.g., first_team)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1277,10 +1167,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   { required: true, message: "Please specify initiator" },
                 ]}
               >
-                <Select
-                  className="custom-select"
-                  placeholder="Select initiator"
-                >
+                <Select placeholder="Select initiator">
                   {match?.teams?.[0] && (
                     <Option value={match.teams[0]}>{match.teams[0]}</Option>
                   )}
@@ -1291,17 +1178,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={handleAddPickBanCancel}
-                    className="text-white border-gray-500"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  <Button onClick={handleAddPickBanCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">
                     Add
                   </Button>
                 </div>
@@ -1309,56 +1187,47 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             </Form>
           </Modal>
 
-          <button
+          <Button
             onClick={showDeletePickBanModal}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-red-600 hover:bg-red-700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Delete Last Pick/Ban
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Delete Last Pick/Ban</span>}
             open={isDeletePickBanModalVisible}
             onCancel={() => setIsDeletePickBanModalVisible(false)}
             footer={null}
-            className="custom-modal"
           >
             <p className="text-white">
               Are you sure you want to delete the last Pick/Ban for this match?
             </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button
-                onClick={() => setIsDeletePickBanModalVisible(false)}
-                className="text-white border-gray-500"
-              >
+              <Button onClick={() => setIsDeletePickBanModalVisible(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleDeletePickBanInfo}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
+              <Button onClick={handleDeletePickBanInfo} type="primary" danger>
                 Delete
               </Button>
             </div>
           </Modal>
 
-          <button
+          <Button
             onClick={showAddMapResultModal}
-            className="text-white bg-green-600 hover:bg-green-700 px-3 py-2 rounded w-full h-10 text-sm mb-2"
+            className="text-white font-bold bg-green-600 hover:bg-green700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Add Map Result
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Add Map Result</span>}
             open={isAddMapResultModalVisible}
             onCancel={handleAddMapResultCancel}
             footer={null}
-            className="custom-modal"
           >
             <Form
               form={addMapResultForm}
               onFinish={handleAddMapResultInfo}
               layout="vertical"
-              className="text-white"
             >
               <Form.Item
                 name="map"
@@ -1366,13 +1235,13 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Map{" "}
                     <Tooltip title="Select map from the list">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
                 rules={[{ required: true, message: "Please select a map" }]}
               >
-                <Select className="custom-select" placeholder="Select map">
+                <Select placeholder="Select map">
                   <Option value="Anubis">Anubis</Option>
                   <Option value="Dust2">Dust2</Option>
                   <Option value="Mirage">Mirage</Option>
@@ -1389,7 +1258,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     First Team (Left){" "}
                     <Tooltip title="First team from match data (cannot be changed)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1400,7 +1269,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   },
                 ]}
               >
-                <Input className="custom-input" disabled />
+                <Input disabled />
               </Form.Item>
               <Form.Item
                 name="secondTeam"
@@ -1408,7 +1277,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Second Team (Right){" "}
                     <Tooltip title="Second team from match data (cannot be changed)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1419,7 +1288,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   },
                 ]}
               >
-                <Input className="custom-input" disabled />
+                <Input disabled />
               </Form.Item>
               <Form.Item
                 name="firstHalfScoreFirstTeam"
@@ -1427,7 +1296,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     First Team First Half Score{" "}
                     <Tooltip title="Enter first team’s score in first half">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1435,8 +1304,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 4"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1445,7 +1314,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Second Team First Half Score{" "}
                     <Tooltip title="Enter second team’s score in first half">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1453,8 +1322,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 8"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1463,7 +1332,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     First Team Second Half Score{" "}
                     <Tooltip title="Enter first team’s score in second half">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1471,8 +1340,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 3"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1481,7 +1350,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Second Team Second Half Score{" "}
                     <Tooltip title="Enter second team’s score in second half">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1489,8 +1358,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 5"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1499,7 +1368,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     First Team Overtime Score{" "}
                     <Tooltip title="Enter first team’s score in overtime (0 if no overtime)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1507,8 +1376,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 0"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1517,7 +1386,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Second Team Overtime Score{" "}
                     <Tooltip title="Enter second team’s score in overtime (0 if no overtime)">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1525,8 +1394,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 0"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1535,7 +1404,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     First Team Total Score{" "}
                     <Tooltip title="Enter first team’s total score">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1545,8 +1414,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 7"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
@@ -1555,7 +1424,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <span className="text-gray-300">
                     Second Team Total Score{" "}
                     <Tooltip title="Enter second team’s total score">
-                      <InfoCircleOutlined className="text-gray-500" />
+                      <InfoCircleOutlined />
                     </Tooltip>
                   </span>
                 }
@@ -1565,23 +1434,14 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               >
                 <InputNumber
                   min={0}
-                  className="custom-input-number w-full"
                   placeholder="e.g., 13"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item>
                 <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={handleAddMapResultCancel}
-                    className="text-white border-gray-500"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
+                  <Button onClick={handleAddMapResultCancel}>Cancel</Button>
+                  <Button type="primary" htmlType="submit">
                     Add
                   </Button>
                 </div>
@@ -1589,33 +1449,26 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
             </Form>
           </Modal>
 
-          <button
+          <Button
             onClick={showDeleteMapResultModal}
-            className="text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded w-full h-10 text-sm"
+            className="text-white font-bold bg-red-600 hover:bg-red-700 rounded w-full h-10 text-sm mb-2 border border-gray-500"
           >
             Delete Last Result
-          </button>
+          </Button>
           <Modal
             title={<span className="text-white">Delete Last Result</span>}
             open={isDeleteMapResultModalVisible}
             onCancel={() => setIsDeleteMapResultModalVisible(false)}
             footer={null}
-            className="custom-modal"
           >
             <p className="text-white">
               Are you sure you want to delete the last map result?
             </p>
             <div className="flex justify-end gap-2 mt-4">
-              <Button
-                onClick={() => setIsDeleteMapResultModalVisible(false)}
-                className="text-white border-gray-500"
-              >
+              <Button onClick={() => setIsDeleteMapResultModalVisible(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleDeleteMapResultInfo}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
+              <Button onClick={handleDeleteMapResultInfo} type="primary" danger>
                 Delete
               </Button>
             </div>
