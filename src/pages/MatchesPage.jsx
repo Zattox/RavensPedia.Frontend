@@ -1,10 +1,10 @@
-// src/pages/MatchesPage.jsx
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Pagination } from 'antd';
-import api from '@/api';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Pagination } from "antd";
+import api from "@/api";
 
 function MatchesPage() {
+  // State for managing matches data, loading status, errors, and pagination
   const [inProgressMatches, setInProgressMatches] = useState([]);
   const [scheduledMatches, setScheduledMatches] = useState([]);
   const [error, setError] = useState(null);
@@ -14,17 +14,27 @@ function MatchesPage() {
   const matchesPerPage = 4;
   const navigate = useNavigate();
 
+  // Fetch matches data when component mounts
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const inProgressResponse = await api.get('/schedules/matches/get_in_progress/');
-        const inProgressData = inProgressResponse.data?.data || inProgressResponse.data || [];
-        setInProgressMatches(Array.isArray(inProgressData) ? inProgressData : []);
+        const inProgressResponse = await api.get(
+          "/schedules/matches/get_in_progress/",
+        );
+        const inProgressData =
+          inProgressResponse.data?.data || inProgressResponse.data || [];
+        setInProgressMatches(
+          Array.isArray(inProgressData) ? inProgressData : [],
+        );
 
-        const scheduledResponse = await api.get('/schedules/matches/get_upcoming_scheduled/', {
-          params: { num_matches: 50 },
-        });
-        const scheduledData = scheduledResponse.data?.data || scheduledResponse.data || [];
+        const scheduledResponse = await api.get(
+          "/schedules/matches/get_upcoming_scheduled/",
+          {
+            params: { num_matches: 50 },
+          },
+        );
+        const scheduledData =
+          scheduledResponse.data?.data || scheduledResponse.data || [];
         const sortedScheduledData = Array.isArray(scheduledData)
           ? scheduledData.sort((a, b) => new Date(a.date) - new Date(b.date))
           : [];
@@ -32,8 +42,8 @@ function MatchesPage() {
 
         setError(null);
       } catch (error) {
-        console.error('Ошибка при загрузке матчей:', error.response?.data || error.message);
-        setError('Не удалось загрузить матчи. Проверьте подключение к серверу.');
+        console.log(error);
+        setError("Failed to load matches. Check server connection.");
       } finally {
         setLoading(false);
       }
@@ -42,43 +52,56 @@ function MatchesPage() {
     fetchMatches();
   }, []);
 
+  // Format date string to a readable format
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleDateString("ru-RU", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
+  // Calculate pagination indices for in-progress matches
   const indexOfLastInProgress = inProgressPage * matchesPerPage;
   const indexOfFirstInProgress = indexOfLastInProgress - matchesPerPage;
-  const currentInProgressMatches = inProgressMatches.slice(indexOfFirstInProgress, indexOfLastInProgress);
+  const currentInProgressMatches = inProgressMatches.slice(
+    indexOfFirstInProgress,
+    indexOfLastInProgress,
+  );
 
+  // Calculate pagination indices for scheduled matches
   const indexOfLastScheduled = scheduledPage * matchesPerPage;
   const indexOfFirstScheduled = indexOfLastScheduled - matchesPerPage;
-  const currentScheduledMatches = scheduledMatches.slice(indexOfFirstScheduled, indexOfLastScheduled);
+  const currentScheduledMatches = scheduledMatches.slice(
+    indexOfFirstScheduled,
+    indexOfLastScheduled,
+  );
 
+  // Handle page change for in-progress matches and scroll to top
   const handleInProgressPageChange = (page) => {
     setInProgressPage(page);
     window.scrollTo(0, 0);
   };
 
+  // Handle page change for scheduled matches and scroll to top
   const handleScheduledPageChange = (page) => {
     setScheduledPage(page);
     window.scrollTo(0, 0);
   };
 
+  // Navigate to match details page
   const handleMatchClick = (matchId) => {
     navigate(`/matches/${matchId}`);
   };
 
+  // Render loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-white text-center">Загрузка...</p>
+        <p className="text-white text-center">Loading...</p>
       </div>
     );
   }
@@ -87,7 +110,9 @@ function MatchesPage() {
     <div className="min-h-screen flex flex-col items-center p-4 pt-24 bg-gray-900">
       <div className="w-full">
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-4 text-white text-center">Текущие матчи</h2>
+          <h2 className="text-2xl font-bold mb-4 text-white text-center">
+            Ongoing Matches
+          </h2>
           {error ? (
             <p className="text-red-500 text-center">{error}</p>
           ) : inProgressMatches.length > 0 ? (
@@ -100,24 +125,29 @@ function MatchesPage() {
                     onClick={() => handleMatchClick(match.id)}
                   >
                     <h3 className="text-lg font-semibold mb-2">
-                      Формат: Best of {match.best_of || 'N/A'}
+                      Format: Best of {match.best_of || "N/A"}
                     </h3>
                     <p className="text-gray-300">
-                      <span className="font-semibold">Турнир:</span> {match.tournament || 'N/A'}
+                      <span className="font-semibold">Tournament:</span>{" "}
+                      {match.tournament || "N/A"}
                     </p>
                     <p className="text-gray-300">
-                      <span className="font-semibold">Дата:</span>{' '}
-                      {match.date ? formatDate(match.date) : 'N/A'}
+                      <span className="font-semibold">Date:</span>{" "}
+                      {match.date ? formatDate(match.date) : "N/A"}
                     </p>
                     <p className="text-gray-300">
-                      <span className="font-semibold">Матч:</span>{' '}
-                      {Array.isArray(match.teams) && match.teams.length === 2 ? (
+                      <span className="font-semibold">Match:</span>{" "}
+                      {Array.isArray(match.teams) &&
+                      match.teams.length === 2 ? (
                         <span>
-                          <span className="text-blue-400">{match.teams[0]}</span> vs{' '}
+                          <span className="text-blue-400">
+                            {match.teams[0]}
+                          </span>{" "}
+                          vs{" "}
                           <span className="text-red-400">{match.teams[1]}</span>
                         </span>
                       ) : (
-                        'N/A'
+                        "N/A"
                       )}
                     </p>
                   </div>
@@ -137,12 +167,14 @@ function MatchesPage() {
               )}
             </>
           ) : (
-            <p className="text-white text-center">Нет текущих матчей.</p>
+            <p className="text-white text-center">No ongoing matches.</p>
           )}
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold mb-4 text-white text-center">Запланированные матчи</h2>
+          <h2 className="text-2xl font-bold mb-4 text-white text-center">
+            Scheduled Matches
+          </h2>
           {error ? (
             <p className="text-red-500 text-center">{error}</p>
           ) : scheduledMatches.length > 0 ? (
@@ -155,24 +187,29 @@ function MatchesPage() {
                     onClick={() => handleMatchClick(match.id)}
                   >
                     <h3 className="text-lg font-semibold mb-2">
-                      Формат: Best of {match.best_of || 'N/A'}
+                      Format: Best of {match.best_of || "N/A"}
                     </h3>
                     <p className="text-gray-300">
-                      <span className="font-semibold">Турнир:</span> {match.tournament || 'N/A'}
+                      <span className="font-semibold">Tournament:</span>{" "}
+                      {match.tournament || "N/A"}
                     </p>
                     <p className="text-gray-300">
-                      <span className="font-semibold">Дата:</span>{' '}
-                      {match.date ? formatDate(match.date) : 'N/A'}
+                      <span className="font-semibold">Date:</span>{" "}
+                      {match.date ? formatDate(match.date) : "N/A"}
                     </p>
                     <p className="text-gray-300">
-                      <span className="font-semibold">Матч:</span>{' '}
-                      {Array.isArray(match.teams) && match.teams.length === 2 ? (
+                      <span className="font-semibold">Match:</span>{" "}
+                      {Array.isArray(match.teams) &&
+                      match.teams.length === 2 ? (
                         <span>
-                          <span className="text-blue-400">{match.teams[0]}</span> vs{' '}
+                          <span className="text-blue-400">
+                            {match.teams[0]}
+                          </span>{" "}
+                          vs{" "}
                           <span className="text-red-400">{match.teams[1]}</span>
                         </span>
                       ) : (
-                        'N/A'
+                        "N/A"
                       )}
                     </p>
                   </div>
@@ -192,7 +229,7 @@ function MatchesPage() {
               )}
             </>
           ) : (
-            <p className="text-white text-center">Нет запланированных матчей.</p>
+            <p className="text-white text-center">No scheduled matches.</p>
           )}
         </div>
       </div>
