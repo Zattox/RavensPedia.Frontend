@@ -57,9 +57,7 @@ function PlayerPage() {
   useEffect(() => {
     const fetchFaceitData = async () => {
       try {
-        const response = await api.get('/players/get_faceit_profile/', {
-          params: { player_nickname: player_id },
-        });
+        const response = await api.get(`/players/${player_id}/get_faceit_profile/`);
         console.log('Faceit Profile Response:', response.data);
         if (response.data.error) {
           setFaceitNickname(null);
