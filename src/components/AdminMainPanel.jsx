@@ -46,52 +46,51 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
     });
   };
 
-  // News modal handlers
+  // Handler to show news creation modal
   const showNewsModal = () => setIsNewsModalVisible(true);
 
+  // Handler to create new news item
   const handleCreateNews = async (values) => {
-    setLoadingNews(true); // Set loading state to true during API call
+    setLoadingNews(true);
     try {
-      // Send POST request to create a new news item
       await api.post("/news/", {
         title: values.title,
         content: values.content,
         author: values.author,
       });
-      // Fetch updated news data after creation
       const updatedNews = await api.get("/news/");
-      setNewsData(updatedNews.data); // Update parent component state
-      refreshNewsData(); // Trigger refresh of news data
-      newsForm.resetFields(); // Clear form fields
+      setNewsData(updatedNews.data);
+      refreshNewsData();
+      newsForm.resetFields();
       showNotification("success", "Success!", "News created successfully!");
-      setIsNewsModalVisible(false); // Close modal
+      setIsNewsModalVisible(false);
     } catch (error) {
       console.error("Error creating news:", error);
       const errorDetail =
         error.response?.data?.detail || "Failed to create news";
       showNotification("error", "Error!", errorDetail);
     } finally {
-      setLoadingNews(false); // Reset loading state
+      setLoadingNews(false);
     }
   };
 
-  // Match modal handlers
+  // Handler to show match creation modal
   const showMatchModal = () => setIsMatchModalVisible(true);
 
+  // Handler to create new match
   const handleCreateMatch = async (values) => {
     try {
-      // Send POST request to create a new match
       await api.post("/matches/", {
         best_of: values.best_of,
-        max_number_of_teams: 2, // Fixed value for matches
-        max_number_of_players: 10, // Fixed value for matches
+        max_number_of_teams: 2,
+        max_number_of_players: 10,
         tournament: values.tournament,
         date: values.date,
         description: values.description,
       });
       showNotification("success", "Success!", "Match created successfully!");
-      setIsMatchModalVisible(false); // Close modal
-      matchForm.resetFields(); // Clear form fields
+      setIsMatchModalVisible(false);
+      matchForm.resetFields();
     } catch (error) {
       console.error("Error creating match:", error);
       const errorDetail =
@@ -100,21 +99,21 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
     }
   };
 
-  // Player modal handlers
+  // Handler to show player creation modal
   const showPlayerModal = () => setIsPlayerModalVisible(true);
 
+  // Handler to create new player
   const handleCreatePlayer = async (values) => {
     try {
-      // Send POST request to create a new player
       await api.post("/players/", {
         steam_id: values.steam_id,
         nickname: values.nickname,
-        name: values.name || undefined, // Optional field
-        surname: values.surname || undefined, // Optional field
+        name: values.name || undefined,
+        surname: values.surname || undefined,
       });
       showNotification("success", "Success!", "Player created successfully!");
-      setIsPlayerModalVisible(false); // Close modal
-      playerForm.resetFields(); // Clear form fields
+      setIsPlayerModalVisible(false);
+      playerForm.resetFields();
     } catch (error) {
       console.error("Error creating player:", error);
       const errorDetail =
@@ -123,20 +122,20 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
     }
   };
 
-  // Team modal handlers
+  // Handler to show team creation modal
   const showTeamModal = () => setIsTeamModalVisible(true);
 
+  // Handler to create new team
   const handleCreateTeam = async (values) => {
     try {
-      // Send POST request to create a new team
       await api.post("/teams/", {
-        max_number_of_players: 10, // Fixed value for teams
+        max_number_of_players: 10,
         name: values.name,
-        description: values.description || undefined, // Optional field
+        description: values.description || undefined,
       });
       showNotification("success", "Success!", "Team created successfully!");
-      setIsTeamModalVisible(false); // Close modal
-      teamForm.resetFields(); // Clear form fields
+      setIsTeamModalVisible(false);
+      teamForm.resetFields();
     } catch (error) {
       console.error("Error creating team:", error);
       const errorDetail =
@@ -145,17 +144,17 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
     }
   };
 
-  // Tournament modal handlers
+  // Handler to show tournament creation modal
   const showTournamentModal = () => setIsTournamentModalVisible(true);
 
+  // Handler to create new tournament
   const handleCreateTournament = async (values) => {
     try {
-      // Send POST request to create a new tournament
       await api.post("/tournaments/", {
         max_count_of_teams: values.max_count_of_teams,
         name: values.name,
-        prize: values.prize || undefined, // Optional field
-        description: values.description || undefined, // Optional field
+        prize: values.prize || undefined,
+        description: values.description || undefined,
         start_date: values.start_date,
         end_date: values.end_date,
       });
@@ -164,8 +163,8 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
         "Success!",
         "Tournament created successfully!",
       );
-      setIsTournamentModalVisible(false); // Close modal
-      tournamentForm.resetFields(); // Clear form fields
+      setIsTournamentModalVisible(false);
+      tournamentForm.resetFields();
     } catch (error) {
       console.error("Error creating tournament:", error);
       const errorDetail =
@@ -174,9 +173,9 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
     }
   };
 
-  // Handler to update Faceit ELO for players
+  // Handler to update players' Faceit ELO
   const handleUpdatePlayersFaceitElo = async () => {
-    setLoadingPlayersElo(true); // Set loading state
+    setLoadingPlayersElo(true);
     try {
       await api.patch("/players/update_faceit_elo/");
       showNotification("success", "Success!", "Players Faceit ELO updated.");
@@ -189,13 +188,13 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
         error.response?.data?.detail || "Failed to update players Faceit ELO";
       showNotification("error", "Error!", errorDetail);
     } finally {
-      setLoadingPlayersElo(false); // Reset loading state
+      setLoadingPlayersElo(false);
     }
   };
 
-  // Handler to update Faceit ELO for teams
+  // Handler to update teams' Faceit ELO
   const handleUpdateTeamsFaceitElo = async () => {
-    setLoadingTeamsElo(true); // Set loading state
+    setLoadingTeamsElo(true);
     try {
       await api.patch("/teams/update_team_faceit_elo/");
       showNotification("success", "Success!", "Teams Faceit ELO updated.");
@@ -208,13 +207,13 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
         error.response?.data?.detail || "Failed to update teams Faceit ELO";
       showNotification("error", "Error!", errorDetail);
     } finally {
-      setLoadingTeamsElo(false); // Reset loading state
+      setLoadingTeamsElo(false);
     }
   };
 
   // Handler to update match statuses
   const handleUpdateMatchesStatuses = async () => {
-    setLoadingMatchesStatuses(true); // Set loading state
+    setLoadingMatchesStatuses(true);
     try {
       await api.patch("/schedules/matches/update_statuses/");
       showNotification("success", "Success!", "Match statuses updated.");
@@ -227,13 +226,13 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
         error.response?.data?.detail || "Failed to update match statuses";
       showNotification("error", "Error!", errorDetail);
     } finally {
-      setLoadingMatchesStatuses(false); // Reset loading state
+      setLoadingMatchesStatuses(false);
     }
   };
 
   // Handler to update tournament statuses
   const handleUpdateTournamentsStatuses = async () => {
-    setLoadingTournamentsStatuses(true); // Set loading state
+    setLoadingTournamentsStatuses(true);
     try {
       await api.patch("/schedules/tournaments/update_statuses/");
       showNotification("success", "Success!", "Tournament statuses updated.");
@@ -246,7 +245,7 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
         error.response?.data?.detail || "Failed to update tournament statuses";
       showNotification("error", "Error!", errorDetail);
     } finally {
-      setLoadingTournamentsStatuses(false); // Reset loading state
+      setLoadingTournamentsStatuses(false);
     }
   };
 
@@ -256,16 +255,17 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
     form.resetFields();
   };
 
-  // JSX rendering of the admin panel
+  // Render admin panel UI
   return (
-    <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20">
+    <div className="fixed top-24 right-4 w-80 bg-gray-800 p-6 rounded-lg shadow-md text-white z-20 admin-panel">
       <h2 className="text-2xl font-bold mb-4 text-center">Admin Panel</h2>
+      <h3 className="text-lg font-semibold mb-2">Creation Section</h3>
       <div className="space-y-4">
-        {/* News Button and Modal */}
+        {/* News Creation Section */}
         <Button
           onClick={showNewsModal}
           loading={loadingNews}
-          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
+          className="bg-green-600 hover:!bg-green-700 text-white font-bold px-3 py-5 w-full border border-gray-500"
         >
           Add News
         </Button>
@@ -321,7 +321,7 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:!bg-blue-700"
                   loading={loadingNews}
                 >
                   Create
@@ -331,10 +331,10 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
           </Form>
         </Modal>
 
-        {/* Match Button and Modal */}
+        {/* Match Creation Section */}
         <Button
           onClick={showMatchModal}
-          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
+          className="bg-green-600 hover:!bg-green-700 text-white font-bold px-3 py-5 w-full border border-gray-500"
         >
           Add Match
         </Button>
@@ -400,7 +400,6 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
                 placeholder="e.g., Tournament final..."
               />
             </Form.Item>
-            {/* Hidden fields for max_number_of_teams and max_number_of_players */}
             <Form.Item name="max_number_of_teams" hidden initialValue={2}>
               <Input type="hidden" />
             </Form.Item>
@@ -420,7 +419,7 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:!bg-blue-700"
                 >
                   Create
                 </Button>
@@ -429,10 +428,10 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
           </Form>
         </Modal>
 
-        {/* Player Button and Modal */}
+        {/* Player Creation Section */}
         <Button
           onClick={showPlayerModal}
-          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
+          className="bg-green-600 hover:!bg-green-700 text-white font-bold px-3 py-5 w-full border border-gray-500"
         >
           Add Player
         </Button>
@@ -491,7 +490,7 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:!bg-blue-700"
                 >
                   Create
                 </Button>
@@ -500,10 +499,10 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
           </Form>
         </Modal>
 
-        {/* Team Button and Modal */}
+        {/* Team Creation Section */}
         <Button
           onClick={showTeamModal}
-          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
+          className="bg-green-600 hover:!bg-green-700 text-white font-bold px-3 py-5 w-full border border-gray-500"
         >
           Add Team
         </Button>
@@ -553,7 +552,7 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:!bg-blue-700"
                 >
                   Create
                 </Button>
@@ -562,10 +561,10 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
           </Form>
         </Modal>
 
-        {/* Tournament Button and Modal */}
+        {/* Tournament Creation Section */}
         <Button
           onClick={showTournamentModal}
-          className="text-white font-bold bg-green-600 hover:!bg-green-700 px-3 py-5 w-full border border-gray-500"
+          className="bg-green-600 hover:!bg-green-700 text-white font-bold px-3 py-5 w-full border border-gray-500"
         >
           Add Tournament
         </Button>
@@ -662,7 +661,7 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:!bg-blue-700"
                 >
                   Create
                 </Button>
@@ -677,28 +676,28 @@ function AdminMainPanel({ setNewsData, refreshNewsData }) {
           <Button
             onClick={handleUpdatePlayersFaceitElo}
             loading={loadingPlayersElo}
-            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
+            className="bg-blue-600 hover:!bg-blue-700 text-white font-bold px-3 py-5 mb-4 w-full border-gray-500"
           >
             Update Players Faceit ELO
           </Button>
           <Button
             onClick={handleUpdateTeamsFaceitElo}
             loading={loadingTeamsElo}
-            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
+            className="bg-blue-600 hover:!bg-blue-700 text-white font-bold px-3 py-5 mb-4 w-full border-gray-500"
           >
             Update Teams Faceit ELO
           </Button>
           <Button
             onClick={handleUpdateMatchesStatuses}
             loading={loadingMatchesStatuses}
-            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
+            className="bg-blue-600 hover:!bg-blue-700 text-white font-bold px-3 py-5 mb-4 w-full border-gray-500"
           >
             Update Match Statuses
           </Button>
           <Button
             onClick={handleUpdateTournamentsStatuses}
             loading={loadingTournamentsStatuses}
-            className="text-white font-bold bg-blue-600 hover:!bg-blue-700 hover:!text-white px-3 py-5 mb-4 rounded w-full border-gray-500"
+            className="bg-blue-600 hover:!bg-blue-700 text-white font-bold px-3 py-5 mb-4 w-full border-gray-500"
           >
             Update Tournament Statuses
           </Button>
