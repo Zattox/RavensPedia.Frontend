@@ -38,5 +38,5 @@ npm run dev
 - Access at: https://127.0.0.1:5173/
 
 2. Backend Integration
-   The frontend requires the [RavensPediaBackend](https://github.com/Zattox/RavensPedia) to be running.
+   The frontend requires the [RavensPedia.Backend](https://github.com/Zattox/RavensPedia) to be running.
    Follow the steps from the readme file on the backend implementation page.
