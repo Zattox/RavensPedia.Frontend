@@ -8,9 +8,9 @@ import { NotificationContext } from "@/context/NotificationContext";
 
 // AdminMatchPanel component for managing match-related admin functionalities
 function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
-  const { Option } = Select; // Destructuring Option from Select for dropdown options
-  const navigate = useNavigate(); // Hook for programmatic navigation
-  const notificationApi = useContext(NotificationContext); // Accessing notification system from context
+  const { Option } = Select;
+  const navigate = useNavigate();
+  const notificationApi = useContext(NotificationContext);
 
   // State for controlling visibility of modals
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
@@ -37,6 +37,9 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
     useState(false);
   const [isDeleteMapResultModalVisible, setIsDeleteMapResultModalVisible] =
     useState(false);
+
+  // State for managing loading during Faceit stats addition
+  const [isAddingFaceitStats, setIsAddingFaceitStats] = useState(false);
 
   // Form instances for managing form data and validation
   const [updateForm] = Form.useForm();
@@ -165,6 +168,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
 
   // Handler to add Faceit stats to the match
   const handleAddFaceitStats = async (values) => {
+    setIsAddingFaceitStats(true);
     try {
       await api.patch(`/matches/stats/${match_id}/add_faceit_stats/`, null, {
         params: { faceit_url: values.faceitUrl },
@@ -187,6 +191,8 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
       const errorDetail =
         error.response?.data?.detail || "Failed to add Faceit stats";
       showNotification("error", "Error!", errorDetail);
+    } finally {
+      setIsAddingFaceitStats(false);
     }
   };
 
@@ -912,6 +918,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <Button
                     onClick={handleAddFaceitStatsCancel}
                     className="button text-white border-gray-500"
+                    disabled={isAddingFaceitStats}
                   >
                     Cancel
                   </Button>
@@ -919,6 +926,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                     type="primary"
                     htmlType="submit"
                     className="button bg-blue-600 hover:!bg-blue-700 text-white"
+                    loading={isAddingFaceitStats}
                   >
                     Add
                   </Button>
