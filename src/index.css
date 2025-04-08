@@ -4,316 +4,318 @@
 
 /* Base styles for the application */
 :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Body styles to ensure full height and no margins */
 body {
-    margin: 0;
-    min-height: 100vh;
+  margin: 0;
+  min-height: 100vh;
 }
 
 /* Heading styles for large titles */
 h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
+  font-size: 3.2em;
+  line-height: 1.1;
 }
 
 /* Custom pagination styles for Antd Pagination component */
 .custom-pagination .ant-pagination-item {
-    background-color: #1f2937;
-    border-color: #374151;
+  background-color: #1f2937;
+  border-color: #374151;
 }
 
 .custom-pagination .ant-pagination-item a {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .custom-pagination .ant-pagination-item-active {
-    background-color: #3b82f6;
-    border-color: #3b82f6;
+  background-color: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .custom-pagination .ant-pagination-item-active a {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .custom-pagination .ant-pagination-prev,
 .custom-pagination .ant-pagination-next {
-    background-color: #1f2937;
-    border-color: #374151;
+  background-color: #1f2937;
+  border-color: #374151;
 }
 
 /* Default color for pagination arrow icons */
 .custom-pagination .ant-pagination-prev .ant-pagination-item-link,
 .custom-pagination .ant-pagination-next .ant-pagination-item-link {
-    color: #d1d5db !important;
+  color: #d1d5db !important;
 }
 
 /* Hover state for pagination arrow icons */
 .custom-pagination .ant-pagination-prev:hover .ant-pagination-item-link,
 .custom-pagination .ant-pagination-next:hover .ant-pagination-item-link {
-    color: #ffffff !important;
-    border-color: #3b82f6 !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
 }
 
 /* Alternating row colors for tables */
 tbody tr:nth-child(even) {
-    background-color: #2d3748;
+  background-color: #2d3748;
 }
 
 /* Custom modal styles for Antd Modal component */
 .custom-modal .ant-modal-content {
-    background-color: #1f2937;
-    color: #ffffff;
+  background-color: #1f2937;
+  color: #ffffff;
 }
 
 .custom-modal .ant-modal-header {
-    background-color: #1f2937;
-    border-bottom: 1px solid #374151;
+  background-color: #1f2937;
+  border-bottom: 1px solid #374151;
 }
 
 .custom-modal .ant-modal-title {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .custom-modal .ant-modal-close-x {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 .custom-modal .ant-input,
 .custom-modal .ant-input-number,
 .custom-modal .ant-input-textarea {
-    background-color: #374151;
-    color: #e5e7eb !important;
-    border-color: #4b5563;
+  background-color: #374151;
+  color: #e5e7eb !important;
+  border-color: #4b5563;
 }
 
 .custom-modal .ant-input:hover,
 .custom-modal .ant-input-number:hover,
 .custom-modal .ant-input-textarea:hover {
-    border-color: #3b82f6;
+  border-color: #3b82f6;
 }
 
 .custom-modal .ant-input:focus,
 .custom-modal .ant-input-number:focus,
 .custom-modal .ant-input-textarea:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .custom-modal .ant-form-item-label > label {
-    color: #d1d5db;
+  color: #d1d5db;
 }
 
 .custom-modal .ant-form-item-explain-error {
-    color: #f87171;
+  color: #f87171;
 }
 
 /* Custom styles for buttons in modals */
 .custom-modal .ant-btn {
-    background-color: #374151 !important;
-    color: #e5e7eb !important;
-    border-color: #4b5563 !important;
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+  border-color: #4b5563 !important;
 }
 
 /* Hover state for buttons in modals */
 .custom-modal .ant-btn:hover {
-    background-color: #4b5563 !important;
-    border-color: #3b82f6 !important;
+  background-color: #4b5563 !important;
+  border-color: #3b82f6 !important;
 }
 
 /* Specific styles for primary buttons in modals */
 .custom-modal .ant-btn-primary {
-    background-color: #3b82f6 !important;
-    border-color: #3b82f6 !important;
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
 }
 
 /* Hover state for primary buttons in modals */
 .custom-modal .ant-btn-primary:hover {
-    background-color: #2563eb !important;
-    border-color: #2563eb !important;
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
 }
 
 /* Custom input styles for Antd Input, InputNumber, and TextArea */
 .custom-input,
 .custom-input-number,
 .custom-textarea {
-    background-color: #374151 !important;
-    color: #e5e7eb !important;
-    border-color: #4b5563 !important;
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+  border-color: #4b5563 !important;
 }
 
 .custom-input:hover,
 .custom-input-number:hover,
 .custom-textarea:hover {
-    border-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
 }
 
 .custom-input:focus,
 .custom-input-number:focus,
 .custom-textarea:focus {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
 }
 
 /* Placeholder styles for inputs */
 .custom-input::placeholder,
 .custom-input-number input::placeholder,
 .custom-textarea::placeholder {
-    color: #9ca3af !important;
+  color: #9ca3af !important;
 }
 
 /* Specific placeholder styles for Input.Password */
 .custom-input.ant-input-password input::placeholder {
-    color: #9ca3af !important;
+  color: #9ca3af !important;
 }
 
 /* DatePicker placeholder styles */
 .custom-input .ant-picker-input > input::placeholder {
-    color: #9ca3af !important;
+  color: #9ca3af !important;
 }
 
 /* Select placeholder styles */
 .custom-select .ant-select-selection-placeholder {
-    color: #9ca3af !important;
+  color: #9ca3af !important;
 }
 
 /* InputNumber text color */
 .custom-input-number .ant-input-number-input {
-    color: #e5e7eb !important;
+  color: #e5e7eb !important;
 }
 
 /* Admin panel styles for admin-specific sections */
 .admin-panel {
-    background-color: #1f2937 !important;
-    color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
 }
 
 /* Admin panel button styles */
 .admin-panel button {
-    background-color: #374151 !important;
-    color: #e5e7eb !important;
-    border-color: #4b5563 !important;
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+  border-color: #4b5563 !important;
 }
 
 .admin-panel button:hover {
-    background-color: #4b5563 !important;
-    border-color: #3b82f6 !important;
+  background-color: #4b5563 !important;
+  border-color: #3b82f6 !important;
 }
 
 /* Specific action button styles within admin panel */
 .admin-panel .bg-blue-600 {
-    background-color: #3b82f6 !important;
+  background-color: #3b82f6 !important;
 }
 
 .admin-panel .bg-blue-600:hover {
-    background-color: #2563eb !important;
+  background-color: #2563eb !important;
 }
 
 .admin-panel .bg-green-600 {
-    background-color: #16a34a !important;
+  background-color: #16a34a !important;
 }
 
 .admin-panel .bg-green-600:hover {
-    background-color: #15803d !important;
+  background-color: #15803d !important;
 }
 
 .admin-panel .bg-red-600 {
-    background-color: #dc2626 !important;
+  background-color: #dc2626 !important;
 }
 
 .admin-panel .bg-red-600:hover {
-    background-color: #b91c1c !important;
+  background-color: #b91c1c !important;
 }
 
 /* Filter form styles for Antd Form component */
 .custom-form .ant-form-item-label > label {
-    color: #d1d5db !important;
+  color: #d1d5db !important;
 }
 
 .custom-form .ant-form-item-label > label .anticon {
-    color: #9ca3af !important;
+  color: #9ca3af !important;
 }
 
 /* Table styles for Antd Table component */
 .custom-table .ant-table {
-    background: #1f2937 !important;
-    color: #d1d5db !important;
+  background: #1f2937 !important;
+  color: #d1d5db !important;
 }
 
 .custom-table .ant-table-thead > tr > th {
-    background: #374151 !important;
-    color: #ffffff !important;
+  background: #374151 !important;
+  color: #ffffff !important;
 }
 
 .custom-table .ant-table-tbody > tr > td {
-    border-bottom: 1px solid #4b5563 !important;
+  border-bottom: 1px solid #4b5563 !important;
 }
 
 .custom-table .ant-table-tbody > tr:hover > td {
-    background: #374151 !important;
+  background: #374151 !important;
 }
 
 /* Styles for the Select input field */
 .custom-select .ant-select-selector {
-    background-color: #2d3748 !important;
-    color: #e2e8f0 !important;
-    border-color: #4a5568 !important;
-    height: 40px !important;
-    display: flex !important;
-    align-items: center !important;
+  background-color: #2d3748 !important;
+  color: #e2e8f0 !important;
+  border-color: #4a5568 !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 /* Styles for the Select arrow */
 .custom-select .ant-select-arrow {
-    color: #e2e8f0 !important;
+  color: #e2e8f0 !important;
 }
 
 /* Styles for the Select dropdown container */
 .custom-select .ant-select-dropdown {
-    background-color: #374151 !important;
-    border: 1px solid #4b5563 !important;
-    border-radius: 8px !important;
-    padding: 4px 0 !important;
+  background-color: #374151 !important;
+  border: 1px solid #4b5563 !important;
+  border-radius: 8px !important;
+  padding: 4px 0 !important;
 }
 
 /* Styles for each dropdown option */
 .custom-select .ant-select-item-option {
-    background-color: #374151 !important;
-    color: #e5e7eb !important;
-    padding: 10px 12px !important;
-    border-bottom: 1px solid #4b5563 !important;
-    transition: background-color 0.3s, color 0.3s !important;
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
+  padding: 10px 12px !important;
+  border-bottom: 1px solid #4b5563 !important;
+  transition:
+    background-color 0.3s,
+    color 0.3s !important;
 }
 
 /* Remove border for the last option */
 .custom-select .ant-select-item-option:last-child {
-    border-bottom: none !important;
+  border-bottom: none !important;
 }
 
 /* Hover state for dropdown options */
 .custom-select .ant-select-item-option:hover {
-    background-color: #4b5563 !important;
-    color: #ffffff !important;
+  background-color: #4b5563 !important;
+  color: #ffffff !important;
 }
 
 /* Selected state for dropdown options */
 .custom-select .ant-select-item-option-selected {
-    background-color: #3b82f6 !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
 }
 
 /* Styles for the selected item text */
 .custom-select .ant-select-selection-item {
-    color: #e2e8f0 !important;
+  color: #e2e8f0 !important;
 }
