@@ -1,10 +1,8 @@
-# RavensPedia Frontend
-
-## Development Setup
+# Development Setup
 
 <!--Prerequisites Installation-->
 
-### Prerequisites Installation
+## Prerequisites Installation
 
 1. Install Node.js and npm (skip if already installed):
 
@@ -27,7 +25,7 @@
 
 <!--Running the Application-->
 
-### Running the Application
+## Running the Application
 
 1. Start development server
 
