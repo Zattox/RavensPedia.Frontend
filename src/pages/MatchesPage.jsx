@@ -11,7 +11,7 @@ function MatchesPage() {
   const [loading, setLoading] = useState(true);
   const [inProgressPage, setInProgressPage] = useState(1);
   const [scheduledPage, setScheduledPage] = useState(1);
-  const matchesPerPage = 4;
+  const matchesPerPage = 6;
   const navigate = useNavigate();
 
   // Fetch matches data when component mounts

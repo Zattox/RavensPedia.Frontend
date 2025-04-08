@@ -14,7 +14,7 @@ function EventsPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const tournamentsPerPage = 4;
+  const tournamentsPerPage = 6;
 
   // Fetch tournaments based on event type when component mounts or eventType changes
   useEffect(() => {

@@ -9,7 +9,7 @@ function MatchesResultsPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const matchesPerPage = 4;
+  const matchesPerPage = 6;
   const navigate = useNavigate();
 
   // Fetch completed matches data when component mounts
