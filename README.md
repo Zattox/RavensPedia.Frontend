@@ -27,7 +27,13 @@
 
 ## Running the Application
 
-1. Start development server
+1. Configure the application by updating `api.js` with:
+
+```
+baseURL: "https://127.0.0.1:8000",
+```
+
+2. Start development server
 
 ```bash
 npm run dev
@@ -35,6 +41,6 @@ npm run dev
 
 - Access at: https://127.0.0.1:5173/
 
-2. Backend Integration
+3. Backend Integration
    The frontend requires the [RavensPedia.Backend](https://github.com/Zattox/RavensPedia) to be running.
    Follow the steps from the readme file on the backend implementation page.
