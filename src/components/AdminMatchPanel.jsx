@@ -744,7 +744,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               <Button
                 onClick={handleDeleteMatch}
                 type="primary"
-                className="button bg-red-600 hover:!bg-red-700 text-white"
+                className="delete-button text-white"
               >
                 Delete
               </Button>
@@ -862,7 +862,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
                   <Button
                     type="primary"
                     htmlType="submit"
-                    className="button bg-blue-600 hover:!bg-blue-700 text-white"
+                    className="delete-button text-white"
                   >
                     Delete
                   </Button>
@@ -961,7 +961,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               <Button
                 onClick={handleDeleteMatchStats}
                 type="primary"
-                className="button bg-red-600 hover:!bg-red-700 text-white"
+                className="delete-button text-white"
               >
                 Delete
               </Button>
@@ -1223,7 +1223,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               <Button
                 onClick={handleDeleteLastStat}
                 type="primary"
-                className="button bg-red-600 hover:!bg-red-700 text-white"
+                className="delete-button text-white"
               >
                 Delete
               </Button>
@@ -1371,7 +1371,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               <Button
                 onClick={handleDeletePickBanInfo}
                 type="primary"
-                className="button bg-red-600 hover:!bg-red-700 text-white"
+                className="delete-button text-white"
               >
                 Delete
               </Button>
@@ -1652,7 +1652,7 @@ function AdminMatchPanel({ match_id, setMatch, refreshMatch, match }) {
               <Button
                 onClick={handleDeleteMapResultInfo}
                 type="primary"
-                className="button bg-red-600 hover:!bg-red-700 text-white"
+                className="delete-button text-white"
               >
                 Delete
               </Button>

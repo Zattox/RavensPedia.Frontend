@@ -213,7 +213,7 @@ function AdminNewsPanel({ newsId, setNews, refreshNews }) {
             </Button>
             <Button
               onClick={handleDeleteNews}
-              className="bg-red-600 hover:!bg-red-700 text-white"
+              className="delete-button text-white"
             >
               Delete
             </Button>

@@ -564,7 +564,7 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) {
             </Button>
             <Button
               onClick={handleDeleteTournament}
-              className="bg-red-600 hover:!bg-red-700 text-white"
+              className="delete-button text-white"
             >
               Delete
             </Button>
@@ -688,7 +688,7 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-blue-600 hover:!bg-blue-700"
+                  className="delete-button text-white"
                 >
                   Delete
                 </Button>
@@ -804,7 +804,7 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) {
             </Button>
             <Button
               onClick={handleDeleteResult}
-              className="bg-red-600 hover:!bg-red-700 text-white"
+              className="delete-button text-white"
             >
               Delete
             </Button>
@@ -958,7 +958,7 @@ function AdminTournamentPanel({ tournamentName, refreshTournament }) {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-blue-600 hover:!bg-blue-700"
+                  className="delete-button text-white"
                 >
                   Remove
                 </Button>

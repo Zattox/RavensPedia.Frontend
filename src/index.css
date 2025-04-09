@@ -319,3 +319,14 @@ tbody tr:nth-child(even) {
 .custom-select .ant-select-selection-item {
   color: #e2e8f0 !important;
 }
+
+/* Custom styles for the Delete button in the modal */
+.custom-modal .delete-button {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+.custom-modal .delete-button:hover {
+  background-color: #b91c1c !important;
+  border-color: #b91c1c !important;
+}

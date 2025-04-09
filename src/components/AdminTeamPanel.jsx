@@ -262,7 +262,7 @@ function AdminTeamPanel({ team_name, refreshTeam }) {
             </Button>
             <Button
               onClick={handleDeleteTeam}
-              className="bg-red-600 hover:!bg-red-700 text-white"
+              className="delete-button text-white"
             >
               Delete
             </Button>
@@ -395,7 +395,7 @@ function AdminTeamPanel({ team_name, refreshTeam }) {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-blue-600 hover:!bg-blue-700"
+                  className="delete-button text-white"
                 >
                   Delete
                 </Button>
